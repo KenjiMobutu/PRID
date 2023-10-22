@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "gCgjo92Y/+7W+fFpfGFZp2EhURwxIQAfpwMl1IqW+eCD5MAhcJnRnFeT2X/qlYjBmrNMy59mMlG2WLm0uZsH5w==",
+  "dgSpecHash": "eLwqPsd9zWEp/HpfH3FE1h25ZCWVlmU5GzVPiJKxR/kDXMwTCVIyjqpzim99naCih5ckNNBOFalTIXDurDTmpA==",
   "success": true,
-  "projectFilePath": "/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid-2324-a11/backend/backend.csproj",
+  "projectFilePath": "/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/backend.csproj",
   "expectedPackageFiles": [
     "/Users/kenjimobutu/.nuget/packages/automapper/12.0.1/automapper.12.0.1.nupkg.sha512",
     "/Users/kenjimobutu/.nuget/packages/automapper.collection/9.0.0/automapper.collection.9.0.0.nupkg.sha512",

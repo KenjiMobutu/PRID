@@ -1,4 +1,4 @@
-namespace prid_tuto.Models;
+namespace prid_2324_a11.Models;
 
 public class UserDTO
 {

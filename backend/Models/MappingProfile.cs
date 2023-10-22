@@ -1,6 +1,6 @@
 using AutoMapper;
 
-namespace prid_tuto.Models;
+namespace prid_2324_a11.Models;
 
 /*
 Cette classe sert à configurer AutoMapper pour lui indiquer quels sont les mappings possibles

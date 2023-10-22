@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid-2324-a11/backend/backend.csproj": {}
+    "/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/backend.csproj": {}
   },
   "projects": {
-    "/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid-2324-a11/backend/backend.csproj": {
+    "/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid-2324-a11/backend/backend.csproj",
+        "projectUniqueName": "/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/backend.csproj",
         "projectName": "backend",
-        "projectPath": "/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid-2324-a11/backend/backend.csproj",
+        "projectPath": "/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/backend.csproj",
         "packagesPath": "/Users/kenjimobutu/.nuget/packages/",
-        "outputPath": "/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid-2324-a11/backend/obj/",
+        "outputPath": "/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/kenjimobutu/.nuget/NuGet/NuGet.Config"

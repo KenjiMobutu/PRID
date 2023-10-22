@@ -1,9 +1,9 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using prid_tuto.Models;
+using prid_2324_a11.Models;
 
-namespace prid_tuto.Controllers;
+namespace prid_2324_a11.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]

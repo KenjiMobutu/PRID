@@ -2,7 +2,7 @@ using FluentValidation;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 
-namespace prid_tuto.Models;
+namespace prid_2324_a11.Models;
 
 public class UserValidator : AbstractValidator<User>{
     private readonly MsnContext _context;

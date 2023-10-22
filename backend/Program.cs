@@ -1,7 +1,7 @@
 using AutoMapper;
 using AutoMapper.EquivalencyExpression;
 using Microsoft.EntityFrameworkCore;
-using prid_tuto.Models;
+using prid_2324_a11.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
