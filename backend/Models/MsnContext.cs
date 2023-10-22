@@ -12,7 +12,7 @@ public class MsnContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         //modelBuilder.Entity<User>().HasIndex(u => u.Pseudo).IsUnique();
-        modelBuilder.Entity<User>().HasIndex(u => u.Id).IsUnique();
+        modelBuilder.Entity<User>().HasIndex(u => u.Id).IsUnique();// garantie au niveau de la db; protection supplémentaire
 
         modelBuilder.Entity<User>().HasData(
             new User { Id = 1, Pseudo = "ben", Email = "bepenelle@epfc.eu", FirstName = "Benoit", LastName = "Penelle", Password = "ben", BirthDate = new DateTime(1975, 6, 23) },

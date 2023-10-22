@@ -8,7 +8,7 @@ namespace prid_tuto.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 public class UsersController : ControllerBase
-{
+{ //DTO: pas toutes les donnes sont renvoyée; toutes les propriét sauf mot de passe
     private readonly MsnContext _context;
     private readonly IMapper _mapper;
 
@@ -66,7 +66,7 @@ public class UsersController : ControllerBase
         // Renvoie une réponse ayant dans son body les données du nouveau membre (3ème paramètre)
         // et ayant dans ses headers une entrée 'Location' qui contient l'url associé à GetOne avec la bonne valeur
         // pour le paramètre 'pseudo' de cet url.
-        return CreatedAtAction(nameof(GetOne), new { id = user.Id }, _mapper.Map<UserDTO>(newUser));
+        return CreatedAtAction(nameof(GetOne), new { id = newUser.Id }, _mapper.Map<UserDTO>(newUser));
     }
 
     [HttpPut]
@@ -92,7 +92,7 @@ public class UsersController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser(int id) {
         // Récupère en BD le membre à supprimer
-        var user = await _context.Users.FindAsync(id);
+        var user = await _context.Users.FindAsync(id);//findAsync que sur la clé primaire
         // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
         if (user == null)
             return NotFound();
@@ -107,7 +107,7 @@ public class UsersController : ControllerBase
     [HttpGet("byPseudo/{pseudo}")]
     public async Task<ActionResult<UserDTO>> ByPseudo(string pseudo) {
         // Récupère en BD le membre dont le pseudo est passé en paramètre dans l'url
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Pseudo == pseudo);
+        var user = await _context.Users.SingleOrDefaultAsync(u => u.Pseudo == pseudo);// singleOrDefault qu'un seul record
         // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
         if (user == null)
             return NotFound();
@@ -118,7 +118,7 @@ public class UsersController : ControllerBase
     [HttpGet("byEmail/{email}")]
     public async Task<ActionResult<UserDTO>> ByEmail(string email) {
         // Récupère en BD le membre dont le pseudo est passé en paramètre dans l'url
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == email);
         // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
         if (user == null)
             return NotFound();
