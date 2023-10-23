@@ -316,3 +316,4 @@
 /Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/obj/Debug/net7.0/backend.pdb
 /Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/obj/Debug/net7.0/backend.genruntimeconfig.cache
 /Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/obj/Debug/net7.0/ref/backend.dll
+/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/bin/Debug/net7.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll

@@ -1,6 +1,7 @@
 using FluentValidation;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
+using prid_2324_a11.Helpers;
 
 namespace prid_2324_a11.Models;
 
@@ -60,6 +61,9 @@ public class UserValidator : AbstractValidator<User>{
             .When(u => u.BirthDate == null) // BirthDate is optional, so it can be empty (null)
             .Must(BeValidAge).WithMessage("La date de naissance doit correspondre à un âge compris entre 18 et 125 ans.");
 
+        RuleFor(u => u.Role)
+            .IsInEnum();
+
         RuleFor(u => u.LastName)
             .Must((user, lastName) => BeUniqueCombination(user, lastName, user.FirstName))
             .WithMessage("La combinaison du nom de famille et du prénom doit être unique, sauf si les deux champs sont nuls.");
@@ -75,6 +79,12 @@ public class UserValidator : AbstractValidator<User>{
                     other.FirstName == names.FirstName && other.LastName == names.LastName);
             })
             .WithMessage("La combinaison de 'FirstName' et 'LastName' doit être unique sauf si les deux champs sont nuls.");
+
+        // Validations spécifiques pour l'authentification
+        RuleSet("authenticate", () => {
+            RuleFor( u => u.Token)
+                .NotNull().OverridePropertyName("Password").WithMessage("Incorrect password.");
+        });
     }
 
     private bool BeValidPseudo(String Pseudo) {
@@ -137,4 +147,9 @@ public class UserValidator : AbstractValidator<User>{
         return await this.ValidateAsync(user, o => o.IncludeRuleSets("default", "create"));
     }
 
+    public async Task<FluentValidation.Results.ValidationResult> ValidateForAuthenticate(User? user) {
+        if (user == null)
+            return ValidatorHelper.CustomError("Member not found.", "Pseudo");
+        return await this.ValidateAsync(user!, o => o.IncludeRuleSets("authenticate"));
+    }
 }

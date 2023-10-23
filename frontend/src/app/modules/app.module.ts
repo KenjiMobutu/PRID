@@ -13,10 +13,10 @@ import { HomeComponent } from '../components/home/home.component';
 import { CounterComponent } from '../components/counter/counter.component';
 import { FetchDataComponent } from '../components/fetch-data/fetch-data.component';
 import { MemberListComponent } from '../components/memberlist/memberlist.component';
-//import { RestrictedComponent } from '../components/restricted/restricted.component';
-//import { UnknownComponent } from '../components/unknown/unknown.component';
-//import { JwtInterceptor } from '../interceptors/jwt.interceptor';
-//import { LoginComponent } from '../components/login/login.component';
+import { RestrictedComponent } from '../components/restricted/restricted.component';
+import { UnknownComponent } from '../components/unknown/unknown.component';
+import { JwtInterceptor } from '../interceptors/jwt.interceptor';
+import { LoginComponent } from '../components/login/login.component';
 
 @NgModule({
   declarations: [
@@ -26,9 +26,9 @@ import { MemberListComponent } from '../components/memberlist/memberlist.compone
     CounterComponent,
     FetchDataComponent,
     MemberListComponent,
-    //LoginComponent,
-    //UnknownComponent,
-    //RestrictedComponent
+    LoginComponent,
+    UnknownComponent,
+    RestrictedComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -39,7 +39,7 @@ import { MemberListComponent } from '../components/memberlist/memberlist.compone
 
   ],
   providers: [
-    //{ provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })

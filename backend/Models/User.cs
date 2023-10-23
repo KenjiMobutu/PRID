@@ -2,7 +2,13 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace prid_2324_a11.Models;
 
-public class User{
+public enum Role
+{
+    Admin = 2, Manager = 1, User = 0
+}
+
+public class User
+{
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
@@ -12,6 +18,11 @@ public class User{
     public string FirstName { get; set; } = "";
     public string LastName { get; set; } = "";
     public DateTime? BirthDate { get; set; }
+    public Role Role { get; set; } = Role.User;
+
+    [NotMapped]
+    public string? Token { get; set; }
+
     public int? Age {
         get {
             if (!BirthDate.HasValue)
