@@ -138,7 +138,7 @@ public class UsersController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("authenticate")]
-    public async Task<ActionResult<UserDTO>> Authenticate(UserWithPasswordDTO dto) {
+    public async Task<ActionResult<UserDTO>> Authenticate(UserLoginDTO dto) {
         var user = await Authenticate(dto.Pseudo, dto.Password);
 
         var result = await new UserValidator(_context).ValidateForAuthenticate(user);

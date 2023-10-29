@@ -6,8 +6,7 @@ namespace prid_2324_a11.Models;
 Cette classe sert à configurer AutoMapper pour lui indiquer quels sont les mappings possibles
 et, le cas échéant, paramétrer ces mappings de manière déclarative (nous verrons des exemples plus tard).
 */
-public class MappingProfile : Profile
-{
+public class MappingProfile : Profile{
     private MsnContext _context;
 
     /*
