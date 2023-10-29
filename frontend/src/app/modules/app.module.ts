@@ -17,6 +17,7 @@ import { RestrictedComponent } from '../components/restricted/restricted.compone
 import { UnknownComponent } from '../components/unknown/unknown.component';
 import { JwtInterceptor } from '../interceptors/jwt.interceptor';
 import { LoginComponent } from '../components/login/login.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { LoginComponent } from '../components/login/login.component';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    AppRoutes
+    AppRoutes,
+    BrowserAnimationsModule
 
   ],
   providers: [
