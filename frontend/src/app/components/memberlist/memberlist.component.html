@@ -1,19 +1,69 @@
 <div class="row">
-  <div class="col-sm-12">
-      <h1>Members</h1>
-  </div>
+    <div class="col-sm-12">
+        <h1>Users</h1>
+    </div>
 </div>
 <div class="row">
-  <div class="col-sm-12">
-      <h3>I found the following members :</h3>
-  </div>
+    <div class="col-sm-12">
+        <h3>I found the following users :</h3>
+    </div>
 </div>
 
 <div class="row">
-  <div class="col-sm-12">
-      <ul *ngIf="members.length > 0">
-          <li *ngFor="let member of members">{{ member.display }}</li>
-      </ul>
-      <p *ngIf="members.length == 0">No members found</p>
-  </div>
+    <div class="col-sm-12">
+    <mat-form-field>
+        <mat-label>Filter</mat-label>
+        <input matInput (keyup)="filterChanged($event)" [value]="filter" appSetFocus>
+    </mat-form-field>
+
+    <div class="mat-elevation-z2">
+        <table mat-table [dataSource]="dataSource" matSort matSortDisableClear>
+            <ng-container matColumnDef="pseudo">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Pseudo </th>
+                <td mat-cell *matCellDef="let row"> {{row.pseudo}} </td>
+            </ng-container>
+            <ng-container matColumnDef="firstName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> First Name </th>
+                <td mat-cell *matCellDef="let row"> {{row.firstName}} </td>
+            </ng-container>
+            <ng-container matColumnDef="lastName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Last Name </th>
+                <td mat-cell *matCellDef="let row"> {{row.lastName}} </td>
+            </ng-container>
+            <ng-container matColumnDef="birthDate">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> BirthDate </th>
+                <td mat-cell *matCellDef="let row"> {{row.birthDate | date:'dd/MM/yyyy'}} </td>
+            </ng-container>
+            <ng-container matColumnDef="role">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Role </th>
+                <td mat-cell *matCellDef="let row"> {{row.roleAsString}} </td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef> Actions </th>
+                <td mat-cell *matCellDef="let row">
+                    <button mat-icon-button tabindex="-1" (click)="edit(row)">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                    <span matTooltip="You may not delete yourself" [matTooltipDisabled]="!isLoggedMember(row)">
+                        <button mat-icon-button tabindex="-1" (click)="delete(row)"
+                            [disabled]="isLoggedMember(row)">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </span>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;">
+            </tr>
+        </table>
+        <mat-paginator [pageSize]="5" [pageSizeOptions]="[3, 5, 10, 25, 100]"></mat-paginator>
+    </div>
+</div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-12">
+        <button mat-raised-button (click)="create()">New user</button>
+    </div>
 </div>

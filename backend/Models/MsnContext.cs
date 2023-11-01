@@ -16,13 +16,13 @@ public class MsnContext : DbContext
         modelBuilder.Entity<User>().HasIndex(u => u.Id).IsUnique();// garantie au niveau de la db; protection supplémentaire
 
         modelBuilder.Entity<User>().HasData(
-            new User { Id = 99, Pseudo = "admin", Email = "admin@epfc.eu", FirstName = "Admin", LastName = "Admin", Password = "admin", Role = Role.Admin },
-            new User { Id = 1, Pseudo = "ben", Email = "bepenelle@epfc.eu", FirstName = "Benoit", LastName = "Penelle", Password = "ben", BirthDate = new DateTime(1975, 6, 23) },
-            new User { Id = 2, Pseudo = "bruno", Email = "brlacroix@epfc.eu", FirstName = "Bruno", LastName = "Lacroix", Password = "bruno", BirthDate = new DateTime(1970, 7, 13) },
-            new User { Id = 3, Pseudo = "alain", Email = "alsilovy@epfc.eu", FirstName = "Alain", LastName = "Silovy", Password = "alain", BirthDate = new DateTime(1965, 8, 22) },
-            new User { Id = 4, Pseudo = "xavier", Email = "xapigeolet@epfc.eu", FirstName = "Xavier", LastName = "Pigeolet", Password = "xavier", BirthDate = new DateTime(1985, 9, 21) },
-            new User { Id = 5, Pseudo = "boris", Email = "boverhaegen@epfc.eu", FirstName = "Boris", LastName = "Verhaegen", Password = "boris", BirthDate = new DateTime(1980, 10, 20) },
-            new User { Id = 6, Pseudo = "marc", Email = "mamichel@epfc.eu", FirstName = "Marc", LastName = "Michel", Password = "marc", BirthDate = new DateTime(1983, 11, 19) }
+            new User { Id = 1, Pseudo = "admin", Email = "admin@epfc.eu", FirstName = "Admin", LastName = "Admin", Password = "admin", Role = Role.Admin },
+            new User { Id = 2, Pseudo = "ben", Email = "bepenelle@epfc.eu", FirstName = "Benoit", LastName = "Penelle", Password = "ben", BirthDate = new DateTime(1975, 6, 23) },
+            new User { Id = 3, Pseudo = "bruno", Email = "brlacroix@epfc.eu", FirstName = "Bruno", LastName = "Lacroix", Password = "bruno", BirthDate = new DateTime(1970, 7, 13) },
+            new User { Id = 4, Pseudo = "alain", Email = "alsilovy@epfc.eu", FirstName = "Alain", LastName = "Silovy", Password = "alain", BirthDate = new DateTime(1965, 8, 22) },
+            new User { Id = 5, Pseudo = "xavier", Email = "xapigeolet@epfc.eu", FirstName = "Xavier", LastName = "Pigeolet", Password = "xavier", BirthDate = new DateTime(1985, 9, 21) },
+            new User { Id = 6, Pseudo = "boris", Email = "boverhaegen@epfc.eu", FirstName = "Boris", LastName = "Verhaegen", Password = "boris", BirthDate = new DateTime(1980, 10, 20) },
+            new User { Id = 7, Pseudo = "marc", Email = "mamichel@epfc.eu", FirstName = "Marc", LastName = "Michel", Password = "marc", BirthDate = new DateTime(1983, 11, 19) }
         );
     }
 

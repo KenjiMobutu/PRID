@@ -5,25 +5,34 @@
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-label="Toggle navigation" [attr.aria-expanded]="isExpanded" (click)="toggle()">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end" [ngClass]="{ show: isExpanded }">
-                <ul class="navbar-nav flex-grow">
+            <div class="navbar-collapse collapse d-sm-inline-flex" [ngClass]="{ show: isExpanded }">
+                <ul class="navbar-nav flex-grow me-auto">
                     <li class="nav-item" [routerLinkActive]="['link-active']" [routerLinkActiveOptions]="{ exact: true }">
                         <a class="nav-link text-dark" [routerLink]="['/']">Home</a>
                     </li>
-                    <li class="nav-item" [routerLinkActive]="['link-active']">
+                    <!-- <li class="nav-item" [routerLinkActive]="['link-active']">
                         <a class="nav-link text-dark" [routerLink]="['/counter']">Counter</a>
                     </li>
                     <li class="nav-item" [routerLinkActive]="['link-active']">
                         <a class="nav-link text-dark" [routerLink]="['/fetch-data']">Fetch data</a>
-                    </li>
-                    <li class="nav-item" [routerLinkActive]='["link-active"]' *ngIf="!currentUser">
-                        <a class="nav-link text-dark" [routerLink]='["/login"]'>Login</a>
-                    </li>
+                    </li> -->
                     <li class="nav-item" [routerLinkActive]='["link-active"]' *ngIf="currentUser && isAdmin">
                         <a class="nav-link text-dark" [routerLink]='["/members"]'>Members</a>
                     </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item" [routerLinkActive]="['link-active']" *ngIf="!currentUser">
+                        <a class="nav-link text-dark" [routerLink]="['/login']">
+                            <span class="material-icons">exit_to_app</span>
+                            <span> Login </span>
+                        </a>
+                    </li>
                     <li class="nav-item" *ngIf="currentUser">
-                        <a class="nav-link text-dark" [routerLink]='[]' (click)='logout()'>Logout</a>
+                        <a class="nav-link text-dark" [routerLink]='[]' (click)='logout()'>
+                            <span class="material-icons">power_settings_new</span>
+                            <span> Logout </span>
+                            <span class="text-info">({{authenticationService.currentUser?.pseudo}})</span>
+                        </a>
                     </li>
                 </ul>
             </div>

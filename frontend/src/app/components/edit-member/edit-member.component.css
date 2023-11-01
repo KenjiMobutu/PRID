@@ -1,0 +1,29 @@
+.form {
+  margin-top: 15px;
+  min-width: 350px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.header {
+  font-size: xx-large;
+}
+
+.add {
+  height: 40px;
+}
+
+.delete {
+  display: grid;
+  justify-items: center;
+}
+
+.footer {
+  display: grid;
+  justify-items: stretch;
+  align-items: center;
+  grid-template-columns: auto auto;
+  margin-top: 30px;
+}

@@ -18,13 +18,16 @@
     "@angular/core": "16.2.0",
     "@angular/forms": "16.2.0",
     "@angular/material": "^16.2.0",
+    "@angular/material-date-fns-adapter": "^16.2.0",
     "@angular/platform-browser": "16.2.0",
     "@angular/platform-browser-dynamic": "16.2.0",
     "@angular/platform-server": "16.2.0",
     "@angular/router": "16.2.0",
     "bootstrap": "5.3.1",
     "class-transformer": "0.5.1",
+    "date-fns": "^2.30.0",
     "jquery": "3.7.0",
+    "lodash-es": "4.17.21",
     "oidc-client": "1.11.5",
     "popper.js": "1.16.1",
     "reflect-metadata": "0.1.13",
@@ -37,6 +40,7 @@
     "@angular-devkit/build-angular": "16.2.0",
     "@angular/cli": "16.2.0",
     "@angular/compiler-cli": "16.2.0",
+    "@types/lodash-es": "4.17.8",
     "typescript": "5.1.6"
   }
 }

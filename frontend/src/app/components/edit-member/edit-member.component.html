@@ -1,0 +1,70 @@
+<h1 mat-dialog-title class="header">{{(!isNew ? 'Edit existing' : 'Add a new') + ' member'}}</h1>
+<form mat-dialog-content id="frm" class="form" [formGroup]="frm" novalidate>
+    <div class="form">
+        <mat-form-field>
+            <mat-label>Pseudo</mat-label>
+            <input matInput [formControl]="ctlPseudo" required [readonly]="!isNew">
+            <mat-error class="field-error" *ngIf="ctlPseudo.hasError('required')">Required</mat-error>
+            <mat-error class="field-error" *ngIf="ctlPseudo.hasError('minlength')">Minimum length is
+                {{ctlPseudo.errors?.minlength?.requiredLength}}</mat-error>
+            <mat-error class="field-error" *ngIf="ctlPseudo.hasError('pseudoUsed')">Pseudo already in use
+            </mat-error>
+            <mat-error class="field-error" *ngIf="ctlPseudo.hasError('forbiddenValue')">Forbiddent value 'abc'
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Email</mat-label>
+            <input matInput [formControl]="ctlEmail" required>
+            <mat-error class="field-error" *ngIf="ctlEmail.hasError('required')">Required</mat-error>
+            <mat-error class="field-error" *ngIf="ctlEmail.hasError('email')">Invalid email format</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>{{'Password ' + (isNew ? '' : ' (leave blank if no change)')}}</mat-label>
+            <input matInput [formControl]="ctlPassword" type="password" [required]="isNew" autocomplete="new-password">
+            <mat-error class="field-error" *ngIf="ctlPassword.hasError('required')">Required</mat-error>
+            <mat-error class="field-error" *ngIf="ctlPassword.hasError('minlength')">Minimum length is
+                {{ctlPassword.errors?.minlength?.requiredLength}}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>First Name</mat-label>
+            <input matInput [formControl]="ctlFirstName">
+            <mat-error class="field-error" *ngIf="ctlFirstName.hasError('minlength')">Minimum length is
+                {{ctlFirstName.errors?.minlength?.requiredLength}}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Last Name</mat-label>
+            <input matInput [formControl]="ctlLastName">
+            <mat-error class="field-error" *ngIf="ctlLastName.hasError('minlength')">Minimum length is
+                {{ctlLastName.errors?.minlength?.requiredLength}}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Birth Date</mat-label>
+            <input matInput [matDatepicker]="picker" [formControl]="ctlBirthDate" [max]="maxDate">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error class="field-error" *ngIf="ctlBirthDate.hasError('tooYoung')">Must be at least 18 years old
+            </mat-error>
+            <mat-error class="field-error" *ngIf="ctlBirthDate.hasError('futureBorn')">Can't be born in the future
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Role</mat-label>
+            <mat-select [formControl]="ctlRole">
+                <mat-option [value]="2">Administrator</mat-option>
+                <mat-option [value]="1">Teacher</mat-option>
+                <mat-option [value]="0">User</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div class="footer">
+        <button type="submit" mat-button form="frm" [disabled]="frm.pristine || frm.invalid || frm.pending"
+            (click)="update()">{{!isNew ? 'Update' : 'Add'}}</button>
+        <button type="reset" mat-button (click)="cancel()">Cancel</button>
+    </div>
+</form>
+<!-- <pre>
+{{frm.value | json }}
+{{frm.invalid | json }}
+{{frm.pristine | json }}
+{{frm.pending | json }}
+</pre> -->

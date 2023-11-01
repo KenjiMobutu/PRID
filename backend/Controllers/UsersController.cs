@@ -79,14 +79,17 @@ public class UsersController : ControllerBase
 
     [Authorized(Role.Admin)]
     [HttpPut]
-    public async Task<IActionResult> PutUser(UserDTO dto) {
+    public async Task<IActionResult> PutUser(UserWithPasswordDTO dto) {
         // Vérifie si le membre à mettre à jour existe bien en BD
         var user = await _context.Users.FindAsync(dto.Id);
         // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
         if (user == null)
             return NotFound();
+        // S'il n'y a pas de mot de passe dans le dto, on garde le mot de passe actuel
+        if (string.IsNullOrEmpty(dto.Password))
+            dto.Password = user.Password;
         // Mappe les données reçues sur celles du membre en question
-        _mapper.Map<UserDTO, User>(dto, user);
+        _mapper.Map<UserWithPasswordDTO, User>(dto, user);
         // Valide les données
         var result = await new UserValidator(_context).ValidateAsync(user);
         if (!result.IsValid)
@@ -166,7 +169,7 @@ public class UsersController : ControllerBase
                         new Claim(ClaimTypes.Role, user.Role.ToString())
                     }),
                 IssuedAt = DateTime.UtcNow,
-                Expires = DateTime.UtcNow.AddMinutes(1), // validité du token
+                Expires = DateTime.UtcNow.AddMinutes(10), // validité du token
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
