@@ -2,8 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace prid_2324_a11.Models;
 
-public class Quiz{
-    [Key]
+public class QuizDTO{
     public int Id { get; set; }
     public string Name { get; set; } = "";
     public string? Description { get; set; } = "";
@@ -13,11 +12,10 @@ public class Quiz{
     public DateTime Start { get; set; }
     public DateTime Finish { get; set; }
 
-    [ForeignKey(nameof(DatabaseId))]
-    public int DatabaseId { get; set; }
-    public virtual Database Database { get; set; } = null!;
+    [ForeignKey(nameof(DatabaseDTOId))]
+    public int DatabaseDTOId { get; set; }
+    public virtual DatabaseDTO Database { get; set; } = null!;
 
-
-    public virtual ICollection<Question> Questions { get; set; } = new HashSet<Question>();
-    public virtual ICollection<Attempt> Attempts { get; set; } = new HashSet<Attempt>();
+    public ICollection<QuestionDTO> QuestionsDTO { get; set; } = new HashSet<QuestionDTO>();
+    public ICollection<AttemptDTO> AttemptsDTO { get; set; } = new HashSet<AttemptDTO>();
 }

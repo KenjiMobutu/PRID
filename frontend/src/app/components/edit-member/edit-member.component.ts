@@ -46,7 +46,7 @@ export class EditMemberComponent {
         this.ctlFirstName = this.fb.control(null, [Validators.minLength(3)]);
         this.ctlLastName = this.fb.control(null, [Validators.minLength(3)]);
         this.ctlBirthDate = this.fb.control(null, [this.validateBirthDate()]);
-        this.ctlRole = this.fb.control(Role.User, []);
+        this.ctlRole = this.fb.control(Role.Student, []);
         this.frm = this.fb.group({
             pseudo: this.ctlPseudo,
             email: this.ctlEmail,
@@ -109,6 +109,7 @@ export class EditMemberComponent {
     }
 
     update() {
+        console.log('Update function called:', this.frm.value);
         this.dialogRef.close(this.frm.value);
     }
 

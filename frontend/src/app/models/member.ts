@@ -2,6 +2,12 @@ import { Type } from "class-transformer";
 import { differenceInYears } from 'date-fns';
 import 'reflect-metadata';
 
+
+export enum Role {
+  Student = 0,
+  Teacher = 1,
+  Admin = 2
+}
 export class User {
   id: number | undefined;
   pseudo?: string;
@@ -10,7 +16,7 @@ export class User {
   lastName?: string;
   @Type(() => Date)
   birthDate?: Date;
-  role: Role = Role.User;
+  role: Role = Role.Student;
   token?: string;
 
   public get roleAsString(): string {
@@ -28,8 +34,4 @@ export class User {
     return differenceInYears(today, this.birthDate);
   }
 }
-export enum Role {
-  User = 0,
-  Manager = 1,
-  Admin = 2
-}
+

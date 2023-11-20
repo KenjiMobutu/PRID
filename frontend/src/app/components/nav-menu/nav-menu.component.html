@@ -8,7 +8,7 @@
             <div class="navbar-collapse collapse d-sm-inline-flex" [ngClass]="{ show: isExpanded }">
                 <ul class="navbar-nav flex-grow me-auto">
                     <li class="nav-item" [routerLinkActive]="['link-active']" [routerLinkActiveOptions]="{ exact: true }">
-                        <a class="nav-link text-dark" [routerLink]="['/']">Home</a>
+                        <a class="nav-link text-dark" [routerLink]="['/']">Welcome</a>
                     </li>
                     <!-- <li class="nav-item" [routerLinkActive]="['link-active']">
                         <a class="nav-link text-dark" [routerLink]="['/counter']">Counter</a>
@@ -25,6 +25,12 @@
                         <a class="nav-link text-dark" [routerLink]="['/login']">
                             <span class="material-icons">exit_to_app</span>
                             <span> Login </span>
+                        </a>
+                    </li>
+                    <li class="nav-item" [routerLinkActive]="['link-active']" *ngIf="!currentUser">
+                        <a class="nav-link text-dark" [routerLink]="['/signup']">
+                            <span class="material-icons">person_add</span>
+                            <span> Signup </span>
                         </a>
                     </li>
                     <li class="nav-item" *ngIf="currentUser">

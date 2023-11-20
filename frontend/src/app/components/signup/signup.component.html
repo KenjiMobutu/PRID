@@ -1,0 +1,63 @@
+<form [formGroup]="frm" novalidate>
+  <h1>Sign Up</h1>
+  <mat-form-field>
+      <mat-label>Pseudo</mat-label>
+      <input matInput [formControl]="ctlPseudo" required appSetFocus>
+      <mat-error class="field-error" *ngIf="ctlPseudo.hasError('required')">Required</mat-error>
+      <mat-error class="field-error" *ngIf="ctlPseudo.hasError('minlength')">Minimum length is
+          {{ctlPseudo.errors?.minlength?.requiredLength}}
+      </mat-error>
+      <mat-error class="field-error" *ngIf="ctlPseudo.hasError('pseudoUsed')">This pseudo is not available</mat-error>
+  </mat-form-field>
+  <mat-form-field>
+      <mat-label>Email</mat-label>
+      <input matInput [formControl]="ctlEmail" required>
+      <mat-error class="field-error" *ngIf="ctlEmail.hasError('required')">Required</mat-error>
+      <mat-error class="field-error" *ngIf="ctlEmail.hasError('email')">Invalid email format</mat-error>
+  </mat-form-field>
+  <mat-form-field>
+      <mat-label>First Name</mat-label>
+      <input matInput [formControl]="ctlFirstName">
+      <mat-error class="field-error" *ngIf="ctlFirstName.hasError('minlength')">Minimum length is
+          {{ctlFirstName.errors?.minlength?.requiredLength}}
+      </mat-error>
+  </mat-form-field>
+  <mat-form-field>
+      <mat-label>Last Name</mat-label>
+      <input matInput [formControl]="ctlLastName">
+      <mat-error class="field-error" *ngIf="ctlLastName.hasError('minlength')">Minimum length is
+          {{ctlLastName.errors?.minlength?.requiredLength}}
+      </mat-error>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+      <mat-label>Birth Date</mat-label>
+      <input matInput [matDatepicker]="picker" [formControl]="ctlBirthDate" >
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error class="field-error" *ngIf="ctlBirthDate.hasError('tooYoung')">Must be at least 18 years old</mat-error>
+      <mat-error class="field-error" *ngIf="ctlBirthDate.hasError('futureBorn')">Can't be born in the future</mat-error>
+  </mat-form-field>
+  <mat-form-field>
+      <mat-label>Password</mat-label>
+      <input type="password" matInput [formControl]="ctlPassword" required
+          autocomplete="new-password">
+      <mat-error class="field-error" *ngIf="ctlPassword.hasError('required')">Required</mat-error>
+      <mat-error class="field-error" *ngIf="ctlPassword.hasError('minlength')">Minimum length is
+          {{ctlPassword.errors?.minlength?.requiredLength}}
+      </mat-error>
+  </mat-form-field>
+  <mat-form-field>
+      <mat-label>Confirm Password</mat-label>
+      <input type="password" matInput [formControl]="ctlPasswordConfirm" required>
+      <mat-error class="field-error" *ngIf="ctlPasswordConfirm.hasError('required')">Required</mat-error>
+      <mat-error class="field-error" *ngIf="ctlPasswordConfirm.hasError('minlength')">Minimum length is
+          {{ctlPasswordConfirm.errors?.minlength?.requiredLength}}
+      </mat-error>
+  </mat-form-field>
+  <div *ngIf="frm.errors && ctlPasswordConfirm.dirty && ctlPasswordConfirm.valid">
+      <mat-error *ngIf="frm.hasError('passwordNotConfirmed')">The passwords don't match</mat-error>
+  </div>
+  <div>
+      <button mat-stroked-button (click)="signup()" [disabled]="frm.invalid">Sign Up</button>
+  </div>
+</form>

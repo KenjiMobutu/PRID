@@ -1,8 +1,10 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 import { User } from '../models/member';
 import { plainToClass } from 'class-transformer';
+import { Observable } from 'rxjs';
+import { DateFilterFn } from '@angular/material/datepicker';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
@@ -37,5 +39,15 @@ export class AuthenticationService {
         // remove user from local storage to log user out
         sessionStorage.removeItem('currentUser');
         this.currentUser = undefined;
+    }
+
+    public isPseudoAvailable(pseudo: string): Observable<boolean> {
+        return this.http.get<boolean>(`${this.baseUrl}api/users/available/${pseudo}`);
+    }
+
+    public signup(pseudo: string, email: string, firstName: string, lastName: string, birthDate: Date ,password: string ): Observable<User> {
+        return this.http.post<User>(`${this.baseUrl}api/users/signup`, { pseudo: pseudo, email:email, firstName: firstName, lastName: lastName, birthDate:birthDate, password: password }).pipe(
+            mergeMap(res => this.login(pseudo, password)),
+        );
     }
 }

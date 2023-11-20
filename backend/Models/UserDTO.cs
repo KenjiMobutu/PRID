@@ -9,15 +9,18 @@ public class UserDTO{
     public string FirstName { get; set; } = "";
     public string LastName { get; set; } = "";
     public DateTime? BirthDate { get; set; }
-    public Role Role { get; set; }
+    public Role Role { get; set; } = Role.Student;
     public string? Token { get; set; }
+
+
+    public ICollection<AttemptDTO> AttemptsDTO { get; set; } = new HashSet<AttemptDTO>();
 }
 
 public class UserWithPasswordDTO : UserDTO{
-    public string Password { get; set; } = null!;
+    public string? Password { get; set; } = null!;
 }
 
 public class UserLoginDTO : UserWithPasswordDTO{
-    public string Pseudo { get; set; } = null!;
+    public string Pseudo{ get; set; } = null!;
     public string Password { get; set; } = null!;
 }

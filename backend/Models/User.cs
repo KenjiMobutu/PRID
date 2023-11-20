@@ -4,7 +4,7 @@ namespace prid_2324_a11.Models;
 
 public enum Role
 {
-    Admin = 2, Manager = 1, User = 0
+    Admin = 2, Teacher = 1, Student = 0
 }
 
 public class User
@@ -18,7 +18,7 @@ public class User
     public string FirstName { get; set; } = "";
     public string LastName { get; set; } = "";
     public DateTime? BirthDate { get; set; }
-    public Role Role { get; set; } = Role.User;
+    public Role Role { get; set; } = Role.Student;
 
     [NotMapped]
     public string? Token { get; set; }
@@ -33,4 +33,28 @@ public class User
             return age;
         }
     }
+
+
+    public ICollection<Attempt> Attempts { get; set; } = new HashSet<Attempt>();
+
+}
+
+public class Admin : User{
+    public Admin() : base() {
+        Role = Role.Admin;
+    }
+
+}
+
+public class Teacher : User{
+    public Teacher() : base() {
+        Role = Role.Teacher;
+    }
+}
+
+public class Student : User{
+    public Student() : base() {
+        Role = Role.Student;
+    }
+
 }

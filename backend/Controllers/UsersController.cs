@@ -16,7 +16,7 @@ namespace prid_2324_a11.Controllers;
 [ApiController]
 public class UsersController : ControllerBase
 { //DTO: pas toutes les donnes sont renvoyée; toutes les propriét sauf mot de passe
-    private readonly MsnContext _context;
+    private readonly PridContext _context;
     private readonly IMapper _mapper;
 
     /*
@@ -24,7 +24,7 @@ public class UsersController : ControllerBase
     Le paramètre du constructeur recoit automatiquement, par injection de dépendance,
     une instance du context EF (MsnContext).
     */
-    public UsersController(MsnContext context, IMapper mapper) {
+    public UsersController(PridContext context, IMapper mapper) {
         _context = context;
         _mapper = mapper;
     }
@@ -83,6 +83,7 @@ public class UsersController : ControllerBase
         // Vérifie si le membre à mettre à jour existe bien en BD
         var user = await _context.Users.FindAsync(dto.Id);
         // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
+        Console.WriteLine("user: " + user);
         if (user == null)
             return NotFound();
         // S'il n'y a pas de mot de passe dans le dto, on garde le mot de passe actuel
@@ -137,6 +138,18 @@ public class UsersController : ControllerBase
             return NotFound();
         // Retourne le membre
         return _mapper.Map<UserDTO>(user);
+    }
+
+    [AllowAnonymous]
+    [HttpGet("available/{pseudo}")]
+    public async Task<ActionResult<bool>> IsAvailable(string pseudo) {
+        return await _context.Users.SingleOrDefaultAsync(u => u.Pseudo == pseudo) == null;
+    }
+
+    [AllowAnonymous]
+    [HttpPost("signup")]
+    public async Task<ActionResult<UserDTO>> SignUp(UserWithPasswordDTO data) {
+        return await PostUser(data);
     }
 
     [AllowAnonymous]

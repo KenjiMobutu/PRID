@@ -2,11 +2,10 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace prid_2324_a11.Models;
 
-public class Database{
-    [Key]
+public class DatabaseDTO{
     public int Id { get; set; }
     public string Name { get; set; } = "";
     public string? Description { get; set; } = "";
 
-    public ICollection<Quiz> Quizzes { get; set; } = new HashSet<Quiz>();
+    public ICollection<QuizDTO> QuizzesDTO { get; set; } = new HashSet<QuizDTO>();
 }

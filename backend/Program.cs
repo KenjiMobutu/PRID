@@ -16,7 +16,7 @@ builder.Services.AddControllers();
 
 // CONNECTION DATABASE
 //Sqlite
-builder.Services.AddDbContext<MsnContext>(opt => opt.UseSqlite("Data Source=msn.db"));
+builder.Services.AddDbContext<PridContext>(opt => opt.UseSqlite("Data Source=prid_2324_a11.db"));
 
 //SQL Server
 // builder.Services.AddDbContext<MsnContext>(opt => opt.UseSqlServer(
@@ -36,10 +36,10 @@ builder.Services.AddSwaggerGen();
 
 // Auto Mapper Configurations
 builder.Services.AddScoped(provider => new MapperConfiguration(cfg => {
-        cfg.AddProfile(new MappingProfile(provider.GetService<MsnContext>()!));
+        cfg.AddProfile(new MappingProfile(provider.GetService<PridContext>()!));
         // see: https://github.com/AutoMapper/AutoMapper.Collection
         cfg.AddCollectionMappers();
-        cfg.UseEntityFrameworkCoreModel<MsnContext>(builder.Services);
+        cfg.UseEntityFrameworkCoreModel<PridContext>(builder.Services);
     }).CreateMapper());
 
 //------------------------------
@@ -96,7 +96,7 @@ if (app.Environment.IsDevelopment()) {
 
 // Seed the database
 using var scope = app.Services.CreateScope();
-using var context = scope.ServiceProvider.GetService<MsnContext>();
+using var context = scope.ServiceProvider.GetService<PridContext>();
 if (context?.Database.IsSqlite() == true)
     /*
     La suppression complète de la base de données n'est pas possible si celle-ci est ouverte par un autre programme,

@@ -17,6 +17,7 @@ import { RestrictedComponent } from '../components/restricted/restricted.compone
 import { UnknownComponent } from '../components/unknown/unknown.component';
 import { JwtInterceptor } from '../interceptors/jwt.interceptor';
 import { LoginComponent } from '../components/login/login.component';
+import { SignUpComponent } from '../components/signup/signup.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SetFocusDirective } from '../directives/setfocus.directive';
 import { EditMemberComponent } from '../components/edit-member/edit-member.component';
@@ -35,7 +36,8 @@ import { fr } from 'date-fns/locale';
     UnknownComponent,
     RestrictedComponent,
     SetFocusDirective,
-    EditMemberComponent
+    EditMemberComponent,
+    SignUpComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

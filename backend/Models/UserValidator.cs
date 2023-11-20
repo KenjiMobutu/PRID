@@ -6,14 +6,14 @@ using prid_2324_a11.Helpers;
 namespace prid_2324_a11.Models;
 
 public class UserValidator : AbstractValidator<User>{
-    private readonly MsnContext _context;
+    private readonly PridContext _context;
 
-    public UserValidator(MsnContext context) {
+    public UserValidator(PridContext context) {
         _context = context;
-
-        RuleFor(u => u.Id)
-            .GreaterThanOrEqualTo(0).WithMessage("L'ID doit être supérieur ou égal à 0.")
+        RuleSet("create", () => {
+            RuleFor(u => u.Id)
             .Must(id => id == default(int)).WithMessage("L'ID est auto-incrémenté et ne doit pas être spécifié manuellement.");
+        });
 
         RuleFor(u => u.Pseudo)
                 .NotEmpty().WithMessage("Le Pseudo Est Obligatoire.")
@@ -64,10 +64,12 @@ public class UserValidator : AbstractValidator<User>{
         RuleFor(u => u.Role)
             .IsInEnum();
 
-        RuleFor(u => u.LastName)
-            .Must((user, lastName) => BeUniqueCombination(user, lastName, user.FirstName))
-            .WithMessage("La combinaison du nom de famille et du prénom doit être unique, sauf si les deux champs sont nuls.");
-
+        RuleSet("create", () => {
+            RuleFor(u => u.LastName)
+                .Must((user, lastName) => BeUniqueCombination(user, lastName, user.FirstName))
+                .WithMessage("La combinaison du nom de famille et du prénom doit être unique, sauf si les deux champs sont nuls.");
+        });
+        RuleSet("create", () => {
         RuleFor(u => new { u.FirstName, u.LastName })
             .MustAsync(async (names, token) => {
                 // Si FirstName et LastName sont tous les deux nuls, la combinaison est considérée comme unique
@@ -79,7 +81,8 @@ public class UserValidator : AbstractValidator<User>{
                     other.FirstName == names.FirstName && other.LastName == names.LastName);
             })
             .WithMessage("La combinaison de 'FirstName' et 'LastName' doit être unique sauf si les deux champs sont nuls.");
-
+        });
+        
         // Validations spécifiques pour l'authentification
         RuleSet("authenticate", () => {
             RuleFor( u => u.Token)
