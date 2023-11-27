@@ -34,6 +34,8 @@ public class User
         }
     }
 
+    public string? RefreshToken { get; set; }
+
 
     public ICollection<Attempt> Attempts { get; set; } = new HashSet<Attempt>();
 

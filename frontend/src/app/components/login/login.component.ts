@@ -98,7 +98,22 @@ export class LoginComponent implements OnInit {
             .subscribe({
                 // si login est ok, on navigue vers la page demandée
                 next: data => {
-                    this.router.navigate([this.returnUrl]);
+                    console.log('REDIRECTION ICICICICICICI');
+                    //this.router.navigate([this.returnUrl]);
+                    const user = this.authenticationService.currentUser;
+                    if (user) {
+                        console.log('*!*!!!!User Role:', user.role);
+                        // Redirection en fonction du rôle de l'utilisateur
+                        if (user.role === 2) {
+                            console.log('Redirecting to /members');
+                            this.router.navigate(['/members']);
+                        } else if (user.role === 1) {
+                            this.router.navigate(['/quiz']);
+                        } else if (user.role === 0) {
+                            this.router.navigate(['/quiz']);
+                        }
+
+                    }
                 },
                 // en cas d'erreurs, on reste sur la page et on les affiche
                 error: error => {

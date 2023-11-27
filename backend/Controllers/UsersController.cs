@@ -2,7 +2,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using prid_2324_a11.Models;
-//using PRID_Framework;
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
@@ -14,10 +13,10 @@ namespace prid_2324_a11.Controllers;
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
-public class UsersController : ControllerBase
-{ //DTO: pas toutes les donnes sont renvoyée; toutes les propriét sauf mot de passe
+public class UsersController : ControllerBase{ //DTO: pas toutes les donnes sont renvoyée; toutes les propriét sauf mot de passe
     private readonly PridContext _context;
     private readonly IMapper _mapper;
+    private readonly TokenHelper _tokenHelper;
 
     /*
     Le contrôleur est instancié automatiquement par ASP.NET Core quand une requête HTTP est reçue.
@@ -27,6 +26,7 @@ public class UsersController : ControllerBase
     public UsersController(PridContext context, IMapper mapper) {
         _context = context;
         _mapper = mapper;
+        _tokenHelper = new TokenHelper(context);
     }
 
     // GET: api/Users
@@ -66,6 +66,8 @@ public class UsersController : ControllerBase
         var result = await new UserValidator(_context).ValidateOnCreate(newUser);
         if (!result.IsValid)
             return BadRequest(result);
+        // Hash the password
+        newUser.Password = TokenHelper.GetPasswordHash(newUser.Password);
         // Ajoute ce nouveau membre au contexte EF
         _context.Users.Add(newUser);
         // Sauve les changements
@@ -171,24 +173,16 @@ public class UsersController : ControllerBase
         // return null if member not found
         if (user == null)
             return null;
+        Console.WriteLine("user 111: " + user.Password);
+        var hash = TokenHelper.GetPasswordHash(password);
+        if (user.Password == hash) {
+            Console.WriteLine("user: 222" + user.Pseudo);
+            user.Token = TokenHelper.GenerateJwtToken(user.Pseudo, user.Role);
+            // Génère un refresh token et le stocke dans la table Members
+            var refreshToken = TokenHelper.GenerateRefreshToken();
+            await _tokenHelper.SaveRefreshTokenAsync(pseudo, refreshToken);
 
-        if (user.Password == password) {
-            // authentication successful so generate jwt token
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes("my-super-secret-key");
-            var tokenDescriptor = new SecurityTokenDescriptor {
-                Subject = new ClaimsIdentity(new Claim[] {
-                        new Claim(ClaimTypes.Name, user.Pseudo),
-                        new Claim(ClaimTypes.Role, user.Role.ToString())
-                    }),
-                IssuedAt = DateTime.UtcNow,
-                Expires = DateTime.UtcNow.AddMinutes(10), // validité du token
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            user.Token = tokenHandler.WriteToken(token);
         }
-
         return user;
     }
 

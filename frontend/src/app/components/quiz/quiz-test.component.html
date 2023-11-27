@@ -1,0 +1,47 @@
+<div class="mat-elevation-z2">
+    <table mat-table [dataSource]="dataSource" matSort matSortDisableClear>
+        <ng-container matColumnDef="nom">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Nom </th>
+          <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+        </ng-container>
+        <ng-container matColumnDef="dataBase">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Base de données </th>
+          <td mat-cell *matCellDef="let row"> {{row.dataBase}} </td>
+        </ng-container>
+        <ng-container matColumnDef="startDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Date de début </th>
+          <td mat-cell *matCellDef="let row"> {{row.startDate | date:'dd/MM/yyyy'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="endDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Date de fin </th>
+          <td mat-cell *matCellDef="let row"> {{row.endDate | date:'dd/MM/yyyy'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="statut">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Statut </th>
+          <td mat-cell *matCellDef="let row"> {{row.statut}} </td>
+        </ng-container>
+        <ng-container matColumnDef="evaluation">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Evaluation </th>
+            <td mat-cell *matCellDef="let row"> {{row.evaluation}} </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let row">
+              <!-- <button mat-icon-button tabindex="-1" (click)="edit(row)">
+                  <mat-icon>edit</mat-icon>
+              </button>
+              <span matTooltip="You may not delete yourself" [matTooltipDisabled]="!isLoggedMember(row)">
+                  <button mat-icon-button tabindex="-1" (click)="delete(row)"
+                      [disabled]="isLoggedMember(row)">
+                      <mat-icon>delete</mat-icon>
+                  </button>
+              </span> -->
+          </td>
+        </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;">
+      </tr>
+  </table>
+  <mat-paginator [pageSize]="5" [pageSizeOptions]="[3, 5, 10, 25, 100]"></mat-paginator>
+</div>

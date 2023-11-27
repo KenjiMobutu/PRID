@@ -24,6 +24,8 @@ import { EditMemberComponent } from '../components/edit-member/edit-member.compo
 import { SharedModule } from './shared.module';
 import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { fr } from 'date-fns/locale';
+import { QuizesContainerComponent } from '../components/quiz/group-container.component';
+import { QuizTestComponent } from '../components/quiz/quiz-test.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -37,7 +39,9 @@ import { fr } from 'date-fns/locale';
     RestrictedComponent,
     SetFocusDirective,
     EditMemberComponent,
-    SignUpComponent
+    SignUpComponent,
+    QuizesContainerComponent,
+    QuizTestComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
