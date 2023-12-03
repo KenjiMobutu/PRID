@@ -26,6 +26,7 @@ import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { fr } from 'date-fns/locale';
 import { QuizesContainerComponent } from '../components/quiz/group-container.component';
 import { QuizTestComponent } from '../components/quiz/quiz-test.component';
+import { QuestionComponent } from '../components/question/question.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -41,7 +42,8 @@ import { QuizTestComponent } from '../components/quiz/quiz-test.component';
     EditMemberComponent,
     SignUpComponent,
     QuizesContainerComponent,
-    QuizTestComponent
+    QuizTestComponent,
+    QuestionComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

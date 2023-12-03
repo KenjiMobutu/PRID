@@ -29,6 +29,6 @@ public class QuizController :  ControllerBase{
     [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<QuizDTO>>> GetAll() {
-        return _mapper.Map<List<QuizDTO>>(await _context.Quizzes.ToListAsync());
+        return _mapper.Map<List<QuizDTO>>(await _context.Quizzes.Include(q => q.Questions).Include(q => q.Database).ToListAsync());
     }
 }

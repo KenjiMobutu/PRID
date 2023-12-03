@@ -25,6 +25,18 @@ public class MappingProfile : Profile{
         CreateMap<Quiz, QuizDTO>();
         CreateMap<QuizDTO, Quiz>();
 
+        CreateMap<Question, QuestionDTO>();
+        CreateMap<QuestionDTO, Question>();
+
+        CreateMap<Attempt, AttemptDTO>();
+        CreateMap<AttemptDTO, Attempt>();
+
+        CreateMap<Database, DatabaseDTO>();
+        CreateMap<DatabaseDTO, Database>();
+
+        CreateMap<Answer, AnswerDTO>();
+        CreateMap<AnswerDTO, Answer>();
+
         /*CreateMap<User, UserDTO>()
             .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => src.BirthDate ?? DateTime.MinValue));*/
     }

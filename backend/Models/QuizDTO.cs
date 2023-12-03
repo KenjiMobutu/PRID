@@ -2,6 +2,8 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace prid_2324_a11.Models;
 
+
+
 public class QuizDTO{
     public int Id { get; set; }
     public string Name { get; set; } = "";
@@ -14,8 +16,26 @@ public class QuizDTO{
 
     [ForeignKey(nameof(DatabaseDTOId))]
     public int DatabaseDTOId { get; set; }
-    public virtual DatabaseDTO Database { get; set; } = null!;
+    public DatabaseDTO Database { get; set; } = null!;
 
-    public ICollection<QuestionDTO> QuestionsDTO { get; set; } = new HashSet<QuestionDTO>();
-    public ICollection<AttemptDTO> AttemptsDTO { get; set; } = new HashSet<AttemptDTO>();
+    public QuizStatus Status{
+        get{
+            DateTime now = DateTime.Now;
+            if (IsClosed){
+                return QuizStatus.Cloture;
+            }
+            else if (now < Start){
+                return QuizStatus.PasCommence;
+            }
+            else if (now >= Start && now <= Finish){
+                return QuizStatus.EnCours;
+            }
+            else{
+                return QuizStatus.Fini;
+            }
+        }
+    }
+
+    public ICollection<QuestionDTO> Questions { get; set; } = new HashSet<QuestionDTO>();
+    public ICollection<AttemptDTO> Attempts { get; set; } = new HashSet<AttemptDTO>();
 }

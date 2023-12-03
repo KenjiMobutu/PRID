@@ -246,6 +246,6 @@ public class PridContext : DbContext{
     public DbSet<Answer> Answers => Set<Answer>();
     public DbSet<Quiz> Quizzes => Set<Quiz>();
     public DbSet<Solution> Solutions => Set<Solution>();
-    public DbSet<Database> QuizTags => Set<Database>();
+    public DbSet<Database> Databases => Set<Database>();
 
 }

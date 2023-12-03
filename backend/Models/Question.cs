@@ -8,7 +8,7 @@ public class Question{
     public int Order { get; set; }
     public string Body { get; set; } = "";
 
-    [ForeignKey(nameof(QuizId))]
+    [ForeignKey(nameof(Quiz))]
     public int QuizId { get; set; }
     public Quiz Quiz { get; set; } = null!;
 

@@ -2,6 +2,13 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace prid_2324_a11.Models;
 
+public enum QuizStatus{
+    EnCours = 0,
+    Fini = 1,
+    PasCommence = 2,
+    Cloture = 3
+}
+
 public class Quiz{
     [Key]
     public int Id { get; set; }
@@ -15,9 +22,28 @@ public class Quiz{
 
     [ForeignKey(nameof(DatabaseId))]
     public int DatabaseId { get; set; }
-    public virtual Database Database { get; set; } = null!;
+    public Database Database { get; set; } = null!;
 
+    public QuizStatus Status{
+        get{
+            DateTime now = DateTime.Now;
+            if (IsClosed){
+                Console.WriteLine("QuizStatus.Cloture");
+                return QuizStatus.Cloture;
+            }
+            else if (now < Start){
+                return QuizStatus.PasCommence;
+            }
+            else if (now >= Start && now <= Finish){
+                return QuizStatus.EnCours;
+            }
+            else{
+                return QuizStatus.Fini;
+            }
+        }
+    }
 
     public virtual ICollection<Question> Questions { get; set; } = new HashSet<Question>();
     public virtual ICollection<Attempt> Attempts { get; set; } = new HashSet<Attempt>();
+
 }

@@ -11,6 +11,7 @@ import { AuthGuard } from '../services/auth.guard';
 import { Role } from '../models/member';
 import { SignUpComponent } from '../components/signup/signup.component';
 import { QuizesContainerComponent } from '../components/quiz/group-container.component';
+import { QuestionComponent } from '../components/question/question.component';
 const appRoutes: Routes = [
     { path: '', component: HomeComponent, pathMatch: 'full' },
     { path: 'counter', component: CounterComponent },
@@ -22,6 +23,7 @@ const appRoutes: Routes = [
     { path: 'login',component: LoginComponent},
     { path: 'signup',component: SignUpComponent},
     { path: 'quiz',component: QuizesContainerComponent},
+    { path: 'question/:id',component: QuestionComponent},
     { path: 'restricted', component: RestrictedComponent },
     { path: '**', component: UnknownComponent }
 ];

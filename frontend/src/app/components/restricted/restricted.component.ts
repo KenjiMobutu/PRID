@@ -15,6 +15,6 @@ export class RestrictedComponent implements OnInit {
     ngOnInit() {
         setTimeout(() => {
             this.router.navigate(['/login']);
-        }, 2000);
+        }, 5000);
     }
 }
