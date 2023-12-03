@@ -11,6 +11,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { Router, ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash-es';
+import { QuestionService } from 'src/app/services/question.service';
 
 
 @Component({
@@ -24,6 +25,7 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
   dataSource: MatTableDataSource<Quiz> = new MatTableDataSource();
   dataSourceTp: MatTableDataSource<Quiz> = new MatTableDataSource();
   dataSourceTest: MatTableDataSource<Quiz> = new MatTableDataSource();
+  questions: Question[] = [];
   state: MatTableState;
   filter: string = '';
 
@@ -41,18 +43,26 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
     public dialog: MatDialog,
     public snackBar: MatSnackBar,
     private router: Router,
+    private route: ActivatedRoute,
+    private service: QuestionService
   ) {
     this.state = this.stateService.quizTestListState;
 
   }
 
-
   // appelée quand on clique sur le bouton "edit"
-  edit(question: Question) {
-    var id = question.id;
-    console.log("edit" +" ---> :"+ question.body?.toString());
-    this.router.navigate(['/question/', id]);
+  edit(quiz: Quiz) {
+    const quizId = quiz.id ?? 0; // Si quiz.id est undefined, utilisez 0 à la place
+    this.service.getQuestionsByQuizId(quizId).subscribe(questions => {
+      if (questions && questions.length > 0) {
+        this.questions = questions;
+        const firstQuestionId = questions[0].id ?? 0; // Si questions[0].id est undefined, utilisez 0 à la place
+        this.router.navigate(['/question/', firstQuestionId]);
+      }
+    });
   }
+  
+
 
   ngOnInit(): void {
       this.refresh();

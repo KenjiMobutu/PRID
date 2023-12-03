@@ -20,28 +20,27 @@ import { QuestionService } from 'src/app/services/question.service';
   templateUrl: './question.component.html'
 })
 
-export class QuestionComponent{
+export class QuestionComponent implements OnInit{
   dataSource: MatTableDataSource<Question> = new MatTableDataSource();
   displayedColumns: string[] = ['id'];
-  question: Question = new Question(); // Initialiser avec une nouvelle question par défaut
+  question: Question | null | undefined; // Initialiser avec une nouvelle question par défaut
+  questions: Question[] = [];
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private service: QuestionService
-
-
     ) { }
 
-
-  ngOnInit() {
-    this.route.params.subscribe(params => {
-      const questionId = +params['id']; //id de la question depuis les paramètres de l'URL
-      //accéder à la question dans votre service ou où vous stockez les questions
-      this.service.getById(questionId).subscribe(question => {
-        this.question = question? question : new Question();
+    ngOnInit() {
+      this.route.params.subscribe(params => {
+        const quizId = +params['id'];
+        this.service.getById(quizId).subscribe(question => {
+          // Vérifiez si des questions ont été récupérées
+            this.question = question || null;
+            // Itérer sur les questions
+        });
       });
-    });
-  }
-
+    }
 
 }

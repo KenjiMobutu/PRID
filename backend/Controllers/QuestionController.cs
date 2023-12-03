@@ -8,6 +8,7 @@ using System.Security.Claims;
 using prid_2324_a11.Helpers;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace prid_2324_a11.Controllers;
 
@@ -37,6 +38,7 @@ public class QuestionController :  ControllerBase{
     [HttpGet("{id}")]
     public async Task<ActionResult<QuestionDTO>> GetOne(int id) {
         // Récupère en BD le membre dont le pseudo est passé en paramètre dans l'url
+        Console.WriteLine(" QUESTION!!! id : " + id);
         var question = await _context.Questions.FindAsync(id);
         // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
         if (question == null)
