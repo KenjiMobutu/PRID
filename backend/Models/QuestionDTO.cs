@@ -8,6 +8,6 @@ public class QuestionDTO{
     public string Body { get; set; } = null!;
 
 
-    public ICollection<SolutionDTO> SolutionsDTO { get; set; } = new HashSet<SolutionDTO>();
-    public ICollection<AnswerDTO> AnswersDTO { get; set; } = new HashSet<AnswerDTO>();
+    public ICollection<SolutionDTO> Solutions { get; set; } = new HashSet<SolutionDTO>();
+    public ICollection<AnswerDTO> Answers { get; set; } = new HashSet<AnswerDTO>();
 }

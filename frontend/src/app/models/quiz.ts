@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-
+import { Solution } from './solution';
 export class DataBase {
   databaseId: number | undefined;
   name?: string;
@@ -10,6 +10,8 @@ export class Question {
     id: number | undefined;
     order: number | undefined;
     body?: string;
+    solutions: Solution[] = [];
+    answers: Answer[] = [];
 }
 
 export enum QuizStatus{
@@ -17,6 +19,15 @@ export enum QuizStatus{
   Fini = 1,
   PasCommence = 2,
   Cloture = 3
+}
+
+export class Answer {
+  id: number | undefined;
+  sql?: string;
+  timeStamp: Date | undefined;
+  isCorrect: boolean = false;
+  questionId: number | undefined;
+  attemptId: number | undefined;
 }
 
 export class Quiz {

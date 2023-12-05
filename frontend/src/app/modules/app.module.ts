@@ -27,6 +27,8 @@ import { fr } from 'date-fns/locale';
 import { QuizesContainerComponent } from '../components/quiz/group-container.component';
 import { QuizTestComponent } from '../components/quiz/quiz-test.component';
 import { QuestionComponent } from '../components/question/question.component';
+import {TestCodeEditorComponent} from '../components/code-editor/test-code-editor.component';
+import {CodeEditorComponent} from '../components/code-editor/code-editor.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -43,7 +45,9 @@ import { QuestionComponent } from '../components/question/question.component';
     SignUpComponent,
     QuizesContainerComponent,
     QuizTestComponent,
-    QuestionComponent
+    QuestionComponent,
+    TestCodeEditorComponent,
+    CodeEditorComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

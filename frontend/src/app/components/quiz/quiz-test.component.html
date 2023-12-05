@@ -1,52 +1,6 @@
-<p>TP</p>
+<p>{{ isTest ? 'Test' : 'TP' }}</p>
 <div class="mat-elevation-z2">
-  <!-- Premier bloc pour les TP -->
-  <div *ngIf="showTpBlock">
-    <table mat-table [dataSource]="dataSourceTp" matSort matSortDisableClear>
-      <!-- Colonnes TP -->
-      <!-- ... -->
-      <ng-container matColumnDef="nom">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Nom </th>
-        <td mat-cell *matCellDef="let row"> {{row.name}} </td>
-      </ng-container>
-      <ng-container matColumnDef="dataBase" >
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Base de données </th>
-        <td mat-cell *matCellDef="let row"> {{row.database?.name }} </td>
-      </ng-container>
-      <ng-container matColumnDef="statut">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Statut </th>
-        <td mat-cell *matCellDef="let row"> {{row.statusAsString}} </td>
-      </ng-container>
-      <ng-container matColumnDef="evaluation">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Evaluation </th>
-        <td mat-cell *matCellDef="let row"> {{row.evaluation}} </td>
-      </ng-container>
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef> Actions </th>
-        <td mat-cell *matCellDef="let row">
-          <!-- Actions TP -->
-          <!-- ... -->
-          <button mat-icon-button tabindex="-1" (click)="edit(row)">
-            <mat-icon>edit</mat-icon>
-          </button>
-        </td>
-      </ng-container>
-      <tr mat-header-row *matHeaderRowDef="displayedColumnsTp"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumnsTp;"></tr>
-    </table>
-  </div>
-  <mat-paginator [pageSize]="5" [pageSizeOptions]="[1, 3, 5, 10, 25, 100]"></mat-paginator>
-</div>
-
-<br>
-
-<p>Test</p>
-<div class="mat-elevation-z2">
-  <!-- Deuxième bloc pour les Tests -->
-  <div *ngIf="showTestBlock">
-    <table mat-table [dataSource]="dataSourceTest" matSort matSortDisableClear>
-      <!-- Colonnes Test -->
-      <!-- ... -->
+    <table mat-table [dataSource]="dataSource" matSort matSortDisableClear>
       <ng-container matColumnDef="nom">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Nom </th>
         <td mat-cell *matCellDef="let row"> {{row.name}} </td>
@@ -56,12 +10,16 @@
         <td mat-cell *matCellDef="let row"> {{row.database?.name }} </td>
       </ng-container>
       <ng-container matColumnDef="startDate" >
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Date de début </th>
-        <td mat-cell *matCellDef="let row"> {{row.start | date:'dd/MM/yyyy'}} </td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> date début </th>
+        <td mat-cell *matCellDef="let row">
+          <ng-container *ngIf="isTest"> {{row.start | date:'dd/MM/yyyy' }} </ng-container>
+        </td>
       </ng-container>
       <ng-container matColumnDef="endDate">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Date de fin </th>
-        <td mat-cell *matCellDef="let row"> {{row.finish | date:'dd/MM/yyyy'}} </td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> date fin </th>
+        <td mat-cell *matCellDef="let row">
+          <ng-container *ngIf="isTest"> {{row.finish | date:'dd/MM/yyyy' }} </ng-container>
+        </td>
       </ng-container>
       <ng-container matColumnDef="statut">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Statut </th>
@@ -74,16 +32,14 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef> Actions </th>
         <td mat-cell *matCellDef="let row">
-          <!-- Actions Test -->
           <button mat-icon-button tabindex="-1" (click)="edit(row)">
             <mat-icon>edit</mat-icon>
           </button>
-          <!-- ... -->
         </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
-  </div>
-  <mat-paginator [pageSize]="5" [pageSizeOptions]="[1,3, 5, 10, 25, 100]"></mat-paginator>
+  <mat-paginator [pageSize]="5" [pageSizeOptions]="[1, 3, 5, 10, 25, 100]"></mat-paginator>
 </div>
+<br>

@@ -30,7 +30,10 @@ public class QuestionController :  ControllerBase{
     [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<QuestionDTO>>> GetAll() {
-        return _mapper.Map<List<QuestionDTO>>(await _context.Questions.ToListAsync());
+        return _mapper.Map<List<QuestionDTO>>(await _context.Questions
+            .Include(q => q.Solutions)
+            .Include(q => q.Answers)
+            .ToListAsync());
     }
 
     // GET: api/Question/id
@@ -46,4 +49,23 @@ public class QuestionController :  ControllerBase{
         // Retourne le membre
         return _mapper.Map<QuestionDTO>(question);
     }
+
+    // GET: api/question/id/quiz
+    [AllowAnonymous]
+    [HttpGet("{id}/quiz")]
+    public async Task<ActionResult<QuizDTO>> GetQuiz(int id) {
+        // Récupère en BD le membre dont le pseudo est passé en paramètre dans l'url
+        var question = await _context.Questions
+            .Include(q => q.Quiz)
+            .FirstOrDefaultAsync(q => q.Id == id);
+        // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
+        if (question == null)
+            return NotFound();
+        // Retourne le membre
+        return _mapper.Map<QuizDTO>(question.Quiz);
+    }
+
+    //GET: api/quiz/id/answers
+    //get quiz by question id
+
 }

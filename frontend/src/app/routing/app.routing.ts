@@ -12,6 +12,7 @@ import { Role } from '../models/member';
 import { SignUpComponent } from '../components/signup/signup.component';
 import { QuizesContainerComponent } from '../components/quiz/group-container.component';
 import { QuestionComponent } from '../components/question/question.component';
+import { TestCodeEditorComponent } from '../components/code-editor/test-code-editor.component';
 const appRoutes: Routes = [
     { path: '', component: HomeComponent, pathMatch: 'full' },
     { path: 'counter', component: CounterComponent },
@@ -25,7 +26,10 @@ const appRoutes: Routes = [
     { path: 'quiz',component: QuizesContainerComponent},
     { path: 'question/:id',component: QuestionComponent},
     { path: 'restricted', component: RestrictedComponent },
-    { path: '**', component: UnknownComponent }
+    { path: 'unknown', component: UnknownComponent},
+    { path: 'test-code-editor', component: TestCodeEditorComponent},
+    
+
 ];
 
 export const AppRoutes = RouterModule.forRoot(appRoutes);

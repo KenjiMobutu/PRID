@@ -9,13 +9,13 @@ public class AnswerDTO{
     public DateTime Timestamp { get; set; }
     public bool IsCorrect { get; set; }
 
-    [ForeignKey(nameof(AttemptDTOId))]
-    public int AttemptDTOId { get; set; }
-    public AttemptDTO AttemptDTO { get; set; } = null!;
+    // [ForeignKey(nameof(AttemptDTOId))]
+    // public int AttemptDTOId { get; set; }
+    // public AttemptDTO AttemptDTO { get; set; } = null!;
 
-    [ForeignKey(nameof(QuestionDTOId))]
-    public int QuestionDTOId { get; set; }
-    public QuestionDTO QuestionDTO { get; set; } = null!;
+    // [ForeignKey(nameof(QuestionDTOId))]
+    // public int QuestionDTOId { get; set; }
+    // public QuestionDTO QuestionDTO { get; set; } = null!;
 
 
 }

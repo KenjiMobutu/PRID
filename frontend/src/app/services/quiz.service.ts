@@ -16,6 +16,37 @@ export class QuizService {
       map(res => plainToInstance(Quiz, res))
     );
   }
+  getTp(): Observable<Quiz[]> {
+    return this.http.get<any[]>(`${this.baseUrl}api/quiz/tp`).pipe(
+      map(res => plainToInstance(Quiz, res))
+    );
+  }
+  getTest(): Observable<Quiz[]> {
+    return this.http.get<any[]>(`${this.baseUrl}api/quiz/test`).pipe(
+      map(res => plainToInstance(Quiz, res))
+    );
+  }
+
+  getOne(id: number) {
+    return this.http.get<Quiz>(`${this.baseUrl}api/quiz/${id}`).pipe(
+      map(m => plainToInstance(Quiz, m)),
+      catchError(err => of(null))
+    );
+  }
+
+  getQuestionsByQuizId(quizId: number): Observable<Quiz[]> {
+    const url = `${this.baseUrl}api/quiz/${quizId}/questions`;
+    console.log('!!!!!!URL:', url);
+    return this.http.get<Quiz[]>(url).pipe(
+      map(res => plainToInstance(Quiz, res))
+    );
+  }
+
+  //get quiz by question id
+  getQuizByQuestionId(questionId: number): Observable<Quiz> {
+    const url = `${this.baseUrl}api/quiz/${questionId}/quiz`;
+    return this.http.get<Quiz>(url);
+  }
 
 
   public update(q: Quiz): Observable<boolean> {
