@@ -42,7 +42,11 @@ public class QuestionController :  ControllerBase{
     public async Task<ActionResult<QuestionDTO>> GetOne(int id) {
         // Récupère en BD le membre dont le pseudo est passé en paramètre dans l'url
         Console.WriteLine(" QUESTION!!! id : " + id);
-        var question = await _context.Questions.FindAsync(id);
+        var question = await _context.Questions
+            .Include(q => q.Solutions)
+            .Include(q => q.Answers)
+            .FirstOrDefaultAsync(q => q.Id == id);
+
         // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
         if (question == null)
             return NotFound();
@@ -56,6 +60,7 @@ public class QuestionController :  ControllerBase{
     public async Task<ActionResult<QuizDTO>> GetQuiz(int id) {
         // Récupère en BD le membre dont le pseudo est passé en paramètre dans l'url
         var question = await _context.Questions
+            .Include(q => q.Solutions)
             .Include(q => q.Quiz)
             .FirstOrDefaultAsync(q => q.Id == id);
         // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found

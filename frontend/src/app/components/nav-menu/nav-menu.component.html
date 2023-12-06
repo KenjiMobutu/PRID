@@ -7,20 +7,17 @@
             </button>
             <div class="navbar-collapse collapse d-sm-inline-flex" [ngClass]="{ show: isExpanded }">
                 <ul class="navbar-nav flex-grow me-auto">
-                    <li class="nav-item" [routerLinkActive]="['link-active']" [routerLinkActiveOptions]="{ exact: true }">
-                        <a class="nav-link text-dark" [routerLink]="['/']">Welcome</a>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item"  [routerLinkActive]="['link-active']" *ngIf="currentUser && isStudent">
+                        <a class="nav-link text-dark" [routerLink]="['/quiz']">Liste des quiz</a>
                     </li>
-                    <!-- <li class="nav-item" [routerLinkActive]="['link-active']">
-                        <a class="nav-link text-dark" [routerLink]="['/counter']">Counter</a>
-                    </li>-->
                     <li class="nav-item" [routerLinkActive]="['link-active']">
                         <a class="nav-link text-dark" [routerLink]="['/test-code-editor']">Code editor</a>
                     </li>
                     <li class="nav-item" [routerLinkActive]='["link-active"]' *ngIf="currentUser && isAdmin">
                         <a class="nav-link text-dark" [routerLink]='["/members"]'>Members</a>
                     </li>
-                </ul>
-                <ul class="navbar-nav">
                     <li class="nav-item" [routerLinkActive]="['link-active']" *ngIf="!currentUser">
                         <a class="nav-link text-dark" [routerLink]="['/login']">
                             <span class="material-icons">exit_to_app</span>

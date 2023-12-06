@@ -14,4 +14,24 @@
     <p>{{ question.body }}</p>
   </div>
 </div>
-<code-editor #editor [(ngModel)]="query" [readOnly]="true"></code-editor>
+<code-editor #editor [(ngModel)]="query" [readOnly]="false"></code-editor>
+<br>
+<div style="display: none;">
+  <textarea [(ngModel)]="query" cols="80" rows="5" style="width: 100%"></textarea>
+</div>
+
+<div>
+  <button style="margin-right: 10px;">Envoyer</button>
+  <button style="margin-right: 10px;">Effacer</button>
+  <button style="margin-right: 10px;" *ngIf="!isTest" (click)="showSolution()">Voir Solutions</button>
+</div>
+<br>
+<div *ngIf="showSolutions && !isTest">
+  <ng-container *ngFor="let solution of solutions; let i = index">
+    <p>Solution {{ solution.order }}</p>
+    <div class="solutionBody">
+      <p [innerText]="solution.sql"></p>
+    </div>
+  </ng-container>
+</div>
+

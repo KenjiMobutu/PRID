@@ -100,7 +100,6 @@ export class QuizTestComponent implements OnInit {
 
   @Input() set isTest(value: boolean | undefined) {
     this._isTest = value;
-    //this.load('setter');
   }
 
   get isFilter(): boolean | undefined {

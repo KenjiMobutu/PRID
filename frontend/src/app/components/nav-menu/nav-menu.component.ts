@@ -31,6 +31,9 @@ export class NavMenuComponent {
     get isAdmin() {
         return this.currentUser && this.currentUser.role === Role.Admin;
     }
+    get isStudent() {
+        return this.currentUser && this.currentUser.role === Role.Student;
+    }
 
     logout() {
         this.authenticationService.logout();

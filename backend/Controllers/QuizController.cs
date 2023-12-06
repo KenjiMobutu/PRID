@@ -66,6 +66,7 @@ public class QuizController :  ControllerBase{
         // Récupère en BD le quiz avec ses questions liées
         var quiz = await _context.Quizzes
             .Include(q => q.Questions)
+            .Include(q => q.Database)
             .FirstOrDefaultAsync(q => q.Id == id);
         Console.WriteLine(" QUIZZZZ ---> " + " :" + quiz?.Questions.Count);
         // Si aucun quiz n'a été trouvé, renvoyer une erreur 404 Not Found
