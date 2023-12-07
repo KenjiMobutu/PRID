@@ -19,8 +19,8 @@ import { QuestionService } from 'src/app/services/question.service';
   templateUrl: './quiz-test.component.html'
 })
 
-export class QuizTestComponent implements OnInit {
-  displayedColumnsWithDates: string[] = ['nom', 'dataBase', 'startDate', 'endDate','evaluation' , 'actions'];
+export class QuizTestComponent implements OnInit, AfterViewInit {
+  displayedColumnsWithDates: string[] = ['nom', 'dataBase', 'startDate', 'endDate', 'statut','evaluation' , 'actions'];
   displayedColumns: string[] = ['nom', 'dataBase','statut','actions'];
   dataSource: MatTableDataSource<Quiz> = new MatTableDataSource();
 
@@ -47,8 +47,11 @@ export class QuizTestComponent implements OnInit {
 
   ngOnInit(): void {
     this.columsInit();
-    this.paginatorInit();
     this.refresh();
+  }
+
+  ngAfterViewInit(): void {
+    this.paginatorInit();
   }
 
   // appelée quand on clique sur le bouton "edit"
@@ -80,6 +83,7 @@ export class QuizTestComponent implements OnInit {
           });
     }
   }
+
   paginatorInit(){
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -100,6 +104,7 @@ export class QuizTestComponent implements OnInit {
 
   @Input() set isTest(value: boolean | undefined) {
     this._isTest = value;
+    //this.load('setter');
   }
 
   get isFilter(): boolean | undefined {
@@ -114,7 +119,4 @@ export class QuizTestComponent implements OnInit {
   load(from: string):void{
     this.dataSource.filter = this.filter??"";
   }
-
-
-
 }

@@ -31,6 +31,7 @@ public class QuestionController :  ControllerBase{
     [HttpGet]
     public async Task<ActionResult<IEnumerable<QuestionDTO>>> GetAll() {
         return _mapper.Map<List<QuestionDTO>>(await _context.Questions
+            .Include(q => q.Quiz)
             .Include(q => q.Solutions)
             .Include(q => q.Answers)
             .ToListAsync());
@@ -43,6 +44,7 @@ public class QuestionController :  ControllerBase{
         // Récupère en BD le membre dont le pseudo est passé en paramètre dans l'url
         Console.WriteLine(" QUESTION!!! id : " + id);
         var question = await _context.Questions
+            .Include(q => q.Quiz)
             .Include(q => q.Solutions)
             .Include(q => q.Answers)
             .FirstOrDefaultAsync(q => q.Id == id);

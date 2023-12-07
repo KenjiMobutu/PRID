@@ -44,7 +44,7 @@ export class QuizesContainerComponent {
     // en se mettant sur la première page
     if (this.dataSource.paginator)
       this.dataSource.paginator.firstPage();
-    }
+  }
 }
 
 

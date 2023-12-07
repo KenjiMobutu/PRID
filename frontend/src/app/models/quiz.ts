@@ -10,6 +10,7 @@ export class Question {
     id: number | undefined;
     order: number | undefined;
     body?: string;
+    quizId: number | undefined; // ID du quiz auquel appartient la question
     solutions: Solution[] = [];
     answers: Answer[] = [];
 }
