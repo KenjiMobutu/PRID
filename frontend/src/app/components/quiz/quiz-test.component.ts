@@ -12,6 +12,7 @@ import { MatSort } from '@angular/material/sort';
 import { Router, ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash-es';
 import { QuestionService } from 'src/app/services/question.service';
+import { th } from 'date-fns/locale';
 
 
 @Component({
@@ -27,7 +28,7 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
   private _isTest?: boolean;
   questions: Question[] = [];
   state: MatTableState;
-  filter: string = '';
+  private _filter?: string = '';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -71,15 +72,17 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
       this.quizService.getTp().subscribe(quizes => {
             // assigne toutes les données récupérées au datasource
             this.dataSource.data = quizes;
+            this.state.restoreState(this.dataSource);
             // restaure l'état du filtre à partir du state
-            this.filter = this.state.filter;
+            this._filter = this.state.filter;
           });
     } else {
       this.quizService.getTest().subscribe(quizes => {
             // assigne toutes les données récupérées au datasource
             this.dataSource.data = quizes;
+            this.state.restoreState(this.dataSource);
             // restaure l'état du filtre à partir du state
-            this.filter = this.state.filter;
+            this._filter = this.state.filter;
           });
     }
   }
@@ -87,9 +90,10 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
   paginatorInit(){
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    if (this.sort) {
-        this.state.bind(this.dataSource);
-    }
+    
+    this.state.bind(this.dataSource);
+    // récupère les données
+    this.refresh();
   }
 
   columsInit(){
@@ -104,19 +108,21 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
 
   @Input() set isTest(value: boolean | undefined) {
     this._isTest = value;
-    //this.load('setter');
   }
 
-  get isFilter(): boolean | undefined {
-    return this._isTest;
+  //FILTRE
+  get filter(): string | undefined {
+    return this._filter;
   }
 
-  @Input() set isFilter(value: boolean | undefined) {
-    this._isTest = value;
-    this.dataSource.filter = value ? 'test' : 'tp';
+  @Input() set filter(value: string | undefined) {
+    this._filter = value;
+    this.load('setter');
   }
 
   load(from: string):void{
-    this.dataSource.filter = this.filter??"";
+    this.dataSource.filter = this._filter??"";
+    console.log('---> load', this._filter);
   }
+
 }

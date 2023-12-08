@@ -21,8 +21,8 @@
 </div>
 
 <div>
-  <button style="margin-right: 10px;">Envoyer</button>
-  <button style="margin-right: 10px;">Effacer</button>
+  <button style="margin-right: 10px;" (click)="send()">Envoyer</button>
+  <button style="margin-right: 10px;" (click)="clear()">Effacer</button>
   <button style="margin-right: 10px;" *ngIf="!isTest" (click)="showSolution()">Voir Solutions</button>
 </div>
 <br>

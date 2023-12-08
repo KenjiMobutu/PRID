@@ -15,7 +15,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     templateUrl: './group-container.component.html'
 })
 
-export class QuizesContainerComponent {
+export class QuizesContainerComponent implements OnInit, AfterViewInit{
   filter: string = '';
   dataSource: MatTableDataSource<Quiz> = new MatTableDataSource();
   state: MatTableState;
@@ -33,18 +33,37 @@ export class QuizesContainerComponent {
         this.state = this.stateService.quizTestListState;
     }
 
+    ngOnInit(): void {
+    }
+
+    ngAfterViewInit(): void {
+      //const event = new KeyboardEvent('input', {bubbles : true, cancelable : true, key : " "});
+      //Object.defineProperty(event, 'target', {writable: false, value: {value: this.filter}});
+      //this.filterChanged(event);
+    }
+
+
   // appelée chaque fois que le filtre est modifié par l'utilisateur
-  filterChanged(e: KeyboardEvent) {
-    const filterValue = (e.target as HTMLInputElement).value;
-    // applique le filtre au datasource (et provoque l'utilisation du filterPredicate)
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    // sauve le nouveau filtre dans le state
-    this.state.filter = this.dataSource.filter;
-    // comme le filtre est modifié, les données aussi et on réinitialise la pagination
-    // en se mettant sur la première page
-    if (this.dataSource.paginator)
-      this.dataSource.paginator.firstPage();
-  }
+filterChanged(e: KeyboardEvent) {
+  const filterValue = (e.target as HTMLInputElement).value;
+  // applique le filtre au datasource (et provoque l'utilisation du filterPredicate)
+  this.dataSource.filter = filterValue.trim().toLowerCase();
+  // Définir le filterPredicate pour rechercher dans plusieurs propriétés
+  
+  console.log('---> this.dataSource.filter', this.dataSource.filter);
+  console.log('---> this.dataSource', this.dataSource);
+  // sauve le nouveau filtre dans le state
+  this.state.filter = this.dataSource.filter;
+  this.filter = this.state.filter;
+  this.state.bind(this.dataSource);
+  console.log('---> this.filter', this.filter);
+  // comme le filtre est modifié, les données aussi et on réinitialise la pagination
+  // en se mettant sur la première page
+  if (this.dataSource.paginator)
+    this.dataSource.paginator.firstPage();
+}
+
+
 }
 
 

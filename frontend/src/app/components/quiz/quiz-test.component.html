@@ -35,6 +35,12 @@
           <button mat-icon-button tabindex="-1" (click)="edit(row)">
             <mat-icon>edit</mat-icon>
           </button>
+          <button mat-icon-button tabindex="-1" >
+            <mat-icon>class</mat-icon>
+          </button>
+          <button mat-icon-button tabindex="-1">
+            <mat-icon>add_box</mat-icon>
+          </button>
         </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -43,3 +49,9 @@
   <mat-paginator [pageSize]="5" [pageSizeOptions]="[1, 3, 5, 10, 25, 100]"></mat-paginator>
 </div>
 <br>
+<mat-icon>edit</mat-icon>
+<p>Permet d'ouvrir une tentative existante en modification.</p>
+<mat-icon>class</mat-icon>
+<p>Permet de visualiser une tentative existante en lecture seule.</p>
+<mat-icon>add_box</mat-icon>
+<p>Permet de créer une nouvelle tentative.</p>

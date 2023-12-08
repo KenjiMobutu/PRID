@@ -188,7 +188,9 @@ public class PridContext : DbContext{
         modelBuilder.Entity<Question>().HasData(
             new Question { Id = 20, QuizId = 3, Order = 1, Body = @"Affichez le nom des personnes qui ont plus de trente ans" }
         );
-        modelBuilder.Entity<Solution>().HasData(new Solution { Id = 22, QuestionId = 20, Order = 1, Sql = "SELECT DISTINCT p.Nom\nFROM Personne p\nWHERE p.Age >= 30;" });
+        modelBuilder.Entity<Solution>().HasData(
+            new Solution { Id = 22, QuestionId = 20, Order = 1, Sql = "SELECT DISTINCT p.Nom\nFROM Personne p\nWHERE p.Age >= 30;" }
+        );
 
         /* ----------  Questions/Quiz4   -------- */
         modelBuilder.Entity<Question>().HasData(
@@ -221,7 +223,7 @@ public class PridContext : DbContext{
 
         /* ----------  Attempt 1   -------- */
         modelBuilder.Entity<Attempt>().HasData(
-            new Attempt { Id = 1, Start = new DateTime(2023, 09, 01), QuizId = 1, StudentId = 4 }
+            new Attempt { Id = 1, Start = new DateTime(2023, 09, 01), QuizId = 1, StudentId = 8 }
         );
         modelBuilder.Entity<Answer>().HasData(
             new Answer { Id = 1, QuestionId = 1, AttemptId = 1, Sql = "SELECT * FROM S", IsCorrect = true }
@@ -229,7 +231,7 @@ public class PridContext : DbContext{
 
         /* ----------  Attempt 2  -------- */
         modelBuilder.Entity<Attempt>().HasData(
-            new Attempt { Id = 2, Start = DateTime.Now, Finish = DateTime.Now, QuizId = 4, StudentId = 4 }
+            new Attempt { Id = 2, Start = DateTime.Now, Finish = DateTime.Now, QuizId = 4, StudentId = 8 }
         );
         modelBuilder.Entity<Answer>().HasData(
             new Answer { Id = 2, QuestionId = 30, AttemptId = 2, Sql = "SELECT * FROM S", IsCorrect = true }

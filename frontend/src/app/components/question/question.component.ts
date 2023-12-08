@@ -80,36 +80,6 @@ export class QuestionComponent implements OnInit{
         });
     }
 
-    // next() {
-    //   // Vérifier si l'index de la question actuelle est inférieur à la longueur des questions - 1
-    //   if (this.currentQuestionIndex < this.questions.length - 1) {
-    //     this.showSolutions = false;
-    //     this.currentQuestionIndex++;
-    //     console.log('----> currentQuestionIndex:', this.currentQuestionIndex);
-    //     // Utiliser l'ID de la question suivante
-    //     const nextQuestionId = this.questions[this.currentQuestionIndex].id;
-    //     this.router.navigate(['/question', nextQuestionId]);
-    //   } else {
-    //     // Traiter le cas où il n'y a pas de question suivante
-    //     console.log('Il n\'y a pas de question suivante.');
-    //   }
-    // }
-
-    // previous() {
-    //   // Vérifier si l'index de la question actuelle est supérieur à 0
-    //   if (this.currentQuestionIndex > 0) {
-    //     this.showSolutions = false;
-    //     this.currentQuestionIndex--;
-    //     console.log('----> currentQuestionIndex:', this.currentQuestionIndex);
-    //     // Utiliser l'ID de la question précédente
-    //     const previousQuestionId = this.questions[this.currentQuestionIndex].id;
-    //     this.router.navigate(['/question', previousQuestionId]);
-    //   } else {
-    //     // Traiter le cas où il n'y a pas de question précédente
-    //     console.log('Il n\'y a pas de question précédente.');
-    //   }
-    // }
-
     next() {
       // Vérifier si l'ID de la question actuelle est dans la liste des questions
       const currentQuestionId = this.questions[this.currentQuestionIndex].id;
@@ -118,8 +88,8 @@ export class QuestionComponent implements OnInit{
 
       const nextQuestionIndex = this.questions.findIndex(q => q.id === currentQuestionId) + 1;
       console.log('----> nextQuestionIndex:', nextQuestionIndex);
-      console.log('----> nextQuestionId:', this.questions[nextQuestionIndex].id);
-      
+      //console.log('----> nextQuestionId:', this.questions[nextQuestionIndex].id);
+
       if (nextQuestionIndex < this.questions.length) {
         this.showSolutions = false;
         this.currentQuestionIndex = nextQuestionIndex;
@@ -138,7 +108,7 @@ export class QuestionComponent implements OnInit{
 
       const previousQuestionIndex = this.questions.findIndex(q => q.id === currentQuestionId) - 1;
       console.log('----> previousQuestionIndex:', previousQuestionIndex);
-      console.log('----> previousQuestionId:', this.questions[previousQuestionIndex].id);
+      //console.log('----> previousQuestionId:', this.questions[previousQuestionIndex].id);
 
       if (previousQuestionIndex >= 0) {
         this.showSolutions = false;
@@ -162,7 +132,16 @@ export class QuestionComponent implements OnInit{
     showSolution(){
       console.log('----> Solution:', this.solutions);
       this.showSolutions = !this.showSolutions;
+    }
+
+    clear() {
+      this.query = ''; // Efface le contenu du textarea
+    }
+
+    send() {
+      console.log('----> Query:', this.query);
 
     }
+
 }
 

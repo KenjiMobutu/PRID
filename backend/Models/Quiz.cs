@@ -27,18 +27,29 @@ public class Quiz{
     public QuizStatus Status{
         get{
             DateTime now = DateTime.Now;
-            if (IsClosed){
-                Console.WriteLine("QuizStatus.Cloture");
-                return QuizStatus.Cloture;
-            }
-            else if (now < Start){
-                return QuizStatus.PasCommence;
-            }
-            else if (now >= Start && now <= Finish){
-                return QuizStatus.EnCours;
+            if (IsTest){
+                if (now > Finish){
+                    Console.WriteLine("QuizStatus.Cloture");
+                    return QuizStatus.Cloture;
+                }
+                else{
+                    return QuizStatus.EnCours;
+                }
             }
             else{
-                return QuizStatus.Fini;
+                if (now < Finish){
+                    Console.WriteLine("QuizStatus.Cloture");
+                    return QuizStatus.Cloture;
+                }
+                else if (now < Start){
+                    return QuizStatus.PasCommence;
+                }
+                else if (now >= Start && now <= Finish){
+                    return QuizStatus.EnCours;
+                }
+                else{
+                    return QuizStatus.Fini;
+                }
             }
         }
     }

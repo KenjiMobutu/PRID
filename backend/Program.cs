@@ -16,7 +16,7 @@ builder.Services.AddControllers();
 
 // CONNECTION DATABASE
 //Sqlite
-builder.Services.AddDbContext<PridContext>(opt => opt.UseSqlite("Data Source=prid_2324_a11.db"));
+//builder.Services.AddDbContext<PridContext>(opt => opt.UseSqlite("Data Source=prid_2324_a11.db"));
 
 //SQL Server
 // builder.Services.AddDbContext<MsnContext>(opt => opt.UseSqlServer(
@@ -24,10 +24,10 @@ builder.Services.AddDbContext<PridContext>(opt => opt.UseSqlite("Data Source=pri
 // ));
 
 //MySql
-// builder.Services.AddDbContext<MsnContext>(opt => opt.UseMySql(
-//     builder.Configuration.GetConnectionString("prid-tuto-mysql"),
-//     ServerVersion.Parse("10.4.28-mariadb")
-// ));
+builder.Services.AddDbContext<PridContext>(opt => opt.UseMySql(
+    builder.Configuration.GetConnectionString("prid-tuto-mysql"),
+    ServerVersion.Parse("10.4.28-mariadb")
+));
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

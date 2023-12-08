@@ -317,3 +317,16 @@
 /Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/obj/Debug/net7.0/backend.genruntimeconfig.cache
 /Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/obj/Debug/net7.0/ref/backend.dll
 /Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/bin/Debug/net7.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/bin/Debug/net7.0/Google.Protobuf.dll
+/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/bin/Debug/net7.0/K4os.Compression.LZ4.dll
+/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/bin/Debug/net7.0/K4os.Compression.LZ4.Streams.dll
+/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/bin/Debug/net7.0/K4os.Hash.xxHash.dll
+/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/bin/Debug/net7.0/MySql.Data.dll
+/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/bin/Debug/net7.0/MySqlConnector.dll
+/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/bin/Debug/net7.0/Pomelo.EntityFrameworkCore.MySql.dll
+/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/bin/Debug/net7.0/BouncyCastle.Crypto.dll
+/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/bin/Debug/net7.0/runtimes/win-x64/native/comerr64.dll
+/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/bin/Debug/net7.0/runtimes/win-x64/native/gssapi64.dll
+/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/bin/Debug/net7.0/runtimes/win-x64/native/k5sprt64.dll
+/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/bin/Debug/net7.0/runtimes/win-x64/native/krb5_64.dll
+/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid_2324_a11/backend/bin/Debug/net7.0/runtimes/win-x64/native/krbcc64.dll
