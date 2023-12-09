@@ -21,11 +21,19 @@
 </div>
 
 <div>
-  <button style="margin-right: 10px;" (click)="send()">Envoyer</button>
+  <button style="margin-right: 10px;" (click)="send()" >Envoyer</button>
   <button style="margin-right: 10px;" (click)="clear()">Effacer</button>
   <button style="margin-right: 10px;" *ngIf="!isTest" (click)="showSolution()">Voir Solutions</button>
 </div>
 <br>
+
+<div *ngIf="showAnswers && !isTest">
+  <p>{{horodatage}}</p>
+  <div [ngClass]="{'correct-answer': res === true, 'incorrect-answer': res === false}">
+    <p [innerText]="answerMessage"></p>
+  </div>
+</div>
+
 <div *ngIf="showSolutions && !isTest">
   <ng-container *ngFor="let solution of solutions; let i = index">
     <p>Solution {{ solution.order }}</p>

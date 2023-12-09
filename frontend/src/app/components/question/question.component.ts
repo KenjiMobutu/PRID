@@ -13,12 +13,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash-es';
 import { Question } from '../../models/quiz';
 import { QuestionService } from 'src/app/services/question.service';
-import { th } from 'date-fns/locale';
+import { el, th, tr } from 'date-fns/locale';
 import { Solution } from 'src/app/models/solution';
 import { SolutionService } from 'src/app/services/solution.service';
 import { CodeEditorComponent } from '../code-editor/code-editor.component';
-
-
 
 @Component({
   selector: 'question',
@@ -34,11 +32,18 @@ export class QuestionComponent implements OnInit{
   quiz: Quiz | null = null;
   solutions: Solution[] = [];
   showSolutions: boolean = false;
+  showAnswers: boolean = false;
   currentQuestionId: number | null = null;
   currentQuestionIndex: number = 0;
   isSolutionCorrect: boolean | null = null;
   private _isTest?: boolean;
   query = "SELECT * FROM s";
+  now = new Date();
+  heure = this.now.toLocaleTimeString();
+  date = this.now.toLocaleDateString();
+  horodatage = `${this.date} ${this.heure}`;
+  answerMessage : string ="";
+  res : boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -82,14 +87,11 @@ export class QuestionComponent implements OnInit{
     }
 
     next() {
+      this.showAnswers = false;
       // Vérifier si l'ID de la question actuelle est dans la liste des questions
-      const currentQuestionId = this.questions[this.currentQuestionIndex].id;
       console.log('----> currentQuestionIndex:', this.currentQuestionIndex);
-      console.log('----> currentQuestionId:', currentQuestionId);
-
-      const nextQuestionIndex = this.questions.findIndex(q => q.id === currentQuestionId) + 1;
+      const nextQuestionIndex = this.questions.findIndex(q => q.id === this.currentQuestionId) + 1;
       console.log('----> nextQuestionIndex:', nextQuestionIndex);
-      //console.log('----> nextQuestionId:', this.questions[nextQuestionIndex].id);
 
       if (nextQuestionIndex < this.questions.length) {
         this.showSolutions = false;
@@ -102,15 +104,13 @@ export class QuestionComponent implements OnInit{
     }
 
     previous() {
+      this.showAnswers = false;
       // Vérifier si l'ID de la question actuelle est dans la liste des questions
-      const currentQuestionId = this.questions[this.currentQuestionIndex].id;
+      console.log("----> currentQuestionId:",this.currentQuestionId )
       console.log('----> currentQuestionIndex:', this.currentQuestionIndex);
-      console.log('----> currentQuestionId:', currentQuestionId);
 
-      const previousQuestionIndex = this.questions.findIndex(q => q.id === currentQuestionId) - 1;
+      const previousQuestionIndex = this.questions.findIndex(q => q.id === this.currentQuestionId) - 1;
       console.log('----> previousQuestionIndex:', previousQuestionIndex);
-      //console.log('----> previousQuestionId:', this.questions[previousQuestionIndex].id);
-
       if (previousQuestionIndex >= 0) {
         this.showSolutions = false;
         this.currentQuestionIndex = previousQuestionIndex;
@@ -120,7 +120,6 @@ export class QuestionComponent implements OnInit{
         console.log('Il n\'y a pas de question précédente.');
       }
     }
-
 
     get isTest(): boolean | undefined {
       return this._isTest;
@@ -133,20 +132,44 @@ export class QuestionComponent implements OnInit{
     showSolution(){
       console.log('----> Solution:', this.solutions);
       this.showSolutions = !this.showSolutions;
+      this.showAnswers = false;
     }
 
     clear() {
       this.query = ''; // Efface le contenu du textarea
+      this.answerMessage = '';
+      this.horodatage = '';
+      this.showSolutions = false;
     }
 
     send() {
-      console.log('----> ** Query:', this.query);
+      this.showAnswer();
+      this.showSolutions = false;
       this.solutionService.sendSolution(this.question?.id ?? 0, this.query).subscribe(res => {
+        console.log('----> *2* ID:', this.question?.id);
+        console.log('----> *2* Query:', this.query);
         console.log('----> ** Résultat:', res);
-      });
+        this.res = res;
+        if(this.query === ""){
+          this.answerMessage = `Vous n'avez pas entré de requête SQL!`;
+        }else{
+          if ( res === true) {
+            console.log('----> ** Message texte:', res);
+            this.answerMessage = `Votre requête a retourné une réponse correcte!\n
+            Néanmoins, comparez votre solution avec celle(s) ci-dessous pour voir si vous n'avez pas eu un peu de chance... ;)`;
+            this.showSolutions = true;
+          }else{
+            console.log('----> ** Message texte:', res);
+            this.answerMessage = `Votre requête n'a pas retourné de réponse correcte!`;
+          }
+        }});
+      this.answerMessage ="";
+      this.showSolutions = false;
     }
 
-
+    showAnswer(){
+      this.showAnswers = !this.showAnswers;
+    }
 
 
 }

@@ -7,6 +7,7 @@ import { Solution } from "../models/solution";
 import { catchError, map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { plainToInstance } from 'class-transformer';
+import { pl } from "date-fns/locale";
 
 @Injectable({ providedIn: 'root' })
 export class SolutionService {
@@ -33,10 +34,9 @@ export class SolutionService {
     );
   }
 
-  sendSolution(questionId: number, solutionSql: string): Observable<boolean> {
-    //const url = `${this.baseUrl}api/solution/${questionId}/check-sql`;
-    //return this.http.post<Solution>(url, {  solutionSql });
-    return this.http.post<boolean>(`${this.baseUrl}api/solution/${questionId}/check-sql`, solutionSql).pipe(
+  sendSolution(questionId: number, sql: string): Observable<boolean> {
+    console.log("--> SQL:"+sql);
+    return this.http.get<Solution>(`${this.baseUrl}api/solution/${questionId}/${sql}`).pipe(
       map(res => true),
       catchError(err => {
         console.error(err);

@@ -71,33 +71,33 @@ public class SolutionController : ControllerBase{
   }
 
     [AllowAnonymous]
-    [HttpPost("{id}/check-sql")]
-    public ActionResult CheckSql(int id, [FromBody] string sql){
+    [HttpGet("{id}/{sql}")]
+    public ActionResult CheckSql(int id,string sql){
       // Exécutez la requête SQL avec la chaîne sql
         string connectionString = "server=localhost;database=fournisseurs;uid=root;password=root";
         using MySqlConnection connection = new MySqlConnection(connectionString);
         DataTable table;
       try{
+        Console.WriteLine("---> sql: " + sql);
         connection.Open();
         MySqlCommand command = new MySqlCommand("SET sql_mode = 'STRICT_ALL_TABLES'; " + sql, connection);
         MySqlDataAdapter adapter = new MySqlDataAdapter(command);
         table = new DataTable();
         adapter.Fill(table);
-
         // Comparer les données avec les solutions associées à la question
-        // Vous devez avoir une méthode ou un service pour récupérer les solutions associées à la question
+        // récupérer les solutions associées à la question
         List<Solution> solutions = RetrieveSolutionsForQuestion(id);
         // Afficher les solutions en console
         foreach (Solution solution in solutions){
-          Console.WriteLine("---> solution: " + solution.Sql); // Cela suppose que la classe Solution a une implémentation appropriée de la méthode ToString()
+          Console.WriteLine("---> solution: " + solution.Sql);
         }
         // Comparer les données de la requête SQL avec les solutions
         bool isValid = CompareDataWithSolutions(table, solutions);
         Console.WriteLine("---> isValid: " + isValid);
         if (isValid){
-            return Ok("Requête SQL valide.");
+            return Ok(new { message = "Requête SQL valide." });
         }else{
-            return BadRequest("Requête SQL invalide.");
+            return BadRequest("Requête SQL invalide." );
         }
     }catch (Exception e){
         return BadRequest("Erreur lors de l'exécution de la requête SQL : " + e.Message);
