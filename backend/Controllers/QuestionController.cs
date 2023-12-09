@@ -72,7 +72,4 @@ public class QuestionController :  ControllerBase{
         return _mapper.Map<QuizDTO>(question.Quiz);
     }
 
-    //GET: api/quiz/id/answers
-    //get quiz by question id
-
 }

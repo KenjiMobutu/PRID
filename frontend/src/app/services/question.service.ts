@@ -40,7 +40,6 @@ export class QuestionService {
     return this.http.get<Question[]>(url);
   }
   
-
   // Obtenez une question par ID
   getById(questionId: number): Observable<Question> {
     const url = `${this.baseUrl}api/question/${questionId}`;
@@ -59,5 +58,4 @@ export class QuestionService {
       catchError(err => of(null))
     );
   }
-
 }

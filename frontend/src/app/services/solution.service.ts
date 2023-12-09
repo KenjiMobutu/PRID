@@ -32,4 +32,18 @@ export class SolutionService {
       map(res => plainToInstance(Solution, res))
     );
   }
+
+  sendSolution(questionId: number, solutionSql: string): Observable<boolean> {
+    //const url = `${this.baseUrl}api/solution/${questionId}/check-sql`;
+    //return this.http.post<Solution>(url, {  solutionSql });
+    return this.http.post<boolean>(`${this.baseUrl}api/solution/${questionId}/check-sql`, solutionSql).pipe(
+      map(res => true),
+      catchError(err => {
+        console.error(err);
+        return of(false);
+      })
+    );
+  }
+
+
 }

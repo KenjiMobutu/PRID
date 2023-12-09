@@ -36,8 +36,9 @@ export class QuestionComponent implements OnInit{
   showSolutions: boolean = false;
   currentQuestionId: number | null = null;
   currentQuestionIndex: number = 0;
+  isSolutionCorrect: boolean | null = null;
   private _isTest?: boolean;
-  query = "SELECT *\nFROM P\nWHERE COLOR='Red'";
+  query = "SELECT * FROM s";
 
   constructor(
     private route: ActivatedRoute,
@@ -139,9 +140,14 @@ export class QuestionComponent implements OnInit{
     }
 
     send() {
-      console.log('----> Query:', this.query);
-
+      console.log('----> ** Query:', this.query);
+      this.solutionService.sendSolution(this.question?.id ?? 0, this.query).subscribe(res => {
+        console.log('----> ** Résultat:', res);
+      });
     }
+
+
+
 
 }
 
