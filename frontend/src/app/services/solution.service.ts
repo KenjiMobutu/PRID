@@ -45,5 +45,17 @@ export class SolutionService {
     );
   }
 
+  getColumnNames(sql: string): Observable<string[]> {
+    return this.http.get<string[]>(`${this.baseUrl}api/solution/${sql}/columns`).pipe(
+      map(res => res)
+    );
+  }
+
+  getDataRows(sql: string): Observable<string[][]> {
+    return this.http.get<string[][]>(`${this.baseUrl}api/solution/${sql}/rows`).pipe(
+      map(res => res)
+    );
+  }
+
 
 }

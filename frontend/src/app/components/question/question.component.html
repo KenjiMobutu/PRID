@@ -34,6 +34,25 @@
   </div>
 </div>
 
+<div *ngIf="showAnswerTable && !isTest">
+  <table>
+    <thead>
+      <tr>
+        <th *ngFor="let columnName of columnNames">
+          {{ columnName }}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let dataRow of dataRows">
+        <td *ngFor="let cell of dataRow">
+          {{ cell }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<br>
 <div *ngIf="showSolutions && !isTest">
   <ng-container *ngFor="let solution of solutions; let i = index">
     <p>Solution {{ solution.order }}</p>

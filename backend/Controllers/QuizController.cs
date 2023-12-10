@@ -99,9 +99,13 @@ public class QuizController :  ControllerBase{
         var question = await _context.Questions
             .Include(q => q.Quiz)
             .FirstOrDefaultAsync(q => q.Id == id);
+
+        if (question == null || question.Quiz == null)
+            return NotFound();
+        var quizId = question.Quiz.Id;
         var quiz = await _context.Quizzes
             .Include(q => q.Questions)
-            .FirstOrDefaultAsync(q => q.Id == question.Quiz.Id);
+            .FirstOrDefaultAsync(q => q.Id == quizId);
         // Si aucun quiz n'a été trouvé, renvoyer une erreur 404 Not Found
         if (question == null)
             return NotFound();

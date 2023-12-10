@@ -19,12 +19,13 @@ namespace prid_2324_a11.Controllers;
 [ApiController]
 
 public class SolutionController : ControllerBase{
-
   private readonly PridContext _context;
   private readonly IMapper _mapper;
   private readonly TokenHelper _tokenHelper;
+  private string[] columnNames;
+  private string[][] dataRows;
 
-  public SolutionController(PridContext context, IMapper mapper) {
+    public SolutionController(PridContext context, IMapper mapper) {
     _context = context;
     _mapper = mapper;
     _tokenHelper = new TokenHelper(context);
@@ -61,9 +62,15 @@ public class SolutionController : ControllerBase{
             .Include(q => q.Quiz)
             .Include(q => q.Solutions)
             .FirstOrDefaultAsync(q => q.Id == id);
+
+    // Si aucune question n'a été trouvée, renvoyer une erreur 404 Not Found
+    if (question == null)
+      return NotFound();
+
     var solution = await _context.Solutions
         .FirstOrDefaultAsync(s => s.QuestionId == question.Id);
-    // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
+
+    // Si aucune solution n'a été trouvée, renvoyer une erreur 404 Not Found
     if (solution == null)
       return NotFound();
     // Retourne le membre
@@ -84,6 +91,7 @@ public class SolutionController : ControllerBase{
         MySqlDataAdapter adapter = new MySqlDataAdapter(command);
         table = new DataTable();
         adapter.Fill(table);
+
         // Comparer les données avec les solutions associées à la question
         // récupérer les solutions associées à la question
         List<Solution> solutions = RetrieveSolutionsForQuestion(id);
@@ -112,12 +120,12 @@ public class SolutionController : ControllerBase{
 
   private bool CompareDataWithSolutions(DataTable data, List<Solution> solutions){
     // Parcourir les données et les solutions pour vérifier si elles correspondent
-    // Retourner true si une correspondance est trouvée, sinon retournez false
+    // Retourne true si une correspondance est trouvée, sinon retourne false
      // Parcourir les solutions
     foreach (var solution in solutions){
-        // Exécutez la solution SQL et obtenez les données
+        // Exécute la solution SQL et obtenir les données
         DataTable? solutionData = ExecuteSql(solution.Sql);
-        // Comparez les données de la solution avec les données de la requête SQL
+        // Compare les données de la solution avec les données de la requête SQL
         if (AreDataEqual(data, solutionData??new DataTable())){
             return true; // Correspondance trouvée, la requête SQL est valide
         }
@@ -126,10 +134,7 @@ public class SolutionController : ControllerBase{
   }
 
   private DataTable? ExecuteSql(string sql){
-    // Exécutez la requête SQL et retournez les données sous forme de DataTable
-    // Vous pouvez utiliser le code que vous avez déjà fourni pour exécuter la requête SQL
-    // et remplir un DataTable
-    // Assurez-vous de gérer les erreurs potentielles ici
+    // Exécute la requête SQL et retourne les données sous forme de DataTable
     try{
         string connectionString = "server=localhost;database=fournisseurs;uid=root;password=root";
         using MySqlConnection connection = new MySqlConnection(connectionString);
@@ -139,22 +144,15 @@ public class SolutionController : ControllerBase{
         MySqlDataAdapter adapter = new MySqlDataAdapter(command);
         table = new DataTable();
         adapter.Fill(table);
+        Console.WriteLine("---> table: " + table);
         return table;
     }catch (Exception){
-        // Gérez les erreurs d'exécution de la requête SQL ici
-        // Vous pouvez choisir de renvoyer null ou de lever une exception personnalisée
         return null;
     }
   }
 
   private bool AreDataEqual(DataTable data1, DataTable data2){
-    // Comparez les deux DataTable pour vérifier s'ils sont égaux
-    // Vous pouvez personnaliser cette méthode en fonction de vos besoins
-    // Par exemple, vérifiez si les données dans data1 sont identiques à celles dans data2
-    // en parcourant les lignes et les colonnes de chaque DataTable
-    // Si les données sont identiques, retournez true ; sinon, retournez false
-
-    // Exemple de comparaison simple (compare le contenu des DataTable)
+    // Compare les deux DataTable pour vérifier s'ils sont égaux
     if (data1.Rows.Count != data2.Rows.Count || data1.Columns.Count != data2.Columns.Count){
         return false;
     }
@@ -167,5 +165,63 @@ public class SolutionController : ControllerBase{
         }
     }
     return true;
+  }
+
+  // Récupère les noms des colonnes d'un DataTable
+  [AllowAnonymous]
+  [HttpGet("{sql}/columns")]
+  public ActionResult<string[]> GetColumnNames(string sql){
+    string connectionString = "server=localhost;database=fournisseurs;uid=root;password=root";
+    using MySqlConnection connection = new MySqlConnection(connectionString);
+    DataTable table;
+    connection.Open();
+    MySqlCommand command = new MySqlCommand("SET sql_mode = 'STRICT_ALL_TABLES'; " + sql, connection);
+    MySqlDataAdapter adapter = new MySqlDataAdapter(command);
+    table = new DataTable();
+    adapter.Fill(table);
+    Console.WriteLine("---> table: " + table);
+    columnNames = new string[table.Columns.Count];
+    for (int i = 0; i < table.Columns.Count; i++){
+        columnNames[i] = table.Columns[i].ColumnName;
+        Console.WriteLine("---> columns Names: " + columnNames[i]);
+    }
+    return columnNames;
+  }
+
+  // Récupère les données d'un DataTable
+  [AllowAnonymous]
+  [HttpGet("{sql}/rows")]
+  public ActionResult<string[][]> GetDataRows(string sql){
+    string connectionString = "server=localhost;database=fournisseurs;uid=root;password=root";
+    using MySqlConnection connection = new MySqlConnection(connectionString);
+    DataTable table;
+    connection.Open();
+    MySqlCommand command = new MySqlCommand("SET sql_mode = 'STRICT_ALL_TABLES'; " + sql, connection);
+    MySqlDataAdapter adapter = new MySqlDataAdapter(command);
+    table = new DataTable();
+    adapter.Fill(table);
+    dataRows = new string[table.Rows.Count][];
+    for (int i = 0; i < table.Rows.Count; i++){
+        dataRows[i] = new string[table.Columns.Count];
+        for (int j = 0; j < table.Columns.Count; j++){
+            object value = table.Rows[i][j];
+            string str;
+            if (value == null)
+                str = "NULL";
+            else {
+                if (value is DateTime d) {
+                    if (d.TimeOfDay == TimeSpan.Zero)
+                        str = d.ToString("yyyy-MM-dd");
+                    else
+                        str = d.ToString("yyyy-MM-dd hh:mm:ss");
+                } else
+                    str = value?.ToString() ?? "";
+            }
+            dataRows[i][j] = str;
+            Console.WriteLine("---> dataRows: " + dataRows[i][j]);
+        }
+    }
+    Console.WriteLine("---> dataRows COUNT : " + dataRows.Count());
+    return dataRows;
   }
 }

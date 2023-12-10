@@ -14,3 +14,35 @@
   color: red;
 }
 
+/* Style pour le tableau */
+table {
+  border-collapse: collapse;
+  width: 50%;
+  border: 1px solid #ddd;
+}
+
+/* Style pour l'en-tête du tableau */
+thead {
+  background-color: #f2f2f2; /* Fond gris clair */
+}
+
+/* Style pour les cellules de l'en-tête */
+th {
+  border: 1px solid #ddd;;
+  padding: 8px;
+  text-align: center;
+}
+
+/* Style pour les lignes du tableau */
+tr {
+  border: 2px solid #ddd;
+}
+
+/* Style pour les cellules du tableau */
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+

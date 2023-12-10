@@ -31,19 +31,23 @@ export class QuestionComponent implements OnInit{
   questions: Question[] = [];
   quiz: Quiz | null = null;
   solutions: Solution[] = [];
+  solution: Solution | null | undefined;
   showSolutions: boolean = false;
   showAnswers: boolean = false;
   currentQuestionId: number | null = null;
   currentQuestionIndex: number = 0;
   isSolutionCorrect: boolean | null = null;
   private _isTest?: boolean;
-  query = "SELECT * FROM s";
+  query = "";
   now = new Date();
   heure = this.now.toLocaleTimeString();
   date = this.now.toLocaleDateString();
   horodatage = `${this.date} ${this.heure}`;
   answerMessage : string ="";
   res : boolean = false;
+  showAnswerTable: boolean = false;
+  columnNames: string[] = []; // Initialisation noms de colonnes
+  dataRows: string[][] = []; // Initialisation des lignes de données
 
   constructor(
     private route: ActivatedRoute,
@@ -60,6 +64,7 @@ export class QuestionComponent implements OnInit{
         this.currentQuestionId = questionId;
         this.service.getById(questionId).subscribe(question => {
           this.question = question;
+
           this.questionInit(this.question); // Obtenez l'ID du quiz correspondant
           console.log('!!$!$!$!$!$$!  Question:', this.question);
         });
@@ -80,6 +85,10 @@ export class QuestionComponent implements OnInit{
           console.log('---->  Questions:', this.questions);
           this.solutionService.getByQuestionId(question?.id ?? 0).subscribe(solutions => {
             this.solutions = solutions;
+            this.solution = this.solutions.find(s => s.questionId === this.currentQuestionId );
+            console.log('$$---->  currentQuestionId:', this.currentQuestionId );
+            console.log('***---->  Solution:', this.solution);
+            this.query = this.solutions[0].sql ?? '';
             this.questions[this.currentQuestionIndex].solutions = this.solutions;
             console.log('--->  Solutions:', this.solutions);
           });
@@ -88,6 +97,7 @@ export class QuestionComponent implements OnInit{
 
     next() {
       this.showAnswers = false;
+      this.showAnswerTable = false;
       // Vérifier si l'ID de la question actuelle est dans la liste des questions
       console.log('----> currentQuestionIndex:', this.currentQuestionIndex);
       const nextQuestionIndex = this.questions.findIndex(q => q.id === this.currentQuestionId) + 1;
@@ -105,6 +115,7 @@ export class QuestionComponent implements OnInit{
 
     previous() {
       this.showAnswers = false;
+      this.showAnswerTable = false;
       // Vérifier si l'ID de la question actuelle est dans la liste des questions
       console.log("----> currentQuestionId:",this.currentQuestionId )
       console.log('----> currentQuestionIndex:', this.currentQuestionIndex);
@@ -133,6 +144,7 @@ export class QuestionComponent implements OnInit{
       console.log('----> Solution:', this.solutions);
       this.showSolutions = !this.showSolutions;
       this.showAnswers = false;
+      this.showAnswerTable = false;
     }
 
     clear() {
@@ -140,24 +152,33 @@ export class QuestionComponent implements OnInit{
       this.answerMessage = '';
       this.horodatage = '';
       this.showSolutions = false;
+      this.showAnswerTable = false;
+    }
+    send(){
+      this.sendAnswer();
+      //this.showTable();
     }
 
-    send() {
+    sendAnswer() {
       this.showAnswer();
+      //this.showTable();
       this.showSolutions = false;
       this.solutionService.sendSolution(this.question?.id ?? 0, this.query).subscribe(res => {
         console.log('----> *2* ID:', this.question?.id);
         console.log('----> *2* Query:', this.query);
         console.log('----> ** Résultat:', res);
+        //this.query = this.query;
         this.res = res;
         if(this.query === ""){
           this.answerMessage = `Vous n'avez pas entré de requête SQL!`;
         }else{
           if ( res === true) {
-            console.log('----> ** Message texte:', res);
+            console.log('----> ** Message texte:', res.valueOf());
             this.answerMessage = `Votre requête a retourné une réponse correcte!\n
             Néanmoins, comparez votre solution avec celle(s) ci-dessous pour voir si vous n'avez pas eu un peu de chance... ;)`;
             this.showSolutions = true;
+            this.showTable();
+            //this.showAnswerTable = true;
           }else{
             console.log('----> ** Message texte:', res);
             this.answerMessage = `Votre requête n'a pas retourné de réponse correcte!`;
@@ -171,6 +192,15 @@ export class QuestionComponent implements OnInit{
       this.showAnswers = !this.showAnswers;
     }
 
+    showTable(){
+      this.showAnswerTable = !this.showAnswerTable;
+      this.solutionService.getColumnNames(this.query).subscribe(columnNames => {
+        this.columnNames = columnNames;
+      });
 
+      this.solutionService.getDataRows(this.query).subscribe(dataRows => {
+        this.dataRows = dataRows;
+      });
+    }
 }
 

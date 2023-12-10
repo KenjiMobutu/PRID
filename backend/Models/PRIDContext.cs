@@ -99,12 +99,12 @@ public class PridContext : DbContext{
         modelBuilder.Entity<Solution>().HasData(
             new Solution { Id = 1, QuestionId = 1, Order = 1, Sql = "SELECT * FROM s" },
             new Solution { Id = 2, QuestionId = 2, Order = 1, Sql = "SELECT sname NOM, city VILLE FROM s" },
-            new Solution { Id = 3, QuestionId = 3, Order = 1, Sql = "SELECT sname\nFROM s\nWHERE city='London' OR city='Paris'" },
-            new Solution { Id = 4, QuestionId = 3, Order = 2, Sql = "SELECT sname\nFROM s\nWHERE city IN ('London', 'Paris')" },
-            new Solution { Id = 5, QuestionId = 4, Order = 1, Sql = "SELECT sname\nFROM s\nWHERE status < 25 AND city='Paris'" },
-            new Solution { Id = 6, QuestionId = 5, Order = 1, Sql = "SELECT sname\nFROM s\nWHERE status NOT BETWEEN 15 AND 25" },
-            new Solution { Id = 7, QuestionId = 5, Order = 2, Sql = "SELECT sname\nFROM s\nWHERE status < 15 OR status >25" },
-            new Solution { Id = 8, QuestionId = 5, Order = 3, Sql = "SELECT sname\nFROM s\nWHERE NOT(status >= 15 AND status <= 25)\n-- si on applique de Morgan, on retrouve la solution 2" },
+            new Solution { Id = 3, QuestionId = 3, Order = 1, Sql = "SELECT sname\n FROM s \n WHERE city='London' OR city='Paris'" },
+            new Solution { Id = 4, QuestionId = 3, Order = 2, Sql = "SELECT sname\n FROM s \n WHERE city IN ('London', 'Paris')" },
+            new Solution { Id = 5, QuestionId = 4, Order = 1, Sql = "SELECT sname\n FROM s \n WHERE status < 25 AND city='Paris'" },
+            new Solution { Id = 6, QuestionId = 5, Order = 1, Sql = "SELECT sname\n FROM s \n WHERE status NOT BETWEEN 15 AND 25" },
+            new Solution { Id = 7, QuestionId = 5, Order = 2, Sql = "SELECT sname\n FROM s \n WHERE status < 15 OR status >25" },
+            new Solution { Id = 8, QuestionId = 5, Order = 3, Sql = "SELECT sname\n FROM s \nWHERE NOT(status >= 15 AND status <= 25)\n -- si on applique de Morgan, on retrouve la solution 2" },
             new Solution { Id = 9, QuestionId = 6, Order = 1, Sql = "SELECT DISTINCT PNAME FROM p WHERE  Color = 'RED' OR Color = 'BLUE'" },
             new Solution { Id = 10, QuestionId = 6, Order = 2, Sql = "SELECT DISTINCT PNAME FROM p WHERE Color IN ('RED', 'BLUE')" }
         );
@@ -135,12 +135,12 @@ public class PridContext : DbContext{
         );
 
         modelBuilder.Entity<Solution>().HasData(
-            new Solution { Id = 11, QuestionId = 7, Order = 1, Sql = "SELECT l.ID_S, l.ID_P, l.ID_J\nFROM SPJ l, P p\nWHERE l.ID_P = p.ID_P AND p.Color = 'Red'" },
-            new Solution { Id = 12, QuestionId = 7, Order = 2, Sql = "-- sans renommage\nSELECT ID_S, SPJ.ID_P, ID_J\nFROM SPJ, P\nWHERE SPJ.ID_P = P.ID_P AND P.Color = 'Red'" },
-            new Solution { Id = 13, QuestionId = 8, Order = 1, Sql = "SELECT DISTINCT s.SNAME\nFROM S s, SPJ l\nWHERE s.ID_S = l.ID_S AND l.ID_P = 'P4'" },
-            new Solution { Id = 14, QuestionId = 9, Order = 1, Sql = "SELECT DISTINCT j.JNAME\nFROM J j, SPJ l\nWHERE j.ID_J = l.ID_J AND l.ID_P = 'P3'" },
-            new Solution { Id = 15, QuestionId = 10, Order = 1, Sql = "SELECT DISTINCT j.JNAME\nFROM J j, SPJ l\nWHERE j.ID_J = l.ID_J AND l.ID_S = 'S1'" },
-            new Solution { Id = 16, QuestionId = 11, Order = 1, Sql = "SELECT DISTINCT S.SNAME\nFROM S, SPJ\nWHERE S.ID_S = SPJ.ID_S AND QTY BETWEEN 150 AND 250" },
+            new Solution { Id = 11, QuestionId = 7, Order = 1, Sql = "SELECT l.ID_S, l.ID_P, l.ID_J \nFROM SPJ l, P p \nWHERE l.ID_P = p.ID_P AND p.Color = 'Red'" },
+            new Solution { Id = 12, QuestionId = 7, Order = 2, Sql = "-- sans renommage\n SELECT ID_S, SPJ.ID_P, ID_J \nFROM SPJ, P \nWHERE SPJ.ID_P = P.ID_P AND P.Color = 'Red'" },
+            new Solution { Id = 13, QuestionId = 8, Order = 1, Sql = "SELECT DISTINCT s.SNAME \nFROM S s, SPJ l \n WHERE s.ID_S = l.ID_S AND l.ID_P = 'P4'" },
+            new Solution { Id = 14, QuestionId = 9, Order = 1, Sql = "SELECT DISTINCT j.JNAME\n FROM J j, SPJ l \nWHERE j.ID_J = l.ID_J AND l.ID_P = 'P3'" },
+            new Solution { Id = 15, QuestionId = 10, Order = 1, Sql = "SELECT DISTINCT j.JNAME\n FROM J j, SPJ l \nWHERE j.ID_J = l.ID_J AND l.ID_S = 'S1'" },
+            new Solution { Id = 16, QuestionId = 11, Order = 1, Sql = "SELECT DISTINCT S.SNAME\n FROM S, SPJ \nWHERE S.ID_S = SPJ.ID_S AND QTY BETWEEN 150 AND 250" },
             new Solution { Id = 17, QuestionId = 12, Order = 1, Sql = @" -- On veut :
             -- NOM    PIECE    PROJET    QUANTITE
             -- Smith  Nut     Sorter    200
@@ -189,7 +189,7 @@ public class PridContext : DbContext{
             new Question { Id = 20, QuizId = 3, Order = 1, Body = @"Affichez le nom des personnes qui ont plus de trente ans" }
         );
         modelBuilder.Entity<Solution>().HasData(
-            new Solution { Id = 22, QuestionId = 20, Order = 1, Sql = "SELECT DISTINCT p.Nom\nFROM Personne p\nWHERE p.Age >= 30;" }
+            new Solution { Id = 22, QuestionId = 20, Order = 1, Sql = "SELECT DISTINCT p.Nom \nFROM Personne p \nWHERE p.Age >= 30;" }
         );
 
         /* ----------  Questions/Quiz4   -------- */
@@ -216,8 +216,8 @@ public class PridContext : DbContext{
             new Question { Id = 34, QuizId = 6, Order = 2, Body = @"Affichez la date d'expédition des messages envoyés par Paul" }
         );
         modelBuilder.Entity<Solution>().HasData(
-            new Solution { Id = 26, QuestionId = 33, Order = 1, Sql = "SELECT DISTINCT p.Nom\nFROM Personne p\nWHERE p.Age >= 30;" },
-            new Solution { Id = 27, QuestionId = 34, Order = 1, Sql = "SELECT DISTINCT m.Date_Expedition \nFROM message m\n\tJOIN personne p ON p.SSN = m.Expediteur\nWHERE p.Nom = 'Paul';" }
+            new Solution { Id = 26, QuestionId = 33, Order = 1, Sql = "SELECT DISTINCT p.Nom \nFROM Personne p \nWHERE p.Age >= 30;" },
+            new Solution { Id = 27, QuestionId = 34, Order = 1, Sql = "SELECT DISTINCT m.Date_Expedition \nFROM message m \n\tJOIN personne p ON p.SSN = m.Expediteur \nWHERE p.Nom = 'Paul';" }
         );
 
 
