@@ -1,12 +1,21 @@
-<button mat-icon-button tabindex="-1" (click)="previous()">
-  <mat-icon>arrow_back_ios</mat-icon>
-</button>
-<button mat-icon-button tabindex="-1" (click)="next()">
-  <mat-icon>arrow_forward_ios</mat-icon>
-</button>
+<div class="button-container">
+  <button mat-icon-button tabindex="-1" (click)="previous()" class="tip" >
+    <mat-icon>arrow_back_ios</mat-icon>
+    <span class="tooltiptext">Previous</span>
+  </button>
+  <button mat-icon-button tabindex="-1" (click)="next()" class="tip">
+    <mat-icon>arrow_forward_ios</mat-icon>
+    <span class="tooltiptext">Next</span>
+  </button>
 
-<div *ngIf="quiz">
-  <p>{{ quiz.name }}</p>
+  <div *ngIf="quiz" class="quiz-name">
+    <p>{{ quiz.name }}</p>
+  </div>
+
+  <button mat-icon-button tabindex="-1" (click)="close()" class="tip">
+    <mat-icon>close</mat-icon>
+    <span class="tooltiptext">Close</span>
+  </button>
 </div>
 
 <div *ngIf="question">

@@ -123,6 +123,10 @@ export class QuestionComponent implements OnInit{
       }
     }
 
+    close() {
+      console.log('close');
+    }
+
     get isTest(): boolean | undefined {
       return this._isTest;
     }
