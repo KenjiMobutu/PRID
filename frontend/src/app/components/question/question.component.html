@@ -33,6 +33,11 @@
     <p [innerText]="answerMessage"></p>
   </div>
 </div>
+<br>
+<div *ngIf="showRowsCount && !isTest" >
+  <p>La réponse compte {{rowsCount}} lignes</p>
+</div>
+
 
 <div *ngIf="showAnswerTable && !isTest">
   <table>

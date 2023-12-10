@@ -34,6 +34,8 @@ export class QuestionComponent implements OnInit{
   solution: Solution | null | undefined;
   showSolutions: boolean = false;
   showAnswers: boolean = false;
+  showRowsCount: boolean = false;
+  rowsCount: number = 0;
   currentQuestionId: number | null = null;
   currentQuestionIndex: number = 0;
   isSolutionCorrect: boolean | null = null;
@@ -98,6 +100,7 @@ export class QuestionComponent implements OnInit{
     next() {
       this.showAnswers = false;
       this.showAnswerTable = false;
+      this.showRowsCount = false;
       // Vérifier si l'ID de la question actuelle est dans la liste des questions
       console.log('----> currentQuestionIndex:', this.currentQuestionIndex);
       const nextQuestionIndex = this.questions.findIndex(q => q.id === this.currentQuestionId) + 1;
@@ -116,6 +119,7 @@ export class QuestionComponent implements OnInit{
     previous() {
       this.showAnswers = false;
       this.showAnswerTable = false;
+      this.showRowsCount = false;
       // Vérifier si l'ID de la question actuelle est dans la liste des questions
       console.log("----> currentQuestionId:",this.currentQuestionId )
       console.log('----> currentQuestionIndex:', this.currentQuestionIndex);
@@ -153,10 +157,12 @@ export class QuestionComponent implements OnInit{
       this.horodatage = '';
       this.showSolutions = false;
       this.showAnswerTable = false;
+      this.showRowsCount = false;
     }
     send(){
+      this.showSolutions = false;
       this.sendAnswer();
-      //this.showTable();
+
     }
 
     sendAnswer() {
@@ -173,12 +179,12 @@ export class QuestionComponent implements OnInit{
           this.answerMessage = `Vous n'avez pas entré de requête SQL!`;
         }else{
           if ( res === true) {
-            console.log('----> ** Message texte:', res.valueOf());
+            console.log('----> ** Message texte:', res);
             this.answerMessage = `Votre requête a retourné une réponse correcte!\n
             Néanmoins, comparez votre solution avec celle(s) ci-dessous pour voir si vous n'avez pas eu un peu de chance... ;)`;
             this.showSolutions = true;
             this.showTable();
-            //this.showAnswerTable = true;
+            this.showRowCount();
           }else{
             console.log('----> ** Message texte:', res);
             this.answerMessage = `Votre requête n'a pas retourné de réponse correcte!`;
@@ -200,6 +206,15 @@ export class QuestionComponent implements OnInit{
 
       this.solutionService.getDataRows(this.query).subscribe(dataRows => {
         this.dataRows = dataRows;
+      });
+    }
+
+    showRowCount(){
+      this.showRowsCount = !this.showRowsCount;
+      this.solutionService.getDataRows(this.query).subscribe(dataRows => {
+        this.dataRows = dataRows;
+        this.rowsCount = this.dataRows.length;
+        console.log('----> Nombre de lignes:', this.rowsCount);
       });
     }
 }

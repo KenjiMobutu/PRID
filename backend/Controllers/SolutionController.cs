@@ -22,13 +22,15 @@ public class SolutionController : ControllerBase{
   private readonly PridContext _context;
   private readonly IMapper _mapper;
   private readonly TokenHelper _tokenHelper;
-  private string[] columnNames;
-  private string[][] dataRows;
+  private string[]? columnNames;
+  private string[][]? dataRows;
 
     public SolutionController(PridContext context, IMapper mapper) {
     _context = context;
     _mapper = mapper;
     _tokenHelper = new TokenHelper(context);
+    columnNames = new string[0];
+    dataRows = new string[0][];
   }
 
   // GET: api/Solutions
