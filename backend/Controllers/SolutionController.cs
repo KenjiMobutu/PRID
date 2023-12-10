@@ -46,7 +46,7 @@ public class SolutionController : ControllerBase{
   [AllowAnonymous]
   [HttpGet("{id}")]
   public async Task<ActionResult<SolutionDTO>> GetOne(int id) {
-    // Récupère en BD le membre dont le pseudo est passé en paramètre dans l'url
+    // Récupère en BD la solution dont l'id est passé en paramètre dans l'url
     var solution = await _context.Solutions.FindAsync(id);
     // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
     if (solution == null)
@@ -59,7 +59,7 @@ public class SolutionController : ControllerBase{
   [AllowAnonymous]
   [HttpGet("{id}/solutions")]
   public async Task<ActionResult<IEnumerable<SolutionDTO>>> GetByQuestionId(int id) {
-    // Récupère en BD le membre dont le pseudo est passé en paramètre dans l'url
+    // Récupère en BD les solutions dont l'id de la question est passé en paramètre dans l'url
     var question = await _context.Questions
             .Include(q => q.Quiz)
             .Include(q => q.Solutions)
@@ -72,7 +72,7 @@ public class SolutionController : ControllerBase{
     var solution = await _context.Solutions
         .FirstOrDefaultAsync(s => s.QuestionId == question.Id);
 
-    // Si aucune solution n'a été trouvée, renvoyer une erreur 404 Not Found
+    // Si aucune solution n'a été trouvée, renvoi une erreur 404 Not Found
     if (solution == null)
       return NotFound();
     // Retourne le membre
@@ -81,8 +81,9 @@ public class SolutionController : ControllerBase{
 
     [AllowAnonymous]
     [HttpGet("{id}/{sql}")]
+    // Vérifie si la requête SQL est valide
     public ActionResult CheckSql(int id,string sql){
-      // Exécutez la requête SQL avec la chaîne sql
+      // Exécute la requête SQL avec la chaîne sql
         string connectionString = "server=localhost;database=fournisseurs;uid=root;password=root";
         using MySqlConnection connection = new MySqlConnection(connectionString);
         DataTable table;

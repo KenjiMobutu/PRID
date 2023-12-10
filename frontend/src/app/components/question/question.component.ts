@@ -1,23 +1,13 @@
-import { Component, OnInit, ViewChild,AfterViewInit, ElementRef, OnDestroy, Input } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
+import { Component, OnInit, ViewChild,Input } from '@angular/core';
 import { Quiz } from '../../models/quiz';
-import { MatDialog } from '@angular/material/dialog';
 import { QuizService } from 'src/app/services/quiz.service';
-import { StateService } from 'src/app/services/state.service';
-import { AuthenticationService } from 'src/app/services/authentication.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatTableState } from 'src/app/helpers/mattable.state';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
 import { Router, ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash-es';
 import { Question } from '../../models/quiz';
 import { QuestionService } from 'src/app/services/question.service';
-import { el, th, tr } from 'date-fns/locale';
 import { Solution } from 'src/app/models/solution';
 import { SolutionService } from 'src/app/services/solution.service';
 import { CodeEditorComponent } from '../code-editor/code-editor.component';
-
 @Component({
   selector: 'question',
   templateUrl: './question.component.html',
@@ -27,7 +17,7 @@ import { CodeEditorComponent } from '../code-editor/code-editor.component';
 export class QuestionComponent implements OnInit{
   @ViewChild('editor') editor!: CodeEditorComponent;
 
-  question: Question | null | undefined; // Initialiser avec une nouvelle question par défaut
+  question: Question | null | undefined;
   questions: Question[] = [];
   quiz: Quiz | null = null;
   solutions: Solution[] = [];
@@ -66,8 +56,7 @@ export class QuestionComponent implements OnInit{
         this.currentQuestionId = questionId;
         this.service.getById(questionId).subscribe(question => {
           this.question = question;
-
-          this.questionInit(this.question); // Obtenez l'ID du quiz correspondant
+          this.questionInit(this.question);
           console.log('!!$!$!$!$!$$!  Question:', this.question);
         });
       });
@@ -78,7 +67,7 @@ export class QuestionComponent implements OnInit{
     }
 
     questionInit(question: Question) {
-        const quizId = question?.quizId ?? 0; // Si question?.quizId est undefined, utilisez 0 à la place
+        const quizId = question?.quizId ?? 0;
         this.quizService.getOne(quizId).subscribe(quiz => {
           this.quiz = quiz;
           this._isTest = this.quiz?.isTest;
@@ -105,7 +94,6 @@ export class QuestionComponent implements OnInit{
       console.log('----> currentQuestionIndex:', this.currentQuestionIndex);
       const nextQuestionIndex = this.questions.findIndex(q => q.id === this.currentQuestionId) + 1;
       console.log('----> nextQuestionIndex:', nextQuestionIndex);
-
       if (nextQuestionIndex < this.questions.length) {
         this.showSolutions = false;
         this.currentQuestionIndex = nextQuestionIndex;
@@ -123,7 +111,6 @@ export class QuestionComponent implements OnInit{
       // Vérifier si l'ID de la question actuelle est dans la liste des questions
       console.log("----> currentQuestionId:",this.currentQuestionId )
       console.log('----> currentQuestionIndex:', this.currentQuestionIndex);
-
       const previousQuestionIndex = this.questions.findIndex(q => q.id === this.currentQuestionId) - 1;
       console.log('----> previousQuestionIndex:', previousQuestionIndex);
       if (previousQuestionIndex >= 0) {
@@ -159,21 +146,19 @@ export class QuestionComponent implements OnInit{
       this.showAnswerTable = false;
       this.showRowsCount = false;
     }
+
     send(){
       this.showSolutions = false;
       this.sendAnswer();
-
     }
 
     sendAnswer() {
       this.showAnswer();
-      //this.showTable();
       this.showSolutions = false;
       this.solutionService.sendSolution(this.question?.id ?? 0, this.query).subscribe(res => {
         console.log('----> *2* ID:', this.question?.id);
         console.log('----> *2* Query:', this.query);
         console.log('----> ** Résultat:', res);
-        //this.query = this.query;
         this.res = res;
         if(this.query === ""){
           this.answerMessage = `Vous n'avez pas entré de requête SQL!`;
@@ -200,15 +185,17 @@ export class QuestionComponent implements OnInit{
 
     showTable(){
       this.showAnswerTable = !this.showAnswerTable;
+      //récupère les noms de colonnes
       this.solutionService.getColumnNames(this.query).subscribe(columnNames => {
         this.columnNames = columnNames;
       });
-
+      //récupère les lignes de données
       this.solutionService.getDataRows(this.query).subscribe(dataRows => {
         this.dataRows = dataRows;
       });
     }
 
+    //affiche le nombre de lignes
     showRowCount(){
       this.showRowsCount = !this.showRowsCount;
       this.solutionService.getDataRows(this.query).subscribe(dataRows => {
