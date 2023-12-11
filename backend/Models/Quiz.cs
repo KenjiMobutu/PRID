@@ -29,7 +29,6 @@ public class Quiz{
             DateTime now = DateTime.Now;
             if (IsTest){
                 if (now > Finish){
-                    Console.WriteLine("QuizStatus.Cloture");
                     return QuizStatus.Cloture;
                 }
                 else{

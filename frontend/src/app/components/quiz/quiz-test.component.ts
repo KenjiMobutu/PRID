@@ -17,7 +17,8 @@ import { th } from 'date-fns/locale';
 
 @Component({
   selector: 'quiz-test',
-  templateUrl: './quiz-test.component.html'
+  templateUrl: './quiz-test.component.html',
+  styleUrls: ['./quiz-test.component.css']
 })
 
 export class QuizTestComponent implements OnInit, AfterViewInit {
@@ -90,7 +91,13 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
   paginatorInit(){
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    
+    this.dataSource.filterPredicate = (data: Quiz, filter: string) => {
+      const str = data.name + ' ' + data.database?.name + ' ' + data.statusAsString + ' ';
+      console.log('---> Database', data.database);
+      console.log('---> str', str);
+      return str.toLowerCase().includes(filter.toLowerCase());
+    };
+
     this.state.bind(this.dataSource);
     // récupère les données
     this.refresh();

@@ -46,6 +46,7 @@ export class MemberListComponent implements AfterViewInit, OnDestroy {
         // définit le predicat qui doit être utilisé pour filtrer les membres
         this.dataSource.filterPredicate = (data: User, filter: string) => {
             const str = data.pseudo + ' ' + data.firstName + ' ' + data.lastName +  (data.birthDate ? format(data.birthDate!, 'dd/MM/yyyy') : '') + ' ' + data.roleAsString;
+            console.log('---> str', str);
             return str.toLowerCase().includes(filter);
         };
         // établit les liens entre le data source et l'état de telle sorte que chaque fois que

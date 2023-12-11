@@ -32,13 +32,13 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef> Actions </th>
         <td mat-cell *matCellDef="let row">
-          <button mat-icon-button tabindex="-1" (click)="edit(row)">
+          <button mat-icon-button tabindex="-1" (click)="edit(row)" class="tip" matTooltip="Poursuivre">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button tabindex="-1" >
+          <button mat-icon-button tabindex="-1" class="tip" matTooltip="Revoir">
             <mat-icon>class</mat-icon>
           </button>
-          <button mat-icon-button tabindex="-1">
+          <button mat-icon-button tabindex="-1" class="tip" matTooltip="Commencer">
             <mat-icon>add_box</mat-icon>
           </button>
         </td>
@@ -49,9 +49,3 @@
   <mat-paginator [pageSize]="5" [pageSizeOptions]="[1, 3, 5, 10, 25, 100]"></mat-paginator>
 </div>
 <br>
-<mat-icon>edit</mat-icon>
-<p>Permet d'ouvrir une tentative existante en modification.</p>
-<mat-icon>class</mat-icon>
-<p>Permet de visualiser une tentative existante en lecture seule.</p>
-<mat-icon>add_box</mat-icon>
-<p>Permet de créer une nouvelle tentative.</p>

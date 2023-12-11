@@ -27,12 +27,14 @@ export class NavMenuComponent {
     get currentUser() {
         return this.authenticationService.currentUser;
     }
-
     get isAdmin() {
         return this.currentUser && this.currentUser.role === Role.Admin;
     }
     get isStudent() {
         return this.currentUser && this.currentUser.role === Role.Student;
+    }
+    get isTeacher() {
+        return this.currentUser && this.currentUser.role === Role.Teacher;
     }
 
     logout() {

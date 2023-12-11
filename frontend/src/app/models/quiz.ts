@@ -1,10 +1,7 @@
 import 'reflect-metadata';
 import { Solution } from './solution';
-export class DataBase {
-  databaseId: number | undefined;
-  name?: string;
-  description?: string;
-}
+import { DataBase } from './database';
+
 
 export class Question {
     id: number | undefined;
@@ -40,7 +37,7 @@ export class Quiz {
     isTest: boolean = false;
     start?: Date;
     finish?: Date;
-    dataBase?: string;
+    database!: DataBase;
     evaluation?: string;
     status: QuizStatus = QuizStatus.PasCommence;
     questions: Question[] = [];
@@ -50,6 +47,6 @@ export class Quiz {
     }
 
     get display(): string {
-      return `${this.name} - ${this.dataBase} - ${this.start} - ${this.finish} - ${this.evaluation}- ${this.status}`;
+      return `${this.name} - ${this.database} - ${this.start} - ${this.finish} - ${this.evaluation}- ${this.status}`;
   }
 }

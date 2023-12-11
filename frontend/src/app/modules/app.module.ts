@@ -29,6 +29,8 @@ import { QuizTestComponent } from '../components/quiz/quiz-test.component';
 import { QuestionComponent } from '../components/question/question.component';
 import {TestCodeEditorComponent} from '../components/code-editor/test-code-editor.component';
 import {CodeEditorComponent} from '../components/code-editor/code-editor.component';
+import { TeacherComponent } from '../components/teacher/teacher.component';
+import { QuizEditionComponent } from '../components/quiz-edition/quiz-edition.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -47,7 +49,9 @@ import {CodeEditorComponent} from '../components/code-editor/code-editor.compone
     QuizTestComponent,
     QuestionComponent,
     TestCodeEditorComponent,
-    CodeEditorComponent
+    CodeEditorComponent,
+    TeacherComponent,
+    QuizEditionComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

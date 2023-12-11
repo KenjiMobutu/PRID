@@ -108,7 +108,7 @@ export class LoginComponent implements OnInit {
                             console.log('Redirecting to /members');
                             this.router.navigate(['/members']);
                         } else if (user.role === 1) {
-                            this.router.navigate(['/quiz']);
+                            this.router.navigate(['/teacher']);
                         } else if (user.role === 0) {
                             this.router.navigate(['/quiz']);
                         }

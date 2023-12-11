@@ -2,8 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace prid_2324_a11.Models;
 
-
-
 public class QuizDTO{
     public int Id { get; set; }
     public string Name { get; set; } = "";

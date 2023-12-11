@@ -12,8 +12,11 @@
                     <li class="nav-item"  [routerLinkActive]="['link-active']" *ngIf="currentUser && isStudent">
                         <a class="nav-link text-dark" [routerLink]="['/quiz']">Liste des quiz</a>
                     </li>
-                    <li class="nav-item" [routerLinkActive]="['link-active']">
+                    <li class="nav-item" [routerLinkActive]="['link-active']" *ngIf="currentUser && isTeacher">
                         <a class="nav-link text-dark" [routerLink]="['/test-code-editor']">Code editor</a>
+                    </li>
+                    <li class="nav-item" [routerLinkActive]="['link-active']" *ngIf="currentUser && isTeacher">
+                        <a class="nav-link text-dark" [routerLink]="['/teacher']">Gestion des quiz</a>
                     </li>
                     <li class="nav-item" [routerLinkActive]='["link-active"]' *ngIf="currentUser && isAdmin">
                         <a class="nav-link text-dark" [routerLink]='["/members"]'>Members</a>

@@ -13,6 +13,8 @@ import { SignUpComponent } from '../components/signup/signup.component';
 import { QuizesContainerComponent } from '../components/quiz/group-container.component';
 import { QuestionComponent } from '../components/question/question.component';
 import { TestCodeEditorComponent } from '../components/code-editor/test-code-editor.component';
+import { TeacherComponent } from '../components/teacher/teacher.component';
+import { QuizEditionComponent } from '../components/quiz-edition/quiz-edition.component';
 const appRoutes: Routes = [
     { path: '', component: HomeComponent, pathMatch: 'full' },
     { path: 'counter', component: CounterComponent },
@@ -28,7 +30,10 @@ const appRoutes: Routes = [
     { path: 'restricted', component: RestrictedComponent },
     { path: 'unknown', component: UnknownComponent},
     { path: 'test-code-editor', component: TestCodeEditorComponent},
-    
+    { path: 'teacher', component: TeacherComponent},
+    { path: 'quiz-edition/:id', component: QuizEditionComponent},
+    { path: '**', redirectTo: 'unknown' }
+
 
 ];
 
