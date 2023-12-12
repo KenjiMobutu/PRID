@@ -1,0 +1,49 @@
+<form mat-dialog-content id="frm" class="form" [formGroup]="frm" novalidate>
+  <div class="form">
+      <mat-form-field>
+          <mat-label>Nom</mat-label>
+          <input matInput [formControl]="ctlName" required>
+          <mat-error class="field-error" *ngIf="ctlName.hasError('required')">Required</mat-error>
+          <mat-error class="field-error" *ngIf="ctlName.hasError('minlength')">Minimum length is
+              {{ctlName.errors?.minlength?.requiredLength}}</mat-error>
+          <mat-error class="field-error" *ngIf="ctlName.hasError('nameUsed')">Pseudo already in use
+          </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+          <mat-label>Description</mat-label>
+          <input matInput [formControl]="ctlDescription">
+      </mat-form-field>
+
+        <label>Type de quiz: </label>
+        <div>
+          <input type="radio" id="trainning" name="quizType" value="false" [formControl]="ctlRadioTrainning" checked />
+          <label for="trainning">Trainning</label>
+        </div>
+        <div>
+          <input type="radio" id="test" name="quizType" value="true" [formControl]="ctlRadioTest" />
+          <label for="test">Test</label>
+        </div>
+
+      <mat-form-field>
+        <mat-label>Base de données</mat-label>
+        <mat-select [formControl]="ctlDataBase" required>
+            <mat-option [value]="1">fournisseurs</mat-option>
+            <mat-option [value]="0">facebook</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div class="publishedToggle">
+        <label class="switch">
+        <input type="checkbox">
+        <span class="slider round"></span>
+        </label>publié
+      </div>
+      <button>
+        <mat-icon>save</mat-icon>
+      </button>
+      <button>
+        <mat-icon>delete_forever</mat-icon>
+      </button>
+  </div>
+  <br>
+  <h2>Questions</h2>
+</form>

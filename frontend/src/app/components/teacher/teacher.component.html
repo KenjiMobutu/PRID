@@ -16,19 +16,19 @@
             <td mat-cell *matCellDef="let row"> {{row.database?.name }} </td>
           </ng-container>
           <ng-container matColumnDef="type" >
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
-            <td mat-cell *matCellDef="let row"> {{row.database?.name }} </td>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Type de quiz </th>
+            <td mat-cell *matCellDef="let row"> {{row.isTest ? 'Test' : 'Trainning' }} </td>
           </ng-container>
           <ng-container matColumnDef="startDate" >
             <th mat-header-cell *matHeaderCellDef mat-sort-header> date début </th>
             <td mat-cell *matCellDef="let row">
-              <ng-container> {{row.start | date:'dd/MM/yyyy' }} </ng-container>
+              <ng-container> {{ row.isTest ? (row.start | date:'dd/MM/yyyy') : 'N/A' }} </ng-container>
             </td>
           </ng-container>
           <ng-container matColumnDef="endDate">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> date fin </th>
             <td mat-cell *matCellDef="let row">
-              <ng-container> {{row.finish | date:'dd/MM/yyyy' }} </ng-container>
+              <ng-container> {{ row.isTest ? (row.finish | date:'dd/MM/yyyy') : 'N/A' }} </ng-container>
             </td>
           </ng-container>
           <ng-container matColumnDef="statut">

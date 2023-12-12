@@ -24,6 +24,7 @@ export class TeacherComponent implements AfterViewInit {
   dataSource: MatTableDataSource<Quiz> = new MatTableDataSource();
   filter: string = '';
   state: MatTableState;
+  private _isTest?: boolean;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -33,7 +34,8 @@ export class TeacherComponent implements AfterViewInit {
     private stateService: StateService,
     private authService: AuthenticationService,
     public dialog: MatDialog,
-    public snackBar: MatSnackBar
+    public snackBar: MatSnackBar,
+    private router: Router,
   ) {
     this.state = this.stateService.quizTestListState;
   }
@@ -69,7 +71,12 @@ export class TeacherComponent implements AfterViewInit {
 
   // appelée quand on clique sur le bouton "edit"
   edit(quiz: Quiz) {
-
+    const quizId = quiz.id ?? 0;
+    this.quizService.getOne(quizId).subscribe(quiz => {
+      if (quiz) {
+        this.router.navigate(['/quiz-edition/', quizId]);
+      }
+    });
   }
 
   refresh() {
@@ -81,4 +88,6 @@ export class TeacherComponent implements AfterViewInit {
       this.filter = this.state.filter;
     });
   }
+
+
 }
