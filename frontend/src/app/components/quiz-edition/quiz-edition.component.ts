@@ -68,10 +68,11 @@ export class QuizEditionComponent implements OnInit{
         this.ctlDescription.setValue(quiz?.description);
         this.ctlRadioGroup.setValue(quiz?.isTest ? 'test' : 'trainning');
         this.ctlPublished.setValue(quiz?.isPublished);
-        this.ctlDataBase.setValue(quiz?.database);
+        this.ctlDataBase.setValue(quiz?.database.name);
 
         console.log('--> Quiz NAME:', quiz?.name);
         console.log('--> isTest', this.isTest);
+        console.log('--> Database:', quiz?.database.name);
       });
     });
   }
