@@ -1,5 +1,5 @@
 import { Routes, RouterModule } from '@angular/router';
-
+import { NgModule } from '@angular/core';
 import { HomeComponent } from '../components/home/home.component';
 import { CounterComponent } from '../components/counter/counter.component';
 import { FetchDataComponent } from '../components/fetch-data/fetch-data.component';
@@ -25,16 +25,19 @@ const appRoutes: Routes = [
     },
     { path: 'login',component: LoginComponent},
     { path: 'signup',component: SignUpComponent},
-    { path: 'quiz',component: QuizesContainerComponent},
+    { path: 'quiz',component: QuizesContainerComponent,canActivate: [AuthGuard],
+    data: { roles: [Role.Student] }},
     { path: 'question/:id',component: QuestionComponent},
     { path: 'restricted', component: RestrictedComponent },
     { path: 'unknown', component: UnknownComponent},
     { path: 'test-code-editor', component: TestCodeEditorComponent},
-    { path: 'teacher', component: TeacherComponent},
+    { path: 'teacher', component: TeacherComponent,canActivate: [AuthGuard],
+            data: { roles: [Role.Teacher] }},
     { path: 'quiz-edition/:id', component: QuizEditionComponent},
     { path: '**', redirectTo: 'unknown' }
 
 
 ];
+
 
 export const AppRoutes = RouterModule.forRoot(appRoutes);

@@ -27,12 +27,14 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 })
 
 export class QuizEditionComponent implements OnInit{
+  public isTest?: boolean;
+
   public frm!: FormGroup;
   public ctlName!: FormControl;
   public ctlDescription!: FormControl;
-  public ctlRadioTrainning!: FormControl;
-  public ctlRadioTest!: FormControl;
   public ctlDataBase!: FormControl;
+  public ctlRadioGroup!: FormControl;
+  public ctlPublished!: FormControl;
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
@@ -44,15 +46,15 @@ export class QuizEditionComponent implements OnInit{
       this.forbiddenValue('abc')
     ]);
     this.ctlDescription = this.fb.control('', []);
-    this.ctlRadioTrainning = this.fb.control('', []);
-    this.ctlRadioTest = this.fb.control('', []);
+    this.ctlRadioGroup = this.fb.control('', []);
     this.ctlDataBase = this.fb.control('', []);
+    this.ctlPublished = this.fb.control(false);
     this.frm = this.fb.group({
       name: this.ctlName,
       description: this.ctlDescription,
-      radioTrainning: this.ctlRadioTrainning,
-      radioTest: this.ctlRadioTest,
+      radioGroup: this.ctlRadioGroup,
       dataBase: this.ctlDataBase,
+      published: this.ctlPublished
     });
   }
 
@@ -61,8 +63,15 @@ export class QuizEditionComponent implements OnInit{
       const quizId = +params['id'];
       // l'ID de la question actuelle
       this.quizService.getOne(quizId).subscribe(quiz => {
+        this.isTest = quiz?.isTest;
         this.ctlName.setValue(quiz?.name);
-        console.log('!!$!$!$!$!$$!  Quiz NAME:', quiz?.name);
+        this.ctlDescription.setValue(quiz?.description);
+        this.ctlRadioGroup.setValue(quiz?.isTest ? 'test' : 'trainning');
+        this.ctlPublished.setValue(quiz?.isPublished);
+        this.ctlDataBase.setValue(quiz?.database);
+
+        console.log('--> Quiz NAME:', quiz?.name);
+        console.log('--> isTest', this.isTest);
       });
     });
   }

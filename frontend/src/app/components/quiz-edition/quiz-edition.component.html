@@ -14,29 +14,26 @@
           <input matInput [formControl]="ctlDescription">
       </mat-form-field>
 
-        <label>Type de quiz: </label>
-        <div>
-          <input type="radio" id="trainning" name="quizType" value="false" [formControl]="ctlRadioTrainning" checked />
-          <label for="trainning">Trainning</label>
-        </div>
-        <div>
-          <input type="radio" id="test" name="quizType" value="true" [formControl]="ctlRadioTest" />
-          <label for="test">Test</label>
-        </div>
+      <mat-card class="form-card">
+          <mat-label>Type de quiz: </mat-label>
+          <mat-radio-group [formControl]="ctlRadioGroup" >
+              <mat-radio-button value="trainning" >Trainning</mat-radio-button>
+              <mat-radio-button value="test" >Test</mat-radio-button>
+          </mat-radio-group>
+      </mat-card>
 
       <mat-form-field>
         <mat-label>Base de données</mat-label>
         <mat-select [formControl]="ctlDataBase" required>
-            <mat-option [value]="1">fournisseurs</mat-option>
-            <mat-option [value]="0">facebook</mat-option>
+          <mat-option value="fournisseurs">fournisseurs</mat-option>
+          <mat-option value="facebook">facebook</mat-option>
         </mat-select>
       </mat-form-field>
-      <div class="publishedToggle">
-        <label class="switch">
-        <input type="checkbox">
-        <span class="slider round"></span>
-        </label>publié
-      </div>
+      
+      <mat-slide-toggle [formControl]="ctlPublished">
+        publié
+      </mat-slide-toggle>
+
       <button>
         <mat-icon>save</mat-icon>
       </button>
