@@ -16,47 +16,31 @@ public class QuizDTO{
     public int DatabaseDTOId { get; set; }
     public DatabaseDTO Database { get; set; } = null!;
 
-    // public QuizStatus Status{
-    //     get{
-    //         DateTime now = DateTime.Now;
-    //         if (IsClosed){
-    //             return QuizStatus.Cloture;
-    //         }
-    //         else if (now < Start){
-    //             return QuizStatus.PasCommence;
-    //         }
-    //         else if (now >= Start && now <= Finish){
-    //             return QuizStatus.EnCours;
-    //         }
-    //         else{
-    //             return QuizStatus.Fini;
-    //         }
-    //     }
-    // }
-
     public QuizStatus Status{
-        get{
+        get {
             DateTime now = DateTime.Now;
             if (IsTest){
                 if (now > Finish){
-                    Console.WriteLine("QuizStatus.Cloture");
                     return QuizStatus.Cloture;
-                }else if (now >= Start && now <= Finish){
-                    return QuizStatus.EnCours;
-
+                }else if ( now >= Start && now <= Finish && Attempts.Count > 0){
+                    return QuizStatus.Fini;
                 }
-                else{
-                    return QuizStatus.EnCours;
+                else if(now >= Start && now <= Finish && Attempts.Count == 0){
+                    return QuizStatus.PasCommence;
+                }else if (now >= Start && now <= Finish && Attempts.Count == 0){
+                    return QuizStatus.PasCommence;
+                }else{
+                    return QuizStatus.NonTest; // Retourne une valeur par défaut
                 }
             }else{
                 if (now < Finish){
                     Console.WriteLine("QuizStatus.Cloture");
                     return QuizStatus.Cloture;
                 }
-                else if (now < Start){
+                else if (Attempts.Count == 0){
                     return QuizStatus.PasCommence;
                 }
-                else if (now >= Start && now <= Finish){
+                else if (Attempts.Count > 0){
                     return QuizStatus.EnCours;
                 }
                 else{

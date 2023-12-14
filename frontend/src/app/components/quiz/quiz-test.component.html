@@ -34,13 +34,13 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef> Actions </th>
         <td mat-cell *matCellDef="let row">
-          <button mat-icon-button tabindex="-1" (click)="edit(row)" class="tip" matTooltip="Poursuivre">
+          <button mat-icon-button tabindex="-1" *ngIf="row.statusAsString === 'EnCours'"  (click)="edit(row)" class="tip" matTooltip="Poursuivre">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button tabindex="-1" class="tip" matTooltip="Revoir">
+          <button mat-icon-button tabindex="-1" *ngIf="row.statusAsString === 'Fini'"  class="tip" matTooltip="Revoir">
             <mat-icon>class</mat-icon>
           </button>
-          <button mat-icon-button tabindex="-1" class="tip" matTooltip="Commencer">
+          <button mat-icon-button tabindex="-1" *ngIf="row.statusAsString === 'PasCommence'"  class="tip" matTooltip="Commencer">
             <mat-icon>add_box</mat-icon>
           </button>
         </td>
