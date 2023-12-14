@@ -73,7 +73,8 @@ export class QuestionComponent implements OnInit{
         this.quizService.getOne(quizId).subscribe(quiz => {
           this.quiz = quiz;
           this._isTest = this.quiz?.isTest;
-          console.log('---> Quiz:', this.quiz);
+          console.log('---> Quiz!!:', this.quiz);
+          console.log('---> Database NAME!!:', this.quiz?.database.name);
           this.questions = quiz?.questions || [];
           console.log('---->  Questions:', this.questions);
           this.solutionService.getByQuestionId(question?.id ?? 0).subscribe(solutions => {
@@ -126,7 +127,7 @@ export class QuestionComponent implements OnInit{
     }
 
     close() {
-      console.log('close');
+      console.log('cloture du quiz');
     }
 
     get isTest(): boolean | undefined {
@@ -161,26 +162,32 @@ export class QuestionComponent implements OnInit{
     sendAnswer() {
       this.showAnswer();
       this.showSolutions = false;
-      this.answerService.sendAnswer(this.question?.id ?? 0, this.query).subscribe(res => {
-        console.log('----> *2* ID:', this.question?.id);
-        console.log('----> *2* Query:', this.query);
-        console.log('----> ** Résultat:', res);
-        this.res = res;
-        if(this.query === ""){
-          this.answerMessage = `Vous n'avez pas entré de requête SQL!`;
-        }else{
-          if ( res === true) {
-            console.log('----> ** Message texte:', res);
-            this.answerMessage = `Votre requête a retourné une réponse correcte!\n
-            Néanmoins, comparez votre solution avec celle(s) ci-dessous pour voir si vous n'avez pas eu un peu de chance... ;)`;
-            this.showSolutions = true;
-            this.showTable();
-            this.showRowCount();
+      this.quizService.getOne(this.question?.quizId ?? 0).subscribe(quiz => {
+        if (quiz?.database.name !== undefined) {
+          this.answerService.sendAnswer(this.question?.id ?? 0, this.query,quiz?.database.name).subscribe(res => {
+          console.log('----> *2* ID:', this.question?.id);
+          console.log('----> *2* Query:', this.query);
+          console.log('----> ** Résultat:', res);
+          console.log('----> *sendAnswer* Database:', quiz?.database.name);
+          this.res = res;
+          if(this.query === ""){
+            this.answerMessage = `Vous n'avez pas entré de requête SQL!`;
           }else{
-            console.log('----> ** Message texte:', res);
-            this.answerMessage = `Votre requête n'a pas retourné de réponse correcte!`;
-          }
-        }});
+            if ( res === true) {
+              console.log('----> ** Message texte:', res);
+              this.answerMessage = `Votre requête a retourné une réponse correcte!\n
+              Néanmoins, comparez votre solution avec celle(s) ci-dessous pour voir si vous n'avez pas eu un peu de chance... ;)`;
+              this.showSolutions = true;
+              this.showTable();
+              this.showRowCount();
+            }else{
+              console.log('----> ** Message texte:', res);
+              this.answerMessage = `Votre requête n'a pas retourné de réponse correcte!`;
+            }
+          }});
+        }
+      });
+
       this.answerMessage ="";
       this.showSolutions = false;
     }
@@ -191,23 +198,31 @@ export class QuestionComponent implements OnInit{
 
     showTable(){
       this.showAnswerTable = !this.showAnswerTable;
-      //récupère les noms de colonnes
-      this.solutionService.getColumnNames(this.query).subscribe(columnNames => {
-        this.columnNames = columnNames;
-      });
-      //récupère les lignes de données
-      this.solutionService.getDataRows(this.query).subscribe(dataRows => {
-        this.dataRows = dataRows;
+      this.quizService.getOne(this.question?.quizId ?? 0).subscribe(quiz => {
+        if (quiz?.database.name !== undefined) {
+          //récupère les noms de colonnes
+          this.answerService.getColumnNames(this.query,quiz?.database.name).subscribe(columnNames => {
+            this.columnNames = columnNames;
+          });
+          //récupère les lignes de données
+          this.answerService.getDataRows(this.query,quiz?.database.name).subscribe(dataRows => {
+            this.dataRows = dataRows;
+          });
+        }
       });
     }
 
     //affiche le nombre de lignes
     showRowCount(){
       this.showRowsCount = !this.showRowsCount;
-      this.solutionService.getDataRows(this.query).subscribe(dataRows => {
-        this.dataRows = dataRows;
-        this.rowsCount = this.dataRows.length;
-        console.log('----> Nombre de lignes:', this.rowsCount);
+      this.quizService.getOne(this.question?.quizId ?? 0).subscribe(quiz => {
+        if (quiz?.database.name !== undefined) {
+          this.answerService.getDataRows(this.query,quiz?.database.name).subscribe(dataRows => {
+            this.dataRows = dataRows;
+            this.rowsCount = this.dataRows.length;
+            console.log('----> Nombre de lignes:', this.rowsCount);
+          });
+        }
       });
     }
 }

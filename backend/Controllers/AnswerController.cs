@@ -75,12 +75,12 @@ public class AnswerController : ControllerBase{
     return _mapper.Map<AnswerDTO>(answer);
   }
 
-  [AllowAnonymous]
-    [HttpGet("{id}/{sql}")]
+    [AllowAnonymous]
+    [HttpGet("{id}/{sql}/{dbName}")]
     // Vérifie si la requête SQL est valide
-    public ActionResult CheckSql(int id,string sql){
+    public ActionResult CheckSql(int id,string sql,string dbName){
       // Exécute la requête SQL avec la chaîne sql
-        string connectionString = "server=localhost;database=fournisseurs;uid=root;password=root";
+        string connectionString = $"server=localhost;database={dbName};uid=root;password=root";
         using MySqlConnection connection = new MySqlConnection(connectionString);
         DataTable table;
       try{
@@ -99,7 +99,7 @@ public class AnswerController : ControllerBase{
           Console.WriteLine("---> solution: " + solution.Sql);
         }
         // Comparer les données de la requête SQL avec les solutions
-        bool isValid = CompareDataWithSolutions(table, solutions);
+        bool isValid = CompareDataWithSolutions(table, solutions,dbName);
         Console.WriteLine("---> isValid: " + isValid);
         if (isValid){
             return Ok(new { message = "Requête SQL valide." });
@@ -117,13 +117,13 @@ public class AnswerController : ControllerBase{
     return solutions;
   }
 
-  private bool CompareDataWithSolutions(DataTable data, List<Solution> solutions){
+  private bool CompareDataWithSolutions(DataTable data, List<Solution> solutions,string dbName){
     // Parcourir les données et les solutions pour vérifier si elles correspondent
     // Retourne true si une correspondance est trouvée, sinon retourne false
      // Parcourir les solutions
     foreach (var solution in solutions){
         // Exécute la solution SQL et obtenir les données
-        DataTable? solutionData = ExecuteSql(solution.Sql);
+        DataTable? solutionData = ExecuteSql(solution.Sql,dbName);
         // Compare les données de la solution avec les données de la requête SQL
         if (AreDataEqual(data, solutionData??new DataTable())){
             return true; // Correspondance trouvée, la requête SQL est valide
@@ -132,10 +132,10 @@ public class AnswerController : ControllerBase{
     return false; // Aucune correspondance trouvée avec les solutions
   }
 
-  private DataTable? ExecuteSql(string sql){
+  private DataTable? ExecuteSql(string sql,string dbName){
     // Exécute la requête SQL et retourne les données sous forme de DataTable
     try{
-        string connectionString = "server=localhost;database=fournisseurs;uid=root;password=root";
+        string connectionString = $"server=localhost;database={dbName};uid=root;password=root";
         using MySqlConnection connection = new MySqlConnection(connectionString);
         DataTable table;
         connection.Open();
@@ -168,9 +168,9 @@ public class AnswerController : ControllerBase{
 
   // Récupère les noms des colonnes d'un DataTable
   [AllowAnonymous]
-  [HttpGet("{sql}/columns")]
-  public ActionResult<string[]> GetColumnNames(string sql){
-    string connectionString = "server=localhost;database=fournisseurs;uid=root;password=root";
+  [HttpGet("{sql}/{dbName}/columns")]
+  public ActionResult<string[]> GetColumnNames(string sql,string dbName){
+    string connectionString = $"server=localhost;database={dbName};uid=root;password=root";
     using MySqlConnection connection = new MySqlConnection(connectionString);
     DataTable table;
     connection.Open();
@@ -189,9 +189,9 @@ public class AnswerController : ControllerBase{
 
   // Récupère les données d'un DataTable
   [AllowAnonymous]
-  [HttpGet("{sql}/rows")]
-  public ActionResult<string[][]> GetDataRows(string sql){
-    string connectionString = "server=localhost;database=fournisseurs;uid=root;password=root";
+  [HttpGet("{sql}/{dbName}/rows")]
+  public ActionResult<string[][]> GetDataRows(string sql,string dbName){
+    string connectionString = $"server=localhost;database={dbName};uid=root;password=root";
     using MySqlConnection connection = new MySqlConnection(connectionString);
     DataTable table;
     connection.Open();

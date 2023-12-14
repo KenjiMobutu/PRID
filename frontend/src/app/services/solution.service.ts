@@ -33,29 +33,4 @@ export class SolutionService {
       map(res => plainToInstance(Solution, res))
     );
   }
-
-  sendSolution(questionId: number, sql: string): Observable<boolean> {
-    console.log("--> SQL:"+sql);
-    return this.http.get<Solution>(`${this.baseUrl}api/solution/${questionId}/${sql}`).pipe(
-      map(res => true),
-      catchError(err => {
-        console.error(err);
-        return of(false);
-      })
-    );
-  }
-
-  getColumnNames(sql: string): Observable<string[]> {
-    return this.http.get<string[]>(`${this.baseUrl}api/solution/${sql}/columns`).pipe(
-      map(res => res)
-    );
-  }
-
-  getDataRows(sql: string): Observable<string[][]> {
-    return this.http.get<string[][]>(`${this.baseUrl}api/solution/${sql}/rows`).pipe(
-      map(res => res)
-    );
-  }
-
-
 }

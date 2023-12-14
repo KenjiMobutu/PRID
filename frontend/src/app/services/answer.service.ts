@@ -14,9 +14,9 @@ import { pl } from "date-fns/locale";
 export class AnswerService {
   constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) { }
 
-  sendAnswer(questionId: number, sql: string): Observable<boolean> {
+  sendAnswer(questionId: number, sql: string, dataBase:string): Observable<boolean> {
     console.log("--> SQL:"+sql);
-    return this.http.get<Solution>(`${this.baseUrl}api/answer/${questionId}/${sql}`).pipe(
+    return this.http.get<Solution>(`${this.baseUrl}api/answer/${questionId}/${sql}/${dataBase}`).pipe(
       map(res => true),
       catchError(err => {
         console.error(err);
@@ -25,14 +25,14 @@ export class AnswerService {
     );
   }
 
-  getColumnNames(sql: string): Observable<string[]> {
-    return this.http.get<string[]>(`${this.baseUrl}api/answer/${sql}/columns`).pipe(
+  getColumnNames(sql: string, dataBase:string): Observable<string[]> {
+    return this.http.get<string[]>(`${this.baseUrl}api/answer/${sql}/${dataBase}/columns`).pipe(
       map(res => res)
     );
   }
 
-  getDataRows(sql: string): Observable<string[][]> {
-    return this.http.get<string[][]>(`${this.baseUrl}api/answer/${sql}/rows`).pipe(
+  getDataRows(sql: string, dataBase:string): Observable<string[][]> {
+    return this.http.get<string[][]>(`${this.baseUrl}api/answer/${sql}/${dataBase}/rows`).pipe(
       map(res => res)
     );
   }

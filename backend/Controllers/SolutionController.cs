@@ -80,11 +80,11 @@ public class SolutionController : ControllerBase{
   }
 
     [AllowAnonymous]
-    [HttpGet("{id}/{sql}")]
+    [HttpGet("{id}/{sql}/{dbName}")]
     // Vérifie si la requête SQL est valide
-    public ActionResult CheckSql(int id,string sql){
+    public ActionResult CheckSql(int id,string sql, string dbName){
       // Exécute la requête SQL avec la chaîne sql
-        string connectionString = "server=localhost;database=fournisseurs;uid=root;password=root";
+        string connectionString = $"server=localhost;database={dbName};uid=root;password=root";
         using MySqlConnection connection = new MySqlConnection(connectionString);
         DataTable table;
       try{
