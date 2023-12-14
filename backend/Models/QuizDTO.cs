@@ -40,11 +40,13 @@ public class QuizDTO{
                 else if (Attempts.Count == 0){
                     return QuizStatus.PasCommence;
                 }
-                else if (Attempts.Count > 0){
+                else if (Attempts.Count > 0 && !IsClosed){
                     return QuizStatus.EnCours;
                 }
-                else{
+                else if(IsClosed){
                     return QuizStatus.Fini;
+                }else{
+                    return QuizStatus.NonTest; // Retourne une valeur par défaut
                 }
             }
         }

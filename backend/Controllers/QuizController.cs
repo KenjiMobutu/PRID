@@ -124,6 +124,21 @@ public class QuizController :  ControllerBase{
         return _mapper.Map<QuizDTO>(quiz);
     }
 
+    [AllowAnonymous]
+    [HttpPost("close/{quizId}")]
+    public async Task<ActionResult<QuizDTO>> CloseQuiz(int quizId) {
+    // Trouver le quiz par ID
+        var quiz = await _context.Quizzes.FirstOrDefaultAsync(q => q.Id == quizId);
+        if (quiz != null) {
+            quiz.IsClosed = true;
+            await _context.SaveChangesAsync();
+            return Ok();
+        } else {
+            return NotFound(); // 404
+        }
+    }
+
+
 
 
 }

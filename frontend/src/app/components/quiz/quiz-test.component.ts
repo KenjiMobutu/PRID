@@ -84,6 +84,9 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
             this.state.restoreState(this.dataSource);
             // restaure l'état du filtre à partir du state
             this._filter = this.state.filter;
+            quizes.forEach((quiz) => {
+              console.log('--> quiz', quiz.name + ' Status -->' + quiz.statusAsString);
+            });
           });
     } else {
       this.quizService.getTest().subscribe(quizes => {
@@ -91,6 +94,9 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
         this.state.restoreState(this.dataSource);
         this._filter = this.state.filter;
         console.log('----> Quizes:', quizes);
+        quizes.forEach((quiz) => {
+          console.log('----> quiz', quiz.name + ' Status -->' + quiz.statusAsString);
+        });
         this.getScore(quizes);
       });
     }
@@ -133,8 +139,6 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
       quiz.evaluation = scoreOnTen + "/10";
     });
   }
-
-
 
   paginatorInit(){
     this.dataSource.paginator = this.paginator;

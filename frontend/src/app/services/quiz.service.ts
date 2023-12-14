@@ -57,5 +57,9 @@ export class QuizService {
             return of(false);
         })
     );
-}
+  }
+
+  closeQuiz(quizId: number): Observable<any> {
+    return this.http.post(`/api/quiz/close/${quizId}`, {});
+  }
 }

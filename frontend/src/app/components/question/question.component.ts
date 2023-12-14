@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild,Input } from '@angular/core';
-import { Quiz } from '../../models/quiz';
+import { Quiz, QuizStatus } from '../../models/quiz';
 import { QuizService } from 'src/app/services/quiz.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash-es';
@@ -127,8 +127,21 @@ export class QuestionComponent implements OnInit{
     }
 
     close() {
-      console.log('cloture du quiz');
+      console.log('Clôture du quiz');
+      if (this.question?.quizId) {
+        this.quizService.closeQuiz(this.question.quizId).subscribe(() => {
+          if (this.quiz) {
+            this.quiz.isClosed = true;
+            this.quiz.status = 1; // Assurez-vous d'avoir une énumération ou une constante pour QuizStatus.Fini
+            console.log('----> Quiz STATUS:', this.quiz.isClosed);
+            this.router.navigate(['/quiz']);
+          }
+        }, error => {
+          console.error('Erreur lors de la clôture du quiz:', error);
+        });
+      }
     }
+
 
     get isTest(): boolean | undefined {
       return this._isTest;
