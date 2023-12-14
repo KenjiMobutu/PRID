@@ -11,11 +11,11 @@ public class AnswerDTO{
 
     // [ForeignKey(nameof(AttemptDTOId))]
     // public int AttemptDTOId { get; set; }
-    // public AttemptDTO AttemptDTO { get; set; } = null!;
+    // public AttemptDTO Attempt { get; set; } = null!;
 
     // [ForeignKey(nameof(QuestionDTOId))]
     // public int QuestionDTOId { get; set; }
-    // public QuestionDTO QuestionDTO { get; set; } = null!;
+    // public QuestionDTO Question { get; set; } = null!;
 
 
 }

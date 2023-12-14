@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild,AfterViewInit, ElementRef, OnDestroy, Input } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { Quiz, Question } from '../../models/quiz';
+import { Quiz, Question, Attempt } from '../../models/quiz';
 import { MatDialog } from '@angular/material/dialog';
 import { QuizService } from 'src/app/services/quiz.service';
 import { StateService } from 'src/app/services/state.service';
@@ -13,8 +13,9 @@ import { Router, ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash-es';
 import { QuestionService } from 'src/app/services/question.service';
 import { th } from 'date-fns/locale';
-
-
+import { AnswerService } from 'src/app/services/answer.service';
+import { AttemptService } from 'src/app/services/attempt.service';
+import { forkJoin, tap } from 'rxjs';
 @Component({
   selector: 'quiz-test',
   templateUrl: './quiz-test.component.html',
@@ -25,8 +26,13 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
   displayedColumnsWithDates: string[] = ['nom', 'dataBase', 'startDate', 'endDate', 'statut','evaluation' , 'actions'];
   displayedColumns: string[] = ['nom', 'dataBase','statut','actions'];
   dataSource: MatTableDataSource<Quiz> = new MatTableDataSource();
+  evaluation: string = "N/A";
+  answerCount: number = 0;
+
+  evaluations: string[] = [];
 
   private _isTest?: boolean;
+  public haveAttempt: boolean = false;
   questions: Question[] = [];
   state: MatTableState;
   private _filter?: string = '';
@@ -42,7 +48,9 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
     public snackBar: MatSnackBar,
     private router: Router,
     private route: ActivatedRoute,
-    private service: QuestionService
+    private service: QuestionService,
+    private answerService: AnswerService,
+    private attemptService: AttemptService
   ) {
     this.state = this.stateService.quizTestListState;
   }
@@ -79,14 +87,54 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
           });
     } else {
       this.quizService.getTest().subscribe(quizes => {
-            // assigne toutes les données récupérées au datasource
-            this.dataSource.data = quizes;
-            this.state.restoreState(this.dataSource);
-            // restaure l'état du filtre à partir du state
-            this._filter = this.state.filter;
-          });
+        this.dataSource.data = quizes;
+        this.state.restoreState(this.dataSource);
+        this._filter = this.state.filter;
+        console.log('----> Quizes:', quizes);
+        this.getScore(quizes);
+      });
     }
   }
+
+  getScore(quizes: Quiz[]): void {
+    quizes.forEach((quiz, index) => {
+      if (quiz.attempts && quiz.attempts.length > 0) {
+        this.processAttempts(quiz.attempts, quiz);
+        console.log('----> quiz', quiz.name + ' LENGTH -->' + quiz.attempts.length);
+        console.log('----> quiz.attempts:', quiz.attempts.length + ' index:' + index);
+      } else if (quiz.attempts.length === 0){
+        console.log('----> quiz', quiz.name + ' LENGTH -->' + quiz.attempts.length);
+        console.log('----> quiz.attempts:', quiz.attempts.length + ' index:' + index);
+        quiz.evaluation = "N/A";
+      }
+    });
+  }
+
+  processAttempts(attempts: Attempt[], quiz: Quiz): void {
+    let totalCorrectAnswers = 0;
+    let totalAnswers = 0;
+    let totalPossibleScore = 0; // le score total possible
+
+    const validAttempts = attempts.filter(attempt => attempt.id !== undefined);
+
+    const observables = validAttempts.map(attempt => {
+      return this.answerService.getAnswers(attempt.id!).pipe(
+        tap(answers => {
+          totalAnswers += answers.length;
+          totalCorrectAnswers += answers.filter(a => a.isCorrect).length;
+          totalPossibleScore += answers.length; //chaque question vaut 1 point
+        })
+      );
+    });
+
+    forkJoin(observables).subscribe(() => {
+      // Calculer le score sur 10
+      const scoreOnTen = (totalCorrectAnswers / totalPossibleScore) * 10;
+      quiz.evaluation = scoreOnTen + "/10";
+    });
+  }
+
+
 
   paginatorInit(){
     this.dataSource.paginator = this.paginator;

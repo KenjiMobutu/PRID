@@ -64,6 +64,7 @@ public class QuestionController :  ControllerBase{
         var question = await _context.Questions
             .Include(q => q.Solutions)
             .Include(q => q.Quiz)
+            .Include(q => q.Answers)
             .FirstOrDefaultAsync(q => q.Id == id);
         // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
         if (question == null)

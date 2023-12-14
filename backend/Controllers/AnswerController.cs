@@ -32,6 +32,48 @@ public class AnswerController : ControllerBase{
     _tokenHelper = new TokenHelper(context);
   }
 
+  // GET: api/questionId/answer
+  [AllowAnonymous]
+  [HttpGet("{questionId}/answer")]
+  public async Task<ActionResult<IEnumerable<AnswerDTO>>> GetAnswers(int questionId) {
+    // Récupère en BD la question dont l'id est passé en paramètre dans l'url
+    var question = await _context.Questions.FindAsync(questionId);
+    // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
+    if (question == null)
+      return NotFound();
+    // Retourne le membre
+    return _mapper.Map<List<AnswerDTO>>(await _context.Answers
+        .Where(a => a.QuestionId == questionId)
+        .ToListAsync());
+  }
+
+  // GET: api/attemptId/answers
+  [AllowAnonymous]
+  [HttpGet("{attemptId}/answers")]
+  public async Task<ActionResult<IEnumerable<AnswerDTO>>> GetByAttemptId(int attemptId) {
+    // Récupère en BD l'attempt dont l'id est passé en paramètre dans l'url
+    var attempt = await _context.Attempts.FindAsync(attemptId);
+    // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
+    if (attempt == null)
+      return NotFound();
+    // Retourne le membre
+    return _mapper.Map<List<AnswerDTO>>(await _context.Answers
+        .Where(a => a.AttemptId == attemptId)
+        .ToListAsync());
+  }
+
+  // GET: api/answer/id
+  [AllowAnonymous]
+  [HttpGet("{id}")]
+  public async Task<ActionResult<AnswerDTO>> GetOne(int id) {
+    // Récupère en BD la réponse dont l'id est passé en paramètre dans l'url
+    var answer = await _context.Answers.FindAsync(id);
+    // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
+    if (answer == null)
+      return NotFound();
+    // Retourne le membre
+    return _mapper.Map<AnswerDTO>(answer);
+  }
 
   [AllowAnonymous]
     [HttpGet("{id}/{sql}")]

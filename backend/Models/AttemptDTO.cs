@@ -15,5 +15,5 @@ public class AttemptDTO{
     public int QuizDTOId { get; set; }
     public Quiz QuizDTO { get; set; } = null!;
 
-    public ICollection<AnswerDTO> AnswersDTO { get; set; } = new HashSet<AnswerDTO>();
+    public ICollection<AnswerDTO> Answers { get; set; } = new HashSet<AnswerDTO>();
 }

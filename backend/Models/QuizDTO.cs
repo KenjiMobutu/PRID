@@ -42,7 +42,8 @@ public class QuizDTO{
                     Console.WriteLine("QuizStatus.Cloture");
                     return QuizStatus.Cloture;
                 }else if (now >= Start && now <= Finish){
-                    return QuizStatus.PasCommence;
+                    return QuizStatus.EnCours;
+
                 }
                 else{
                     return QuizStatus.EnCours;

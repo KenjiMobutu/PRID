@@ -1,7 +1,7 @@
 import { Injectable, Inject } from "@angular/core";
 import { MatTableState } from "../helpers/mattable.state";
 import { HttpClient } from '@angular/common/http';
-import { Quiz } from '../models/quiz';
+import { Answer, Quiz } from '../models/quiz';
 import { Solution } from "../models/solution";
 
 import { catchError, map } from 'rxjs/operators';
@@ -11,7 +11,7 @@ import { pl } from "date-fns/locale";
 
 @Injectable({ providedIn: 'root' })
 
-export class SolutionService {
+export class AnswerService {
   constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) { }
 
   sendAnswer(questionId: number, sql: string): Observable<boolean> {
@@ -33,6 +33,12 @@ export class SolutionService {
 
   getDataRows(sql: string): Observable<string[][]> {
     return this.http.get<string[][]>(`${this.baseUrl}api/answer/${sql}/rows`).pipe(
+      map(res => res)
+    );
+  }
+
+  getAnswers(attemptId: number): Observable<Answer[]> {
+    return this.http.get<Answer[]>(`${this.baseUrl}api/answer/${attemptId}/answers`).pipe(
       map(res => res)
     );
   }

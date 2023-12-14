@@ -8,6 +8,7 @@ import { QuestionService } from 'src/app/services/question.service';
 import { Solution } from 'src/app/models/solution';
 import { SolutionService } from 'src/app/services/solution.service';
 import { CodeEditorComponent } from '../code-editor/code-editor.component';
+import { AnswerService } from 'src/app/services/answer.service';
 @Component({
   selector: 'question',
   templateUrl: './question.component.html',
@@ -47,6 +48,7 @@ export class QuestionComponent implements OnInit{
     private service: QuestionService,
     private quizService: QuizService,
     private solutionService: SolutionService,
+    private answerService: AnswerService
     ) { }
 
     ngOnInit() {
@@ -159,7 +161,7 @@ export class QuestionComponent implements OnInit{
     sendAnswer() {
       this.showAnswer();
       this.showSolutions = false;
-      this.solutionService.sendSolution(this.question?.id ?? 0, this.query).subscribe(res => {
+      this.answerService.sendAnswer(this.question?.id ?? 0, this.query).subscribe(res => {
         console.log('----> *2* ID:', this.question?.id);
         console.log('----> *2* Query:', this.query);
         console.log('----> ** Résultat:', res);

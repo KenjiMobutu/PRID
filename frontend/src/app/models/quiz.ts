@@ -2,7 +2,14 @@ import 'reflect-metadata';
 import { Solution } from './solution';
 import { DataBase } from './database';
 
-
+export class Attempt {
+  id: number | undefined;
+  timeStamp: Date | undefined;
+  score: number | undefined;
+  quizId: number | undefined;
+  userId: number | undefined;
+  answers: Answer[] = [];
+}
 export class Question {
     id: number | undefined;
     order: number | undefined;
@@ -24,8 +31,8 @@ export class Answer {
   sql?: string;
   timeStamp: Date | undefined;
   isCorrect: boolean = false;
-  questionId: number | undefined;
-  attemptId: number | undefined;
+  question: Question | undefined;
+  attempt: Attempt | undefined;
 }
 
 export class Quiz {
@@ -41,6 +48,7 @@ export class Quiz {
     evaluation?: string;
     status: QuizStatus = QuizStatus.PasCommence;
     questions: Question[] = [];
+    attempts: Attempt[] = [];
 
     public get statusAsString(): string {
       return QuizStatus[this.status];
