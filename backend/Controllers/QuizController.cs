@@ -138,6 +138,19 @@ public class QuizController :  ControllerBase{
         }
     }
 
+    [AllowAnonymous]
+    [HttpPost("open/{quizId}")]
+    public async Task<ActionResult<QuizDTO>> OpenQuiz(int quizId) {
+    // Trouver le quiz par ID
+        var quiz = await _context.Quizzes.FirstOrDefaultAsync(q => q.Id == quizId);
+        if (quiz != null) {
+            quiz.IsClosed = false;
+            await _context.SaveChangesAsync();
+            return Ok();
+        } else {
+            return NotFound(); // 404
+        }
+    }
 
 
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild,Input } from '@angular/core';
+import { Component, OnInit, ViewChild,Input, SimpleChanges } from '@angular/core';
 import { Quiz, QuizStatus } from '../../models/quiz';
 import { QuizService } from 'src/app/services/quiz.service';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -9,6 +9,7 @@ import { Solution } from 'src/app/models/solution';
 import { SolutionService } from 'src/app/services/solution.service';
 import { CodeEditorComponent } from '../code-editor/code-editor.component';
 import { AnswerService } from 'src/app/services/answer.service';
+import { tr } from 'date-fns/locale';
 @Component({
   selector: 'question',
   templateUrl: './question.component.html',
@@ -41,6 +42,7 @@ export class QuestionComponent implements OnInit{
   showAnswerTable: boolean = false;
   columnNames: string[] = []; // Initialisation noms de colonnes
   dataRows: string[][] = []; // Initialisation des lignes de données
+  isQuizFinished = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -74,6 +76,7 @@ export class QuestionComponent implements OnInit{
           this.quiz = quiz;
           this._isTest = this.quiz?.isTest;
           console.log('---> Quiz!!:', this.quiz);
+          this.isQuizFinished = this.quiz?.status === QuizStatus.Fini;
           console.log('---> Database NAME!!:', this.quiz?.database.name);
           this.questions = quiz?.questions || [];
           console.log('---->  Questions:', this.questions);

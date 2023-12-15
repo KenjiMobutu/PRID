@@ -62,4 +62,8 @@ export class QuizService {
   closeQuiz(quizId: number): Observable<any> {
     return this.http.post(`/api/quiz/close/${quizId}`, {});
   }
+
+  openQuiz(quizId: number): Observable<any> {
+    return this.http.post(`/api/quiz/open/${quizId}`, {});
+  }
 }

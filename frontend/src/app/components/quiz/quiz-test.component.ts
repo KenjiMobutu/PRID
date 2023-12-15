@@ -76,6 +76,36 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
     });
   }
 
+  review(quiz: Quiz) {
+    const quizId = quiz.id ?? 0; // Si quiz.id est undefined, utilisez 0 à la place
+    this.service.getQuestionsByQuizId(quizId).subscribe(questions => {
+      if (questions && questions.length > 0) {
+        this.questions = questions;
+        const firstQuestionId = questions[0].id ?? 0; // Si questions[0].id est undefined, utilisez 0 à la place
+        this.router.navigate(['/question/', firstQuestionId]);
+      }
+    });
+  }
+
+  startQuiz(quiz: Quiz) {
+    const quizId = quiz.id ?? 0; // Si quiz.id est undefined, utilisez 0 à la place
+    console.log('^^^^----> Quiz ID:', quizId);
+    this.quizService.openQuiz(quizId).subscribe(() => {
+      if (quiz) {
+        quiz.isClosed = false;
+        quiz.status = 0; // Assurez-vous d'avoir une énumération ou une constante pour QuizStatus.Fini
+        console.log('----> Quiz STATUS:', quiz.isClosed);
+      }
+      this.service.getQuestionsByQuizId(quizId).subscribe(questions => {
+        if (questions && questions.length > 0) {
+          this.questions = questions;
+          const firstQuestionId = questions[0].id ?? 0; // Si questions[0].id est undefined, utilisez 0 à la place
+          this.router.navigate(['/question/', firstQuestionId]);
+        }
+      });
+    });
+  }
+
   refresh() {
     if (!this._isTest) {
       this.quizService.getTp().subscribe(quizes => {

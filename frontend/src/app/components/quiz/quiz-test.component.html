@@ -35,13 +35,13 @@
         <th mat-header-cell *matHeaderCellDef> Actions </th>
         <td mat-cell *matCellDef="let row">
           <!-- *ngIf="row.statusAsString === 'EnCours'" -->
-          <button mat-icon-button tabindex="-1"   (click)="edit(row)" class="tip" matTooltip="Poursuivre">
+          <button mat-icon-button tabindex="-1" *ngIf="row.statusAsString === 'EnCours'"   (click)="edit(row)" class="tip" matTooltip="Poursuivre">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button tabindex="-1" *ngIf="row.statusAsString === 'Fini'"  class="tip" matTooltip="Revoir">
+          <button mat-icon-button tabindex="-1" *ngIf="row.statusAsString === 'Fini'" (click)="review(row)" class="tip" matTooltip="Revoir">
             <mat-icon>class</mat-icon>
           </button>
-          <button mat-icon-button tabindex="-1" *ngIf="row.statusAsString === 'PasCommence'"  class="tip" matTooltip="Commencer">
+          <button mat-icon-button tabindex="-1" *ngIf="row.statusAsString === 'PasCommence' || row.statusAsString === 'Fini'" (click)="startQuiz(row)" class="tip" matTooltip="Commencer">
             <mat-icon>add_box</mat-icon>
           </button>
         </td>
