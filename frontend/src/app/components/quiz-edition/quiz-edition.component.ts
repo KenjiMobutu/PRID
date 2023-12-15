@@ -19,6 +19,9 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatSelectModule} from '@angular/material/select';
 import {MatInputModule} from '@angular/material/input';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import {FlatTreeControl} from '@angular/cdk/tree';
+import {MatTreeFlatDataSource, MatTreeFlattener, MatTreeModule} from '@angular/material/tree';
+import {MatButtonModule} from '@angular/material/button';
 
 @Component({
   selector: 'quiz-edition',
@@ -27,6 +30,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 })
 
 export class QuizEditionComponent implements OnInit{
+  quizType: string = "";
   public isTest?: boolean;
 
   public frm!: FormGroup;
@@ -72,6 +76,7 @@ export class QuizEditionComponent implements OnInit{
 
         console.log('--> Quiz NAME:', quiz?.name);
         console.log('--> isTest', this.isTest);
+        console.log('--> RADIO:', this.ctlRadioGroup.value);
         console.log('--> Database:', quiz?.database.name);
       });
     });

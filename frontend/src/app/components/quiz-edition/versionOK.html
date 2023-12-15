@@ -1,6 +1,5 @@
 <form mat-dialog-content id="frm" class="form" [formGroup]="frm" novalidate>
-  <div class="form-row">
-    <div class="form-column">
+  <div class="form">
       <mat-form-field>
           <mat-label>Nom</mat-label>
           <input matInput [formControl]="ctlName" required>
@@ -23,9 +22,6 @@
           </mat-radio-group>
       </mat-card>
 
-    </div>
-
-    <div class="form-column">
       <mat-form-field>
         <mat-label>Base de données</mat-label>
         <mat-select [formControl]="ctlDataBase" required>
@@ -34,37 +30,17 @@
         </mat-select>
       </mat-form-field>
 
-      <div class="publish-and-actions">
-        <!-- Publié Toggle -->
-        <mat-slide-toggle [formControl]="ctlPublished">publié</mat-slide-toggle>
+      <mat-slide-toggle [formControl]="ctlPublished">
+        publié
+      </mat-slide-toggle>
 
-        <!-- Actions Buttons -->
-        <div class="form-actions">
-          <button mat-icon-button matTooltip="Sauver">
-            <mat-icon>save</mat-icon>
-          </button>
-          <button mat-icon-button matTooltip="Supprimer">
-            <mat-icon>delete_forever</mat-icon>
-          </button>
-        </div>
-
-      </div>
-      <mat-form-field *ngIf="isTest">
-        <mat-label>Choisissez une période de validité</mat-label>
-        <mat-date-range-input [rangePicker]="picker">
-          <input matStartDate placeholder="Start date">
-          <input matEndDate placeholder="End date">
-        </mat-date-range-input>
-        <mat-hint>JJ/MM/AAAA – JJ/MM/AAAA</mat-hint>
-        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-date-range-picker #picker></mat-date-range-picker>
-      </mat-form-field>
-
-
-    </div>
+      <button>
+        <mat-icon>save</mat-icon>
+      </button>
+      <button>
+        <mat-icon>delete_forever</mat-icon>
+      </button>
   </div>
   <br>
   <h2>Questions</h2>
-
-
 </form>

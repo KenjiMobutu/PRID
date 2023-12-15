@@ -1,0 +1,59 @@
+<form mat-dialog-content id="frm" class="form" [formGroup]="frm" novalidate>
+  <div class="form-row">
+    <!-- Colonne de gauche pour Nom, Description, et Base de données -->
+    <div class="form-column">
+      <!-- Nom -->
+      <mat-form-field class="full-width">
+        <mat-label>Nom</mat-label>
+        <input matInput [formControl]="ctlName" required>
+        <!-- Mat errors here -->
+      </mat-form-field>
+
+      <!-- Description -->
+      <mat-form-field class="full-width">
+        <mat-label>Description</mat-label>
+        <input matInput [formControl]="ctlDescription">
+      </mat-form-field>
+
+      <!-- Base de données -->
+      <mat-form-field class="full-width">
+        <mat-label>Base de données</mat-label>
+        <mat-select [formControl]="ctlDataBase" required>
+          <mat-option value="fournisseurs">fournisseurs</mat-option>
+          <mat-option value="facebook">facebook</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Colonne de droite pour Type de quiz, Publié et Boutons d'action -->
+    <div class="form-column">
+      <!-- Type de quiz -->
+      <mat-card class="form-card">
+        <mat-label>Type de quiz: </mat-label>
+        <mat-radio-group [formControl]="ctlRadioGroup" required>
+          <mat-radio-button value="training">Training</mat-radio-button>
+          <mat-radio-button value="test">Test</mat-radio-button>
+        </mat-radio-group>
+      </mat-card>
+
+      <!-- Publié Toggle et Actions Buttons sur la même ligne -->
+      <div class="publish-and-actions">
+        <!-- Publié Toggle -->
+        <mat-slide-toggle [formControl]="ctlPublished">publié</mat-slide-toggle>
+
+        <!-- Actions Buttons -->
+        <div class="form-actions">
+          <button mat-icon-button>
+            <mat-icon>save</mat-icon>
+          </button>
+          <button mat-icon-button>
+            <mat-icon>delete_forever</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Questions</h2>
+  <!-- Questions will go here -->
+</form>
