@@ -168,7 +168,6 @@ public class UsersController : ControllerBase{ //DTO: pas toutes les donnes sont
 
     private async Task<User?> Authenticate(string pseudo, string password) {
         //var user = await _context.Users.FindAsync(pseudo); ne fonctionne pas car le find se fait sur la clé primaire qui est un int.
-
         var user = await _context.Users.SingleOrDefaultAsync(u => u.Pseudo == pseudo);
         // return null if member not found
         if (user == null)
@@ -181,10 +180,8 @@ public class UsersController : ControllerBase{ //DTO: pas toutes les donnes sont
             // Génère un refresh token et le stocke dans la table Members
             var refreshToken = TokenHelper.GenerateRefreshToken();
             await _tokenHelper.SaveRefreshTokenAsync(pseudo, refreshToken);
-
         }
         return user;
     }
-
 
 }
