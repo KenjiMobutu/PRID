@@ -41,7 +41,7 @@
           <button mat-icon-button tabindex="-1" *ngIf="row.statusAsString === 'Fini'" (click)="review(row)" class="tip" matTooltip="Revoir">
             <mat-icon>class</mat-icon>
           </button>
-          <button mat-icon-button tabindex="-1" *ngIf="row.statusAsString === 'PasCommence' || row.statusAsString === 'Fini'" (click)="startQuiz(row)" class="tip" matTooltip="Commencer">
+          <button mat-icon-button tabindex="-1" *ngIf="row.statusAsString === 'PasCommence' || row.statusAsString === 'Fini' && !isTest" (click)="startQuiz(row)" class="tip" matTooltip="Commencer">
             <mat-icon>add_box</mat-icon>
           </button>
         </td>

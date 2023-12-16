@@ -22,7 +22,10 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlatDataSource, MatTreeFlattener, MatTreeModule} from '@angular/material/tree';
 import {MatButtonModule} from '@angular/material/button';
-
+import { FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {JsonPipe} from '@angular/common';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatNativeDateModule} from '@angular/material/core';
 @Component({
   selector: 'quiz-edition',
   templateUrl: './quiz-edition.component.html',
@@ -30,15 +33,21 @@ import {MatButtonModule} from '@angular/material/button';
 })
 
 export class QuizEditionComponent implements OnInit{
-  quizType: string = "";
+  public isNew: boolean = false;
   public isTest?: boolean;
-
+  range = new FormGroup({
+    ctlStart: new FormControl<Date | null>(null),
+    ctlEnd: new FormControl<Date | null>(null),
+  });
   public frm!: FormGroup;
   public ctlName!: FormControl;
   public ctlDescription!: FormControl;
   public ctlDataBase!: FormControl;
   public ctlRadioGroup!: FormControl;
   public ctlPublished!: FormControl;
+  public ctlDateRange!: FormControl;
+  public ctlStart!: FormControl;
+  public ctlFinish!: FormControl;
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
@@ -53,12 +62,18 @@ export class QuizEditionComponent implements OnInit{
     this.ctlRadioGroup = this.fb.control('', []);
     this.ctlDataBase = this.fb.control('', []);
     this.ctlPublished = this.fb.control(false);
+    this.ctlDateRange = this.fb.control('', []);
+    this.ctlStart = this.fb.control('', []);
+    this.ctlFinish = this.fb.control('', []);
     this.frm = this.fb.group({
       name: this.ctlName,
       description: this.ctlDescription,
       radioGroup: this.ctlRadioGroup,
       dataBase: this.ctlDataBase,
-      published: this.ctlPublished
+      published: this.ctlPublished,
+      dateRange: this.ctlDateRange,
+      start: this.ctlStart,
+      finish: this.ctlFinish,
     });
   }
 
@@ -73,11 +88,16 @@ export class QuizEditionComponent implements OnInit{
         this.ctlRadioGroup.setValue(quiz?.isTest ? 'test' : 'trainning');
         this.ctlPublished.setValue(quiz?.isPublished);
         this.ctlDataBase.setValue(quiz?.database.name);
-
+        this.ctlDateRange.setValue(quiz?.start);
+        this.ctlStart.setValue(quiz?.start);
+        this.ctlFinish.setValue(quiz?.finish);
         console.log('--> Quiz NAME:', quiz?.name);
         console.log('--> isTest', this.isTest);
         console.log('--> RADIO:', this.ctlRadioGroup.value);
         console.log('--> Database:', quiz?.database.name);
+        console.log('--> Range:', this.ctlDateRange.value);
+        console.log('--> Start DATE:', this.ctlStart.value);
+        console.log('--> End DATE:', this.ctlFinish.value);
       });
     });
   }

@@ -57,7 +57,7 @@ public class UsersController : ControllerBase{ //DTO: pas toutes les donnes sont
         return _mapper.Map<UserDTO>(user);
     }
 
-
+    [AllowAnonymous]
     [HttpPost]
     public async Task<ActionResult<UserDTO>> PostUser(UserWithPasswordDTO user) {
         // Utilise le mapper pour convertir le DTO qu'on a reçu en une instance de Member

@@ -99,4 +99,41 @@ public class AttemptController : ControllerBase{
     // Retourne le membre
     return _mapper.Map<AttemptDTO>(attempt);
   }
+
+  // POST: api/Attempts
+  // [AllowAnonymous]
+  // [HttpPost]
+  // public async Task<ActionResult<AttemptDTO>> PostAttempt(AttemptDTO attemptDTO) {
+  //   // Récupère en BD le quiz dont l'id est passé en paramètre dans l'url
+  //   var quiz = await _context.Quizzes
+  //       .Include(q => q.Questions)
+  //       .Include(q => q.Database)
+  //       .Include(q => q.Attempts)
+  //       .FirstOrDefaultAsync(q => q.Id == attemptDTO.QuizId);
+  //   // Si aucun quiz n'a été trouvé, renvoyer une erreur 404 Not Found
+  //   if (quiz == null)
+  //     return NotFound();
+  //   // Créer un nouvel attempt
+  //   var attempt = new Attempt {
+  //     QuizId = attemptDTO.QuizId,
+  //     StudentId = attemptDTO.StudentId,
+  //     Answers = new List<Answer>()
+  //   };
+  //   // Ajouter les réponses à l'attempt
+  //   foreach (var answer in attemptDTO.Answers) {
+  //     attempt.Answers.Add(new Answer {
+  //       AttemptId = attempt.Id,
+  //       QuestionId = answer.QuestionId,
+
+  //     });
+  //   }
+  //   // Ajouter l'attempt au quiz
+  //   quiz.Attempts.Add(attempt);
+  //   // Ajouter l'attempt à la BD
+  //   _context.Attempts.Add(attempt);
+  //   // Sauvegarder les changements
+  //   await _context.SaveChangesAsync();
+  //   // Retourner le DTO de l'attempt
+  //   return _mapper.Map<AttemptDTO>(attempt);
+  // }
 }

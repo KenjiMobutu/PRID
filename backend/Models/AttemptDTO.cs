@@ -11,8 +11,8 @@ public class AttemptDTO{
     public int StudentId { get; set; }
     public Student Student { get; set; } = null!;
 
-    [ForeignKey(nameof(QuizDTOId))]
-    public int QuizDTOId { get; set; }
+    [ForeignKey(nameof(QuizId))]
+    public int QuizId { get; set; }
     public Quiz QuizDTO { get; set; } = null!;
 
     public ICollection<AnswerDTO> Answers { get; set; } = new HashSet<AnswerDTO>();
