@@ -76,30 +76,30 @@ public class AnswerController : ControllerBase{
   }
 
     [AllowAnonymous]
-    [HttpGet("{id}/{sql}/{dbName}")]
+    [HttpPost("queryPost")]
     // Vérifie si la requête SQL est valide
-    public ActionResult CheckSql(int id,string sql,string dbName){
+    public ActionResult CheckSql(SqlDTO sqlDTO){
       // Exécute la requête SQL avec la chaîne sql
-        string connectionString = $"server=localhost;database={dbName};uid=root;password=root";
+        string connectionString = $"server=localhost;database={sqlDTO.DbName};uid=root;password=root";
         using MySqlConnection connection = new MySqlConnection(connectionString);
         DataTable table;
       try{
-        Console.WriteLine("---> sql: " + sql);
+        //Console.WriteLine("---> sql: " + sql);
         connection.Open();
-        MySqlCommand command = new MySqlCommand("SET sql_mode = 'STRICT_ALL_TABLES'; " + sql, connection);
+        MySqlCommand command = new MySqlCommand("SET sql_mode = 'STRICT_ALL_TABLES'; " + sqlDTO.Query, connection);
         MySqlDataAdapter adapter = new MySqlDataAdapter(command);
         table = new DataTable();
         adapter.Fill(table);
 
         // Comparer les données avec les solutions associées à la question
         // récupérer les solutions associées à la question
-        List<Solution> solutions = RetrieveSolutionsForQuestion(id);
+        List<Solution> solutions = RetrieveSolutionsForQuestion(sqlDTO.QuestionId);
         // Afficher les solutions en console
         foreach (Solution solution in solutions){
           Console.WriteLine("---> solution: " + solution.Sql);
         }
         // Comparer les données de la requête SQL avec les solutions
-        bool isValid = CompareDataWithSolutions(table, solutions,dbName);
+        bool isValid = CompareDataWithSolutions(table, solutions,sqlDTO.DbName);
         Console.WriteLine("---> isValid: " + isValid);
         if (isValid){
             return Ok(new { message = "Requête SQL valide." });

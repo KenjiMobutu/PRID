@@ -52,7 +52,7 @@ public class AttemptController : ControllerBase{
     return _mapper.Map<AttemptDTO>(attempt);
   }
 
-  // GET: api/attempt/id/answers
+  // GET: api/attempt/attemptId/answers
   [AllowAnonymous]
   [HttpGet("{id}/answers")]
   public async Task<ActionResult<IEnumerable<AnswerDTO>>> GetAnswers(int id) {
@@ -101,39 +101,37 @@ public class AttemptController : ControllerBase{
   }
 
   // POST: api/Attempts
-  // [AllowAnonymous]
-  // [HttpPost]
-  // public async Task<ActionResult<AttemptDTO>> PostAttempt(AttemptDTO attemptDTO) {
-  //   // Récupère en BD le quiz dont l'id est passé en paramètre dans l'url
-  //   var quiz = await _context.Quizzes
-  //       .Include(q => q.Questions)
-  //       .Include(q => q.Database)
-  //       .Include(q => q.Attempts)
-  //       .FirstOrDefaultAsync(q => q.Id == attemptDTO.QuizId);
-  //   // Si aucun quiz n'a été trouvé, renvoyer une erreur 404 Not Found
-  //   if (quiz == null)
-  //     return NotFound();
-  //   // Créer un nouvel attempt
-  //   var attempt = new Attempt {
-  //     QuizId = attemptDTO.QuizId,
-  //     StudentId = attemptDTO.StudentId,
-  //     Answers = new List<Answer>()
-  //   };
-  //   // Ajouter les réponses à l'attempt
-  //   foreach (var answer in attemptDTO.Answers) {
-  //     attempt.Answers.Add(new Answer {
-  //       AttemptId = attempt.Id,
-  //       QuestionId = answer.QuestionId,
+  [AllowAnonymous]
+  [HttpPost("{quizId}/{studentId}")]
+  public async Task<ActionResult<AttemptDTO>> PostAttempt(int quizId, int studentId) {
+    // Récupère en BD le quiz dont l'id est passé en paramètre dans l'url
+    var newAttempt = new Attempt {
+      Start = DateTime.Now,
+      StudentId = studentId,
+      QuizId = quizId,
+    };
+    _context.Attempts.Add(newAttempt);
+    // Sauvegarder les changements
+    await _context.SaveChangesAsync();
+    var attemptDTO = _mapper.Map<AttemptDTO>(newAttempt);
+    // Retourner le DTO de l'attempt
+    return CreatedAtAction(nameof(GetOne), new { id = attemptDTO.Id }, attemptDTO);
+  }
 
-  //     });
-  //   }
-  //   // Ajouter l'attempt au quiz
-  //   quiz.Attempts.Add(attempt);
-  //   // Ajouter l'attempt à la BD
-  //   _context.Attempts.Add(attempt);
-  //   // Sauvegarder les changements
-  //   await _context.SaveChangesAsync();
-  //   // Retourner le DTO de l'attempt
-  //   return _mapper.Map<AttemptDTO>(attempt);
-  // }
+  //PUT: api/attempt/attemptId/finish
+  [AllowAnonymous]
+  [HttpPut("{attemptId}/finish")]
+  public async Task<ActionResult<AttemptDTO>> PutAttempt(int attemptId) {
+    // Récupère en BD l'attempt dont l'id est passé en paramètre dans l'url
+    var attempt = await _context.Attempts.FindAsync(attemptId);
+    // Si aucun attempt n'a été trouvé, renvoyer une erreur 404 Not Found
+    if (attempt == null)
+      return NotFound();
+    attempt.Finish = DateTime.Now;
+    // Sauvegarder les changements
+    await _context.SaveChangesAsync();
+    var attemptDTO = _mapper.Map<AttemptDTO>(attempt);
+    // Retourner le DTO de l'attempt
+    return CreatedAtAction(nameof(GetOne), new { id = attemptDTO.Id }, attemptDTO);
+  }
 }

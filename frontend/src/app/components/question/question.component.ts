@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild,Input, SimpleChanges } from '@angular/core';
-import { Quiz, QuizStatus } from '../../models/quiz';
+import { Attempt, Quiz, QuizStatus } from '../../models/quiz';
 import { QuizService } from 'src/app/services/quiz.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash-es';
@@ -10,6 +10,9 @@ import { SolutionService } from 'src/app/services/solution.service';
 import { CodeEditorComponent } from '../code-editor/code-editor.component';
 import { AnswerService } from 'src/app/services/answer.service';
 import { tr } from 'date-fns/locale';
+import { AttemptService } from 'src/app/services/attempt.service';
+import { AuthenticationService } from 'src/app/services/authentication.service';
+import { User } from 'oidc-client';
 @Component({
   selector: 'question',
   templateUrl: './question.component.html',
@@ -43,6 +46,7 @@ export class QuestionComponent implements OnInit{
   columnNames: string[] = []; // Initialisation noms de colonnes
   dataRows: string[][] = []; // Initialisation des lignes de données
   isQuizFinished = false;
+  user : number | undefined;
 
   constructor(
     private route: ActivatedRoute,
@@ -50,10 +54,13 @@ export class QuestionComponent implements OnInit{
     private service: QuestionService,
     private quizService: QuizService,
     private solutionService: SolutionService,
-    private answerService: AnswerService
+    private answerService: AnswerService,
+    private attemptService: AttemptService,
+    private authService: AuthenticationService
     ) { }
 
     ngOnInit() {
+      this.user = this.authService.currentUser?.id;
       this.route.params.subscribe(params => {
         const questionId = +params['id'];
         // l'ID de la question actuelle
@@ -143,6 +150,7 @@ export class QuestionComponent implements OnInit{
           console.error('Erreur lors de la clôture du quiz:', error);
         });
       }
+      this.closeAttempt();
     }
 
 
@@ -173,6 +181,19 @@ export class QuestionComponent implements OnInit{
     send(){
       this.showSolutions = false;
       this.sendAnswer();
+    }
+
+    closeAttempt() {
+      this.attemptService.getByQuizId(this.quiz?.id ?? 0).subscribe(attempts => {
+        if (attempts && attempts.length > 0) {
+          const lastAttempt = attempts[attempts.length - 1]; // Accéder à la dernière tentative
+          if (lastAttempt && lastAttempt.id !== undefined) {
+            this.attemptService.update(lastAttempt.id).subscribe(res => {
+              console.log('----> *1* Résultat:', res);
+            });
+          }
+        }
+      });
     }
 
     sendAnswer() {

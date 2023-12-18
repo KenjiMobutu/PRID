@@ -13,10 +13,10 @@ import "ace-builds/src-noconflict/ext-language_tools";
     </form>
     `,
     styles: [`
-      .app-ace-editor {
-        border: 2px solid #f8f9fa;
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-      }`,
+        .app-ace-editor {
+            border: 2px solid #f8f9fa;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }`,
     ],
     // Déclare un fournisseur de NG_VALUE_ACCESSOR pour indiquer comment le composant doit fonctionner en tant que
     // contrôle Angular, ce qui permet de lier des valeurs bidirectionnelles avec [(ngModel)] ou [ngModel].
@@ -123,6 +123,31 @@ export class CodeEditorComponent implements AfterViewInit, ControlValueAccessor 
     private static getTableNames() {
         return ["SPJ", "S", "P", "J"];
     }
+    // private async getTableNames(): Promise<string[]> {
+    //     const tableNames: string[] = [];
+
+    //     try {
+    //         const connection = await mysql.createConnection({
+    //             host: 'localhost',
+    //             user: 'root',
+    //             password: 'root',
+    //             database: 'facebook'
+    //         });
+    //         const [rows] = await connection.query("SHOW TABLES");
+    //         if (Array.isArray(rows)) {
+    //             rows.forEach((row: any) => {
+    //                 const value = Object.values(row)[0];
+    //                 if (typeof value === 'string') {
+    //                     tableNames.push(value);
+    //                 }
+    //             });
+    //         }
+    //         await connection.end();
+    //     } catch (error) {
+    //         console.error('Error while getting table names:', error);
+    //     }
+    //     return tableNames;
+    // }
 
     /**
      * Renvoie un tableau contenant les noms des colonnes des tables SQL a afficher dans la complétion.

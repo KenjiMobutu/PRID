@@ -16,6 +16,7 @@ import { th } from 'date-fns/locale';
 import { AnswerService } from 'src/app/services/answer.service';
 import { AttemptService } from 'src/app/services/attempt.service';
 import { forkJoin, tap } from 'rxjs';
+
 @Component({
   selector: 'quiz-test',
   templateUrl: './quiz-test.component.html',
@@ -28,6 +29,7 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
   dataSource: MatTableDataSource<Quiz> = new MatTableDataSource();
   evaluation: string = "N/A";
   answerCount: number = 0;
+  private user : number | undefined;
 
   evaluations: string[] = [];
 
@@ -50,12 +52,14 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private service: QuestionService,
     private answerService: AnswerService,
-    private attemptService: AttemptService
+    private attemptService: AttemptService,
+
   ) {
     this.state = this.stateService.quizTestListState;
   }
 
   ngOnInit(): void {
+    this.user = this.authService.currentUser?.id;
     this.columsInit();
     this.refresh();
   }
@@ -88,6 +92,7 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
   }
 
   startQuiz(quiz: Quiz) {
+    this.newAttempt(quiz);
     const quizId = quiz.id ?? 0; // Si quiz.id est undefined, utilisez 0 à la place
     console.log('^^^^----> Quiz ID:', quizId);
     this.quizService.openQuiz(quizId).subscribe(() => {
@@ -104,6 +109,16 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
         }
       });
     });
+  }
+
+  newAttempt(quiz: Quiz){
+    this.attemptService.add(quiz?.id!, this.user!).subscribe(
+      res => {
+        console.log('----> *1* Résultat:', res);
+        //console.log('----> *1* Database:', this.quiz?.database.name);
+        console.log('----> *1* Attempt:', this.attemptService);
+      }
+    );
   }
 
   refresh() {
