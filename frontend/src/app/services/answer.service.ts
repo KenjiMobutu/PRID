@@ -14,9 +14,19 @@ import { pl } from "date-fns/locale";
 export class AnswerService {
   constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) { }
 
-  sendAnswer(questionId: number, Query: string, DbName:string): Observable<boolean> {
+  postQuery(questionId: number, Query: string, DbName:string): Observable<boolean> {
     console.log("--> SQL:"+Query);
     return this.http.post<Solution>(`${this.baseUrl}api/answer/queryPost`,{questionId, Query, DbName}).pipe(
+      map(res => true),
+      catchError(err => {
+        console.error(err);
+        return of(false);
+      })
+    );
+  }
+
+  sendAnswer(questionId: number, attemptId: number, sql: string, isCorrect: boolean): Observable<boolean> {
+    return this.http.post<Answer>(`${this.baseUrl}api/answer/sendAnswer`, {questionId, attemptId, sql, isCorrect}).pipe(
       map(res => true),
       catchError(err => {
         console.error(err);

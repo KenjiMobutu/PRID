@@ -177,10 +177,18 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
         })
       );
     });
-
+    console.log('----> quiz TOTAL POSSIBLE SCORE', quiz.name + ' TOTAL POSSIBLE SCORE -->' + totalPossibleScore);
     forkJoin(observables).subscribe(() => {
       // Calculer le score sur 10
+      if (totalCorrectAnswers === 0 || totalAnswers === 0) {
+        quiz.evaluation = "0/10";
+        return;
+      }
       const scoreOnTen = (totalCorrectAnswers / totalPossibleScore) * 10;
+
+      console.log('----> quiz TOTAL ANSWERS', quiz.name + ' TOTAL ANSWERS -->' + totalAnswers);
+      console.log('----> quiz TOTAL CORRECT ANSWERS', quiz.name + ' TOTAL CORRECT ANSWERS -->' + totalCorrectAnswers);
+      console.log('----> quiz SCORE ON TEN', quiz.name + ' SCORE -->' + scoreOnTen);
       quiz.evaluation = scoreOnTen + "/10";
     });
   }

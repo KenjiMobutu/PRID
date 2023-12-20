@@ -84,6 +84,7 @@ export class QuestionComponent implements OnInit{
           this._isTest = this.quiz?.isTest;
           console.log('---> Quiz!!:', this.quiz);
           this.isQuizFinished = this.quiz?.status === QuizStatus.Fini;
+          console.log('---> Quiz STATUS FINISHED:', this.isQuizFinished );
           console.log('---> Database NAME!!:', this.quiz?.database.name);
           this.questions = quiz?.questions || [];
           console.log('---->  Questions:', this.questions);
@@ -201,12 +202,19 @@ export class QuestionComponent implements OnInit{
       this.showSolutions = false;
       this.quizService.getOne(this.question?.quizId ?? 0).subscribe(quiz => {
         if (quiz?.database.name !== undefined) {
-          this.answerService.sendAnswer(this.question?.id ?? 0, this.query,quiz?.database.name).subscribe(res => {
+          this.answerService.postQuery(this.question?.id ?? 0, this.query,quiz?.database.name).subscribe(res => {
           console.log('----> *2* ID:', this.question?.id);
           console.log('----> *2* Query:', this.query);
           console.log('----> ** Résultat:', res);
           console.log('----> *sendAnswer* Database:', quiz?.database.name);
           this.res = res;
+          if (this.question?.id !== undefined && quiz?.attempts[0]?.id !== undefined) {
+            var attempt = quiz?.attempts?.[quiz?.attempts.length -1];
+            if(attempt?.id !== undefined)
+              this.answerService.sendAnswer(this.question.id, attempt.id, this.query, res).subscribe(res => {
+                  console.log('----> *3* Résultat:', res);
+              });
+          }
           if(this.query === ""){
             this.answerMessage = `Vous n'avez pas entré de requête SQL!`;
           }else{

@@ -225,26 +225,22 @@ public class AnswerController : ControllerBase{
   }
 
   // POST: api/answer
-  // [AllowAnonymous]
-  // [HttpPost]
-  // public async Task<ActionResult<AnswerDTO>> PostAnswer(AnswerDTO answerDTO) {
+  [AllowAnonymous]
+  [HttpPost("sendAnswer")]
+  public async Task<ActionResult<AnswerDTO>> PostAnswer(AnswerDTO answerDTO) {
   //   // Récupère en BD la question dont l'id est passé en paramètre dans l'url
-  //   var question = await _context.Questions.FindAsync(answerDTO.QuestionId);
-  //   // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
-  //   if (question == null)
-  //     return NotFound();
-  //   // Créer une nouvelle réponse
-  //   var answer = new Answer {
-  //     AttemptId = answerDTO.AttemptId,
-  //     QuestionId = answerDTO.QuestionId,
-  //     Sql = answerDTO.Sql,
-  //     IsCorrect = answerDTO.IsCorrect
-  //   };
-  //   // Ajouter la réponse à l'attempt
-  //   _context.Answers.Add(answer);
-  //   // Sauvegarde les changements
-  //   await _context.SaveChangesAsync();
-  //   // Retourne un statut 201 Created avec l'entité créée
-  //   return CreatedAtAction(nameof(GetOne), new { id = answer.Id }, _mapper.Map<AnswerDTO>(answer));
-  // }
+    // Créer une nouvelle réponse
+    var answer = new Answer {
+      AttemptId = answerDTO.AttemptId,
+      QuestionId = answerDTO.QuestionId,
+      Sql = answerDTO.Sql,
+      IsCorrect = answerDTO.IsCorrect
+    };
+    // Ajouter la réponse à l'attempt
+    _context.Answers.Add(answer);
+    // Sauvegarde les changements
+    await _context.SaveChangesAsync();
+    // Retourne un statut 201 Created avec l'entité créée
+    return CreatedAtAction(nameof(GetOne), new { id = answer.Id }, _mapper.Map<AnswerDTO>(answer));
+  }
 }
