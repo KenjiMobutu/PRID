@@ -31,6 +31,7 @@ import {TestCodeEditorComponent} from '../components/code-editor/test-code-edito
 import {CodeEditorComponent} from '../components/code-editor/code-editor.component';
 import { TeacherComponent } from '../components/teacher/teacher.component';
 import { QuizEditionComponent } from '../components/quiz-edition/quiz-edition.component';
+import {TruncatePipe} from '../helpers/truncatePipe';
 @NgModule({
   declarations: [
     AppComponent,
@@ -51,7 +52,8 @@ import { QuizEditionComponent } from '../components/quiz-edition/quiz-edition.co
     TestCodeEditorComponent,
     CodeEditorComponent,
     TeacherComponent,
-    QuizEditionComponent
+    QuizEditionComponent,
+    TruncatePipe
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

@@ -92,7 +92,7 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
   }
 
   startQuiz(quiz: Quiz) {
-    //this.newAttempt(quiz);
+    this.newAttempt(quiz);
     const quizId = quiz.id ?? 0; // Si quiz.id est undefined, utilisez 0 à la place
     console.log('^^^^----> Quiz ID:', quizId);
     this.quizService.openQuiz(quizId).subscribe(() => {

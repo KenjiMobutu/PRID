@@ -26,6 +26,8 @@ import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {JsonPipe} from '@angular/common';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material/core';
+import {MatAccordion, MatExpansionModule} from '@angular/material/expansion';
+import { TruncatePipe } from 'src/app/helpers/truncatePipe';
 @Component({
   selector: 'quiz-edition',
   templateUrl: './quiz-edition.component.html',
@@ -48,6 +50,8 @@ export class QuizEditionComponent implements OnInit{
   public ctlDateRange!: FormControl;
   public ctlStart!: FormControl;
   public ctlFinish!: FormControl;
+  panelOpenState = false;
+  questions: Question[] = [];
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
@@ -98,6 +102,8 @@ export class QuizEditionComponent implements OnInit{
         console.log('--> Range:', this.ctlDateRange.value);
         console.log('--> Start DATE:', this.ctlStart.value);
         console.log('--> End DATE:', this.ctlFinish.value);
+        console.log('--> Quiz:', quiz);
+        this.questions = quiz?.questions ?? [];
       });
     });
   }

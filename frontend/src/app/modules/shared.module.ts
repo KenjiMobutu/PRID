@@ -19,20 +19,22 @@ import { MatDateFnsModule } from '@angular/material-date-fns-adapter';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatRadioModule } from '@angular/material/radio';
 import {MatTreeModule} from '@angular/material/tree';
+import {  } from '@angular/material/core';
+import { MatExpansionModule } from '@angular/material/expansion';
 @NgModule({
     imports: [
         MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatInputModule,
         MatTableModule, MatPaginatorModule, MatSortModule, MatIconModule,
         MatSlideToggleModule, MatDialogModule, MatSnackBarModule, MatTabsModule,
         MatSelectModule, MatCardModule, MatDatepickerModule, MatDateFnsModule,
-        MatTooltipModule, MatRadioModule, MatTreeModule
+        MatTooltipModule, MatRadioModule, MatTreeModule,MatExpansionModule,
     ],
     exports: [
         MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatInputModule,
         MatTableModule, MatPaginatorModule, MatSortModule, MatIconModule,
         MatSlideToggleModule, MatDialogModule, MatSnackBarModule, MatTabsModule,
         MatSelectModule, MatCardModule, MatDatepickerModule, MatDateFnsModule,
-        MatTooltipModule, MatRadioModule, MatTreeModule
+        MatTooltipModule, MatRadioModule, MatTreeModule,MatExpansionModule,
     ],
 })
 

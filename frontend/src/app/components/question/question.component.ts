@@ -193,10 +193,10 @@ export class QuestionComponent implements OnInit{
     }
 
     send(){
-      this.newAttempt(this.quiz!);
+      //this.newAttempt(this.quiz!);
       this.showSolutions = false;
       this.envoyer();
-      //this.sendAnswer();
+      this.sendAnswer();
     }
 
     newAttempt(quiz: Quiz){
