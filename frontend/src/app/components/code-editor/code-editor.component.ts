@@ -4,7 +4,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import * as ace from "ace-builds";
 import "ace-builds/src-noconflict/mode-mysql";
 import "ace-builds/src-noconflict/ext-language_tools";
-
+import { QuestionService } from "src/app/services/question.service";
+import { DataBase } from "src/app/models/database";
 @Component({
     selector: "code-editor",
     template: `
@@ -39,7 +40,10 @@ export class CodeEditorComponent implements AfterViewInit, ControlValueAccessor 
     permet à un composant d'agir comme un contrôle Angular.
     */
 
-    constructor() { }
+    constructor(private questionService: QuestionService) {
+        CodeEditorComponent._questionService = questionService;
+
+    }
 
     // permet d'accéder à l'objet DOM qui correspond au DIV qui contient l'éditeur
     @ViewChild("editor") private _editor!: ElementRef<HTMLElement>;
@@ -51,6 +55,15 @@ export class CodeEditorComponent implements AfterViewInit, ControlValueAccessor 
     private _readOnly: boolean = false;
     // contient la fonction de callback qui sera appelée quand la valeur de l'éditeur change
     private _onChange: any;
+    private static _database: DataBase;
+    private static _questionService: QuestionService;
+
+    get database(): DataBase  {
+        return CodeEditorComponent._database!;
+    }
+    @Input() set database(value: DataBase) {
+        CodeEditorComponent._database = value;
+    }
 
     ngAfterViewInit(): void {
         ace.config.set("fontSize", "1.5rem");
@@ -78,7 +91,7 @@ export class CodeEditorComponent implements AfterViewInit, ControlValueAccessor 
         ace.config.loadModule("ace/ext/language_tools", function () {
             const langTools = ace.require("ace/ext/language_tools");
             langTools.addCompleter({
-                getCompletions: (editor:any, session: any, pos: any, prefix: any, callback: any) => {
+                getCompletions: async (editor:any, session: any, pos: any, prefix: any, callback: any) => {
                     // Si le préfixe (texte précédant la position du curseur) est vide, il n'y a aucune suggestion.
                     if (prefix.length === 0) {
                         callback(null, []);
@@ -86,8 +99,10 @@ export class CodeEditorComponent implements AfterViewInit, ControlValueAccessor 
                     }
 
                     // Récupère les noms des tables, des colonnes et des mots-clés.
-                    const tables = CodeEditorComponent.getTableNames();
-                    const columns = CodeEditorComponent.getColumnNames();
+                    const tables = await CodeEditorComponent.getTableNames(CodeEditorComponent._database.name!);
+                    const columns = await CodeEditorComponent.getColumnNames(CodeEditorComponent._database.name!);
+                    //const tables = await CodeEditorComponent.getTableNames();
+                    //const columns = await CodeEditorComponent.getColumnNames();
                     const keywords = CodeEditorComponent.getKeywords();
 
                     // Crée un tableau pour stocker les différents types de complétions.
@@ -120,42 +135,35 @@ export class CodeEditorComponent implements AfterViewInit, ControlValueAccessor 
      *
      * **TODO: Ici, géré de manière statique, mais devrait être dynamique en fonction de la BD ciblée.**
      */
-    private static getTableNames() {
-        return ["SPJ", "S", "P", "J"];
-    }
-    // private async getTableNames(): Promise<string[]> {
-    //     const tableNames: string[] = [];
-
-    //     try {
-    //         const connection = await mysql.createConnection({
-    //             host: 'localhost',
-    //             user: 'root',
-    //             password: 'root',
-    //             database: 'facebook'
-    //         });
-    //         const [rows] = await connection.query("SHOW TABLES");
-    //         if (Array.isArray(rows)) {
-    //             rows.forEach((row: any) => {
-    //                 const value = Object.values(row)[0];
-    //                 if (typeof value === 'string') {
-    //                     tableNames.push(value);
-    //                 }
-    //             });
-    //         }
-    //         await connection.end();
-    //     } catch (error) {
-    //         console.error('Error while getting table names:', error);
-    //     }
-    //     return tableNames;
+    // private static getTableNames() {
+    //     return ["SPJ", "S", "P", "J"];
     // }
+    private static getTableNames(dbname: string): Promise<any[]> {
+        return new Promise<any[]>((resolve) => {
+            CodeEditorComponent._questionService.getData(dbname).subscribe((res: any)=> {
+                console.log("---> *Code editor* TABLES : " + res);
+                resolve(res);
+            });
+        });
+    }
+
 
     /**
      * Renvoie un tableau contenant les noms des colonnes des tables SQL a afficher dans la complétion.
      *
      * **TODO: Ici, géré de manière statique, mais devrait être dynamique en fonction de la BD ciblée.**
      */
-    private static getColumnNames() {
-        return ["ID_S", "ID_P", "ID_J", "PNAME", "COLOR", "CITY", "JNAME", "SNAME", "STATUS", "WEIGHT", "QTY", "DATE_DERNIERE_LIVRAISON"];
+    // private static getColumnNames() {
+    //     return ["ID_S", "ID_P", "ID_J", "PNAME", "COLOR", "CITY", "JNAME", "SNAME", "STATUS", "WEIGHT", "QTY", "DATE_DERNIERE_LIVRAISON"];
+    // }
+
+    private static getColumnNames(dbname: string): Promise<any[]> {
+        return new Promise<any[]>((resolve) => {
+            CodeEditorComponent._questionService.getColumns(dbname).subscribe((res: any)=> {
+                console.log("---> *Code editor* Columns : " + res);
+                resolve(res);
+            });
+        });
     }
 
     /**

@@ -9,6 +9,8 @@ using prid_2324_a11.Helpers;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using MySql.Data.MySqlClient;
+using System.Data;
 
 namespace prid_2324_a11.Controllers;
 
@@ -19,6 +21,8 @@ public class QuestionController :  ControllerBase{
     private readonly PridContext _context;
     private readonly IMapper _mapper;
     private readonly TokenHelper _tokenHelper;
+
+    private string[]? columnNames;
 
     public QuestionController(PridContext context, IMapper mapper) {
         _context = context;
@@ -71,6 +75,89 @@ public class QuestionController :  ControllerBase{
             return NotFound();
         // Retourne le membre
         return _mapper.Map<QuizDTO>(question.Quiz);
+    }
+
+    [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Student, Role.Admin)]
+    [HttpGet("getdata/{dbname}")]
+    public async Task<ActionResult<Dictionary<string, List<string>>>> GetData(string dbname) {
+
+        string connectionString = $"server=localhost;database={dbname};uid=root;password=root";
+
+        using MySqlConnection connection = new MySqlConnection(connectionString);
+        List<string> tableNames = new List<string>();
+
+        try {
+            connection.Open();
+            DataTable schema = connection.GetSchema("Tables");
+
+            foreach (DataRow row in schema.Rows) {
+                string? tableName = row["TABLE_NAME"]?.ToString();
+                if (tableName != null) {
+                    tableNames.Add(tableName);
+                }
+            }
+        } catch (Exception e) {
+            Console.WriteLine($"-->Error: {e.Message}");
+        }
+
+        return Ok(tableNames);
+    }
+
+    [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Student, Role.Admin)]
+    [HttpGet("GetColumns/{dbName}")]
+    public ActionResult<Dictionary<string, List<string>>> GetColumns(string dbName) {
+        string connectionString = $"server=localhost;database={dbName};uid=root;password=root";
+
+        using MySqlConnection connection = new MySqlConnection(connectionString);
+        List<string> columnNames = new List<string>();
+
+        try {
+            connection.Open();
+            DataTable schema = connection.GetSchema("Columns");
+
+            foreach (DataRow row in schema.Rows) {
+                string? columnName = row["COLUMN_NAME"].ToString();
+                if (columnName != null)
+                    columnNames.Add(columnName);
+            }
+        } catch (Exception e) {
+            Console.WriteLine($"--> Error: {e.Message}");
+        }
+
+        return Ok(columnNames);
+    }
+
+    [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Student, Role.Admin)]
+    [HttpPost("queryPost")]
+    public async Task<ActionResult<object>> Sql(SqlDTO sqldto){
+        //recupere la premiere solution de la question
+        string firstSolution = await _context.Solutions.Where(s => s.QuestionId == sqldto.QuestionId).Select(s => s.Sql).FirstOrDefaultAsync();
+        if (firstSolution  == null){
+            // Si aucune solution n'a été trouvée, renvoi une erreur 404 Not Found
+            return NotFound();
+        }
+        Console.WriteLine("---> first Solution  : " + firstSolution );
+        SqlDTO sqlQuery = new SqlDTO{
+            QuestionId = sqldto.QuestionId,
+            Query = firstSolution ,
+            DbName = sqldto.DbName
+        };
+
+        QueryDTO query = sqldto.ExecuteQuery(); //j'execute la query du user
+
+        if(query.Error.Length > 0)   //dans ma executeQuery je returne une erreur donc je la check ici (sinon tu auras une erreur 500)
+            return query;
+
+        QueryDTO solutionQuery = sqlQuery.ExecuteQuery();
+
+        if (query.Data is not null && solutionQuery.Data is not null)
+            query.CheckQueries(solutionQuery);
+        else
+            query.Error = new string[] { "Errors while sending the data" };
+        return query;
     }
 
 }

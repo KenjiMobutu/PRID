@@ -9,10 +9,12 @@ import { Solution } from 'src/app/models/solution';
 import { SolutionService } from 'src/app/services/solution.service';
 import { CodeEditorComponent } from '../code-editor/code-editor.component';
 import { AnswerService } from 'src/app/services/answer.service';
-import { tr } from 'date-fns/locale';
+import { da, tr } from 'date-fns/locale';
 import { AttemptService } from 'src/app/services/attempt.service';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { User } from 'oidc-client';
+import { Data } from 'popper.js';
+import { DataBase } from 'src/app/models/database';
 @Component({
   selector: 'question',
   templateUrl: './question.component.html',
@@ -47,6 +49,13 @@ export class QuestionComponent implements OnInit{
   dataRows: string[][] = []; // Initialisation des lignes de données
   isQuizFinished = false;
   user : number | undefined;
+  database: string = "";
+  DB!: DataBase;
+  dataT: any;
+  errors: any;
+  badQuery!: boolean;
+  correctMessage: string = "";
+  correctQuery: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -56,7 +65,9 @@ export class QuestionComponent implements OnInit{
     private solutionService: SolutionService,
     private answerService: AnswerService,
     private attemptService: AttemptService,
-    private authService: AuthenticationService
+    private authService: AuthenticationService,
+    private questionService: QuestionService
+
     ) { }
 
     ngOnInit() {
@@ -69,6 +80,7 @@ export class QuestionComponent implements OnInit{
           this.question = question;
           this.questionInit(this.question);
           console.log('!!$!$!$!$!$$!  Question:', this.question);
+
         });
       });
     }
@@ -81,6 +93,8 @@ export class QuestionComponent implements OnInit{
         const quizId = question?.quizId ?? 0;
         this.quizService.getOne(quizId).subscribe(quiz => {
           this.quiz = quiz;
+          this.DB = this.quiz!.database;
+          this.database = quiz?.database.name ?? '';
           this._isTest = this.quiz?.isTest;
           console.log('---> Quiz!!:', this.quiz);
           this.isQuizFinished = this.quiz?.status === QuizStatus.Fini;
@@ -154,7 +168,6 @@ export class QuestionComponent implements OnInit{
       this.closeAttempt();
     }
 
-
     get isTest(): boolean | undefined {
       return this._isTest;
     }
@@ -180,8 +193,20 @@ export class QuestionComponent implements OnInit{
     }
 
     send(){
+      this.newAttempt(this.quiz!);
       this.showSolutions = false;
-      this.sendAnswer();
+      this.envoyer();
+      //this.sendAnswer();
+    }
+
+    newAttempt(quiz: Quiz){
+      this.attemptService.add(quiz?.id!, this.user!).subscribe(
+        res => {
+          console.log('----> *1* Résultat:', res);
+          //console.log('----> *1* Database:', this.quiz?.database.name);
+          console.log('----> *1* Attempt:', this.attemptService);
+        }
+      );
     }
 
     closeAttempt() {
@@ -198,8 +223,9 @@ export class QuestionComponent implements OnInit{
     }
 
     sendAnswer() {
-      this.showAnswer();
-      this.showSolutions = false;
+      //this.newAttempt(this.quiz!);
+      //this.showAnswer();
+      //this.showSolutions = false;
       this.quizService.getOne(this.question?.quizId ?? 0).subscribe(quiz => {
         if (quiz?.database.name !== undefined) {
           this.answerService.postQuery(this.question?.id ?? 0, this.query,quiz?.database.name).subscribe(res => {
@@ -215,26 +241,64 @@ export class QuestionComponent implements OnInit{
                   console.log('----> *3* Résultat:', res);
               });
           }
-          if(this.query === ""){
-            this.answerMessage = `Vous n'avez pas entré de requête SQL!`;
-          }else{
-            if ( res === true) {
-              console.log('----> ** Message texte:', res);
-              this.answerMessage = `Votre requête a retourné une réponse correcte!\n
-              Néanmoins, comparez votre solution avec celle(s) ci-dessous pour voir si vous n'avez pas eu un peu de chance... ;)`;
-              this.showSolutions = true;
-              this.showTable();
-              this.showRowCount();
-            }else{
-              console.log('----> ** Message texte:', res);
-              this.answerMessage = `Votre requête n'a pas retourné de réponse correcte!`;
-            }
-          }});
+          // if(this.query === ""){
+          //   this.answerMessage = `Vous n'avez pas entré de requête SQL!`;
+          // }else{
+          //   if ( res === true) {
+          //     console.log('----> ** Message texte:', res);
+          //     this.answerMessage = `Votre requête a retourné une réponse correcte!\n
+          //     Néanmoins, comparez votre solution avec celle(s) ci-dessous pour voir si vous n'avez pas eu un peu de chance... ;)`;
+          //     this.showSolutions = true;
+          //     this.showTable();
+          //     this.showRowCount();
+          //   }else{
+          //     console.log('----> ** Message texte:', res);
+          //     this.answerMessage = `Votre requête n'a pas retourné de réponse correcte!`;
+          //   }
+          // }
+        });
         }
       });
 
-      this.answerMessage ="";
-      this.showSolutions = false;
+      //this.answerMessage ="";
+      //this.showSolutions = false;
+    }
+
+    envoyer() {
+      this.showAnswer();
+        this.questionService.postQuery(this.question!.id!, this.query,this.database!).subscribe(
+          (data:any) => {
+            if(this.query === "")
+              this.answerMessage = `Vous n'avez pas entré de requête SQL!`;
+            this.errors = data.error;
+            if(this.errors.length >0){
+              this.res = false;
+              this.badQuery = true;
+              this.answerMessage = data.error;
+            }
+            if(data.correctMessage){
+              this.res = true;
+              this.answerMessage = data.correctMessage;
+              this.correctQuery = true;
+            }
+
+            this.showRowsCount = !this.showRowsCount;
+            this.showAnswerTable = !this.showAnswerTable;
+
+            this.rowsCount = data.data.length;
+            this.dataT = data;
+            this.dataRows =  data.data;
+            this.columnNames = data.columnNames;
+            console.log('----> *envoyer* DATA:', data);
+            console.log('----> *envoyer* Errors:', this.errors);
+            console.log('----> *envoyer* BadQuery:', this.badQuery);
+            console.log('----> *envoyer* CorrectMessage:', data.correctMessage);
+            console.log('----> *envoyer* RowsCount:', this.rowsCount);
+            console.log('----> *envoyer* Rows:', this.dataRows);
+            console.log('----> *envoyer* Columns:', this.columnNames);
+            this.showSolutions = true;
+          }
+        );
     }
 
     showAnswer(){

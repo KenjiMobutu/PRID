@@ -1,12 +1,13 @@
 import { Injectable, Inject } from "@angular/core";
 import { MatTableState } from "../helpers/mattable.state";
 import { HttpClient } from '@angular/common/http';
-import { Quiz, Question } from '../models/quiz';
+import { Quiz, Question, Query } from '../models/quiz';
 import { switchMap, tap } from 'rxjs/operators';
 
 import { catchError, map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { plainToInstance } from 'class-transformer';
+import { Solution } from "../models/solution";
 
 @Injectable({ providedIn: 'root' })
 export class QuestionService {
@@ -39,7 +40,7 @@ export class QuestionService {
     const url = `${this.baseUrl}api/quiz/${quizId}/questions`;
     return this.http.get<Question[]>(url);
   }
-  
+
   // Obtenez une question par ID
   getById(questionId: number): Observable<Question> {
     const url = `${this.baseUrl}api/question/${questionId}`;
@@ -56,6 +57,27 @@ export class QuestionService {
     return this.http.get<Question>(url).pipe(
       map(question => question?.id || null),
       catchError(err => of(null))
+    );
+  }
+
+  postQuery(questionId: number, Query: string, DbName:string): Observable<Solution | null> {
+    return this.http.post<Solution>(`${this.baseUrl}api/question/queryPost`,{questionId, Query, DbName}).pipe(
+      catchError(err => {
+        console.error(err);
+        return of(null);
+      })
+    );
+  }
+
+  getColumns(dataBase:string): Observable<string[]> {
+    return this.http.get<string[]>(`${this.baseUrl}api/question/getColumns/${dataBase}`).pipe(
+      map(res => res)
+    );
+  }
+
+  getData(dataBase:string): Observable<string[][]> {
+    return this.http.get<string[][]>(`${this.baseUrl}api/question/getData/${dataBase}`).pipe(
+      map(res => res)
     );
   }
 }

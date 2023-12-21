@@ -19,6 +19,10 @@ export class Question {
     answers: Answer[] = [];
 }
 
+export class Query{
+  ColumnNames = [] = [];
+}
+
 export enum QuizStatus{
   EnCours = 0,
   Fini = 1,

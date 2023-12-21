@@ -92,7 +92,7 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
   }
 
   startQuiz(quiz: Quiz) {
-    this.newAttempt(quiz);
+    //this.newAttempt(quiz);
     const quizId = quiz.id ?? 0; // Si quiz.id est undefined, utilisez 0 à la place
     console.log('^^^^----> Quiz ID:', quizId);
     this.quizService.openQuiz(quizId).subscribe(() => {
@@ -171,13 +171,14 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
     const observables = validAttempts.map(attempt => {
       return this.answerService.getAnswers(attempt.id!).pipe(
         tap(answers => {
+          console.log('----> quiz.answers:', quiz.questions.length + ' ' + quiz.name);
           totalAnswers += answers.length;
           totalCorrectAnswers += answers.filter(a => a.isCorrect).length;
-          totalPossibleScore += answers.length; //chaque question vaut 1 point
+          totalPossibleScore += quiz.questions.length ; //chaque question vaut 1 point
         })
       );
     });
-    console.log('----> quiz TOTAL POSSIBLE SCORE', quiz.name + ' TOTAL POSSIBLE SCORE -->' + totalPossibleScore);
+
     forkJoin(observables).subscribe(() => {
       // Calculer le score sur 10
       if (totalCorrectAnswers === 0 || totalAnswers === 0) {
@@ -185,9 +186,9 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
         return;
       }
       const scoreOnTen = (totalCorrectAnswers / totalPossibleScore) * 10;
-
-      console.log('----> quiz TOTAL ANSWERS', quiz.name + ' TOTAL ANSWERS -->' + totalAnswers);
-      console.log('----> quiz TOTAL CORRECT ANSWERS', quiz.name + ' TOTAL CORRECT ANSWERS -->' + totalCorrectAnswers);
+      console.log('----> TOTAL POSSIBLE SCORE', quiz.name + ' ' + totalPossibleScore);
+      console.log('----> quiz TOTAL ANSWERS', quiz.name + ' ' + totalAnswers);
+      console.log('----> quiz TOTAL CORRECT ANSWERS', quiz.name + ' ' + totalCorrectAnswers);
       console.log('----> quiz SCORE ON TEN', quiz.name + ' SCORE -->' + scoreOnTen);
       quiz.evaluation = scoreOnTen + "/10";
     });
