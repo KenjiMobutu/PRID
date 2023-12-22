@@ -17,6 +17,7 @@ export class Question {
     quizId: number | undefined; // ID du quiz auquel appartient la question
     solutions: Solution[] = [];
     answers: Answer[] = [];
+    isOpen: boolean = false;
 }
 
 export class Query{
@@ -50,6 +51,7 @@ export class Quiz {
     finish?: Date;
     database!: DataBase;
     evaluation?: string;
+    score?: string;
     status: QuizStatus = QuizStatus.PasCommence;
     questions: Question[] = [];
     attempts: Attempt[] = [];

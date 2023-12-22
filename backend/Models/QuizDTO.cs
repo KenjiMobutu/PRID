@@ -9,15 +9,28 @@ public class QuizDTO{
     public bool IsPublished { get; set; }
     public bool IsClosed { get; set; }
     public bool IsTest { get; set; }
-    public DateTime Start { get; set; }
-    public DateTime Finish { get; set; }
+    public DateTime? Start { get; set; }
+    public DateTime? Finish { get; set; }
 
     [ForeignKey(nameof(DatabaseDTOId))]
     public int DatabaseDTOId { get; set; }
     public DatabaseDTO Database { get; set; } = null!;
 
+    public bool HaveAttempt { get; set; }
+    public string? Score { get; set; }
+
+    private QuizStatus _externalStatus;
+    private bool _isExternalStatusSet = false;
+
+    public void SetExternalStatus(QuizStatus status){
+        _externalStatus = status;
+        _isExternalStatusSet = true;
+    }
+
     public QuizStatus Status{
         get {
+            if (_isExternalStatusSet)
+                return _externalStatus;
             DateTime now = DateTime.Now;
             if (IsTest){
                 if (now > Finish){

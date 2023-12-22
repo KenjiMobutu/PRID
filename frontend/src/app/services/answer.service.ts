@@ -47,8 +47,8 @@ export class AnswerService {
     );
   }
 
-  getAnswers(attemptId: number): Observable<Answer[]> {
-    return this.http.get<Answer[]>(`${this.baseUrl}api/answer/${attemptId}/answers`).pipe(
+  getAnswers(attemptId: number, userId: number): Observable<Answer[]> {
+    return this.http.get<Answer[]>(`${this.baseUrl}api/answer/${attemptId}/${userId}/answers`).pipe(
       map(res => res)
     );
   }

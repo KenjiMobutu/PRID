@@ -6,6 +6,7 @@ import { Quiz } from '../models/quiz';
 import { catchError, map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { plainToInstance } from 'class-transformer';
+import { NumberInput } from "@angular/cdk/coercion";
 
 @Injectable({ providedIn: 'root' })
 export class QuizService {
@@ -16,13 +17,15 @@ export class QuizService {
       map(res => plainToInstance(Quiz, res))
     );
   }
-  getTp(): Observable<Quiz[]> {
-    return this.http.get<any[]>(`${this.baseUrl}api/quiz/tp`).pipe(
+  
+  getTp(userId: number): Observable<Quiz[]> {
+    return this.http.get<any[]>(`${this.baseUrl}api/quiz/${userId}/tp`).pipe(
       map(res => plainToInstance(Quiz, res))
     );
   }
-  getTest(): Observable<Quiz[]> {
-    return this.http.get<any[]>(`${this.baseUrl}api/quiz/test`).pipe(
+
+  getTest(userId: number): Observable<Quiz[]> {
+    return this.http.get<any[]>(`${this.baseUrl}api/quiz/${userId}/test`).pipe(
       map(res => plainToInstance(Quiz, res))
     );
   }

@@ -157,7 +157,7 @@ export class QuestionComponent implements OnInit{
         this.quizService.closeQuiz(this.question.quizId).subscribe(() => {
           if (this.quiz) {
             this.quiz.isClosed = true;
-            this.quiz.status = 1; // Assurez-vous d'avoir une énumération ou une constante pour QuizStatus.Fini
+            this.quiz.status = 1; // constante pour QuizStatus.Fini
             console.log('----> Quiz STATUS:', this.quiz.isClosed);
             this.router.navigate(['/quiz']);
           }
@@ -334,5 +334,7 @@ export class QuestionComponent implements OnInit{
         }
       });
     }
+
+    
 }
 

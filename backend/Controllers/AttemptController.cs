@@ -88,9 +88,9 @@ public class AttemptController : ControllerBase{
   public async Task<ActionResult<AttemptDTO>> GetByQuizIdAndStudentId(int quizId, int studentId) {
     // Récupère en BD les attempts dont l'id du quiz est passé en paramètre dans l'url
     var attempt = await _context.Attempts
-            .Include(a => a.Quiz)
-            .Include(a => a.Student)
-            .Include(a => a.Answers)
+            //.Include(a => a.Quiz)
+            //.Include(a => a.Student)
+            //.Include(a => a.Answers)
             .FirstOrDefaultAsync(a => a.QuizId == quizId && a.StudentId == studentId);
 
     // Si aucune question n'a été trouvée, renvoyer une erreur 404 Not Found

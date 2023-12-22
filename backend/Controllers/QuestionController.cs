@@ -80,7 +80,7 @@ public class QuestionController :  ControllerBase{
     [AllowAnonymous]
     [Authorized(Role.Teacher, Role.Student, Role.Admin)]
     [HttpGet("getdata/{dbname}")]
-    public async Task<ActionResult<Dictionary<string, List<string>>>> GetData(string dbname) {
+    public ActionResult<Dictionary<string, List<string>>> GetData(string dbname) {
 
         string connectionString = $"server=localhost;database={dbname};uid=root;password=root";
 
@@ -134,7 +134,9 @@ public class QuestionController :  ControllerBase{
     [HttpPost("queryPost")]
     public async Task<ActionResult<object>> Sql(SqlDTO sqldto){
         //recupere la premiere solution de la question
-        string firstSolution = await _context.Solutions.Where(s => s.QuestionId == sqldto.QuestionId).Select(s => s.Sql).FirstOrDefaultAsync();
+        Solution?  firstSolution = await _context.Solutions
+                                .FirstOrDefaultAsync(s => s.QuestionId == sqldto.QuestionId);
+
         if (firstSolution  == null){
             // Si aucune solution n'a été trouvée, renvoi une erreur 404 Not Found
             return NotFound();
@@ -142,7 +144,7 @@ public class QuestionController :  ControllerBase{
         Console.WriteLine("---> first Solution  : " + firstSolution );
         SqlDTO sqlQuery = new SqlDTO{
             QuestionId = sqldto.QuestionId,
-            Query = firstSolution ,
+            Query = firstSolution.Sql ,
             DbName = sqldto.DbName
         };
 

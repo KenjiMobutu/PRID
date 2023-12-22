@@ -30,6 +30,7 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
   evaluation: string = "N/A";
   answerCount: number = 0;
   private user : number | undefined;
+  quiz?: Quiz;
 
   evaluations: string[] = [];
 
@@ -65,7 +66,9 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    this.user = this.authService.currentUser?.id;
     this.paginatorInit();
+    this.refresh();
   }
 
   // appelée quand on clique sur le bouton "edit"
@@ -116,14 +119,14 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
       res => {
         console.log('----> *1* Résultat:', res);
         //console.log('----> *1* Database:', this.quiz?.database.name);
-        console.log('----> *1* Attempt:', this.attemptService);
+        console.log('----> *1* Attempt:', res);
       }
     );
   }
 
   refresh() {
     if (!this._isTest) {
-      this.quizService.getTp().subscribe(quizes => {
+      this.quizService.getTp(this.user!).subscribe(quizes => {
             // assigne toutes les données récupérées au datasource
             this.dataSource.data = quizes;
             this.state.restoreState(this.dataSource);
@@ -134,13 +137,16 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
             });
           });
     } else {
-      this.quizService.getTest().subscribe(quizes => {
+      this.quizService.getTest(this.user!).subscribe(quizes => {
         this.dataSource.data = quizes;
         this.state.restoreState(this.dataSource);
         this._filter = this.state.filter;
         console.log('----> Quizes:', quizes);
         quizes.forEach((quiz) => {
-          console.log('----> quiz', quiz.name + ' Status -->' + quiz.statusAsString);
+          if (this.quiz) {
+            this.quiz.score = quiz.score;
+          }
+          console.log('----> quiz', quiz.name + ' Status -->' + quiz.statusAsString + ' ' + quiz.score);
         });
         this.getScore(quizes);
       });
@@ -148,18 +154,21 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
   }
 
   getScore(quizes: Quiz[]): void {
-    quizes.forEach((quiz, index) => {
-      if (quiz.attempts && quiz.attempts.length > 0) {
-        this.processAttempts(quiz.attempts, quiz);
-        console.log('----> quiz', quiz.name + ' LENGTH -->' + quiz.attempts.length);
-        console.log('----> quiz.attempts:', quiz.attempts.length + ' index:' + index);
-      } else if (quiz.attempts.length === 0){
-        console.log('----> quiz', quiz.name + ' LENGTH -->' + quiz.attempts.length);
-        console.log('----> quiz.attempts:', quiz.attempts.length + ' index:' + index);
-        quiz.evaluation = "N/A";
-      }
-    });
-  }
+    for (let i = 0; i < quizes.length; i++) {
+        let quiz = quizes[i];
+        if (quiz.attempts && quiz.attempts.length > 0) {
+            this.processAttempts(quiz.attempts, quiz);
+            console.log('----> quiz', quiz.name + ' LENGTH -->' + quiz.attempts.length);
+            console.log('----> quiz.attempts:', quiz.attempts.length + ' index:' + i);
+            //this.refresh();
+            break;
+        } else if (quiz.attempts.length === 0){
+            console.log('----> quiz', quiz.name + ' LENGTH -->' + quiz.attempts.length);
+            console.log('----> quiz.attempts:', quiz.attempts.length + ' index:' + i);
+            quiz.evaluation = "N/A";
+        }
+    }
+}
 
   processAttempts(attempts: Attempt[], quiz: Quiz): void {
     let totalCorrectAnswers = 0;
@@ -169,7 +178,7 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
     const validAttempts = attempts.filter(attempt => attempt.id !== undefined);
 
     const observables = validAttempts.map(attempt => {
-      return this.answerService.getAnswers(attempt.id!).pipe(
+      return this.answerService.getAnswers(attempt.id!, this.user!).pipe(
         tap(answers => {
           console.log('----> quiz.answers:', quiz.questions.length + ' ' + quiz.name);
           totalAnswers += answers.length;
@@ -191,6 +200,7 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
       console.log('----> quiz TOTAL CORRECT ANSWERS', quiz.name + ' ' + totalCorrectAnswers);
       console.log('----> quiz SCORE ON TEN', quiz.name + ' SCORE -->' + scoreOnTen);
       quiz.evaluation = scoreOnTen + "/10";
+      quiz.score = quiz.evaluation;
     });
   }
 

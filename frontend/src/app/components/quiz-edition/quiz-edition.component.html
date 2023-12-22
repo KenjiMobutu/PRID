@@ -59,20 +59,43 @@
         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-date-range-picker #picker></mat-date-range-picker>
       </mat-form-field>
-      <p>Selected range: {{ctlStart.value | date:'dd/MM/yyyy' }} - {{ctlFinish.value | date:'dd/MM/yyyy' }}</p>
+      <!-- <p>Selected range: {{ctlStart.value | date:'dd/MM/yyyy' }} - {{ctlFinish.value | date:'dd/MM/yyyy' }}</p> -->
     </div>
   </div>
   <br>
   <h2>Questions</h2>
   <mat-accordion>
-    <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false" *ngFor="let question of questions">
+    <mat-expansion-panel *ngFor="let question of questions"
+    (opened)="question.isOpen = true"
+    (closed)="question.isOpen = false">
       <mat-expansion-panel-header>
         <mat-panel-title>
-          {{ question.body | truncate:90 }}
+          {{ question.isOpen ? ('Question ' + question.order) : (question.order + '. ' + (question.body | truncate:90)) }}
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <p>I'm visible because I am open</p>
-      <p>{{ question.body}}</p>
+      <button mat-icon-button matTooltip="Up">
+        <mat-icon>keyboard_arrow_up</mat-icon>
+      </button>
+      <button mat-icon-button matTooltip="Down">
+        <mat-icon>keyboard_arrow_down</mat-icon>
+      </button>
+      <button mat-icon-button matTooltip="Supprimer">
+        <mat-icon>delete_forever</mat-icon>
+      </button>
+      <p>Intitulé</p>
+      <textarea cols="80" rows="5" style="width: 100%">{{ question.body}}</textarea>
+      <p></p>
+      <code-editor #editor [(ngModel)]="query" [database]="DB"></code-editor>
+      <br>
+      <div hidden>
+        <input id="readonly" type="checkbox" >
+      </div>
+      <div style="display: none;">
+        <textarea [(ngModel)]="query" cols="80" rows="5" style="width: 100%"></textarea>
+      </div>
+      <button mat-icon-button tabindex="-1" class="tip" matTooltip="Ajouter une solution">
+        <mat-icon>add_box</mat-icon>
+      </button>
     </mat-expansion-panel>
   </mat-accordion>
 

@@ -49,13 +49,15 @@ public class AnswerController : ControllerBase{
 
   // GET: api/attemptId/answers
   [AllowAnonymous]
-  [HttpGet("{attemptId}/answers")]
-  public async Task<ActionResult<IEnumerable<AnswerDTO>>> GetByAttemptId(int attemptId) {
+  [HttpGet("{attemptId}/{userId}/answers")]
+  public async Task<ActionResult<IEnumerable<AnswerDTO>>> GetByAttemptId(int attemptId,int userId) {
     // Récupère en BD l'attempt dont l'id est passé en paramètre dans l'url
-    var attempt = await _context.Attempts.FindAsync(attemptId);
+    var attempt = await _context.Attempts.FirstOrDefaultAsync(a => a.Id == attemptId && a.StudentId == userId);
+    Console.WriteLine("---> attempt : " + attempt);
     // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
     if (attempt == null)
       return NotFound();
+
     // Retourne le membre
     return _mapper.Map<List<AnswerDTO>>(await _context.Answers
         .Where(a => a.AttemptId == attemptId)

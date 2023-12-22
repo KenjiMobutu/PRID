@@ -12,7 +12,7 @@
     <p>{{ quiz.name }}</p>
   </div>
 
-  <button mat-icon-button tabindex="-1" *ngIf="!isQuizFinished" (click)="close()" class="tip">
+  <button mat-icon-button tabindex="-1"  (click)="close()" class="tip">
     <mat-icon>close</mat-icon>
     <span class="tooltiptext">Cloturer le quiz</span>
   </button>
@@ -25,7 +25,7 @@
 </div>
 <code-editor #editor [(ngModel)]="query" [readOnly]="isQuizFinished" [database]="DB"></code-editor>
 <br>
-<div hidden>
+<div>
   <input id="readonly" type="checkbox" [(ngModel)]="isQuizFinished">
 </div>
 <div style="display: none;">

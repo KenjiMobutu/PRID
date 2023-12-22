@@ -19,21 +19,20 @@ const appRoutes: Routes = [
     { path: '', component: HomeComponent, pathMatch: 'full' },
     { path: 'counter', component: CounterComponent },
     { path: 'fetch-data', component: FetchDataComponent },
-    { path: 'members',component: MemberListComponent,
-        canActivate: [AuthGuard],
-        data: { roles: [Role.Admin] }
-    },
+    { path: 'members',component: MemberListComponent,canActivate: [AuthGuard],
+            data: { roles: [Role.Admin] }},
     { path: 'login',component: LoginComponent},
     { path: 'signup',component: SignUpComponent},
     { path: 'quiz',component: QuizesContainerComponent,canActivate: [AuthGuard],
-    data: { roles: [Role.Student] }},
+            data: { roles: [Role.Student] }},
     { path: 'question/:id',component: QuestionComponent},
     { path: 'restricted', component: RestrictedComponent },
     { path: 'unknown', component: UnknownComponent},
     { path: 'test-code-editor', component: TestCodeEditorComponent},
     { path: 'teacher', component: TeacherComponent,canActivate: [AuthGuard],
             data: { roles: [Role.Teacher] }},
-    { path: 'quiz-edition/:id', component: QuizEditionComponent},
+    { path: 'quiz-edition/:id', component: QuizEditionComponent,canActivate: [AuthGuard],
+            data: { roles: [Role.Teacher] }},
     { path: '**', redirectTo: 'unknown' }
 
 
