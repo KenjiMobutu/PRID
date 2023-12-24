@@ -62,13 +62,12 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.user = this.authService.currentUser?.id;
     this.columsInit();
-    this.refresh();
   }
 
   ngAfterViewInit(): void {
     this.user = this.authService.currentUser?.id;
     this.paginatorInit();
-    this.refresh();
+    //this.refresh();
   }
 
   // appelée quand on clique sur le bouton "edit"
@@ -148,60 +147,9 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
           }
           console.log('----> quiz', quiz.name + ' Status -->' + quiz.statusAsString + ' ' + quiz.score);
         });
-        this.getScore(quizes);
+        //this.getScore(quizes);
       });
     }
-  }
-
-  getScore(quizes: Quiz[]): void {
-    for (let i = 0; i < quizes.length; i++) {
-        let quiz = quizes[i];
-        if (quiz.attempts && quiz.attempts.length > 0) {
-            this.processAttempts(quiz.attempts, quiz);
-            console.log('----> quiz', quiz.name + ' LENGTH -->' + quiz.attempts.length);
-            console.log('----> quiz.attempts:', quiz.attempts.length + ' index:' + i);
-            //this.refresh();
-            break;
-        } else if (quiz.attempts.length === 0){
-            console.log('----> quiz', quiz.name + ' LENGTH -->' + quiz.attempts.length);
-            console.log('----> quiz.attempts:', quiz.attempts.length + ' index:' + i);
-            quiz.evaluation = "N/A";
-        }
-    }
-}
-
-  processAttempts(attempts: Attempt[], quiz: Quiz): void {
-    let totalCorrectAnswers = 0;
-    let totalAnswers = 0;
-    let totalPossibleScore = 0; // le score total possible
-
-    const validAttempts = attempts.filter(attempt => attempt.id !== undefined);
-
-    const observables = validAttempts.map(attempt => {
-      return this.answerService.getAnswers(attempt.id!, this.user!).pipe(
-        tap(answers => {
-          console.log('----> quiz.answers:', quiz.questions.length + ' ' + quiz.name);
-          totalAnswers += answers.length;
-          totalCorrectAnswers += answers.filter(a => a.isCorrect).length;
-          totalPossibleScore += quiz.questions.length ; //chaque question vaut 1 point
-        })
-      );
-    });
-
-    forkJoin(observables).subscribe(() => {
-      // Calculer le score sur 10
-      if (totalCorrectAnswers === 0 || totalAnswers === 0) {
-        quiz.evaluation = "0/10";
-        return;
-      }
-      const scoreOnTen = (totalCorrectAnswers / totalPossibleScore) * 10;
-      console.log('----> TOTAL POSSIBLE SCORE', quiz.name + ' ' + totalPossibleScore);
-      console.log('----> quiz TOTAL ANSWERS', quiz.name + ' ' + totalAnswers);
-      console.log('----> quiz TOTAL CORRECT ANSWERS', quiz.name + ' ' + totalCorrectAnswers);
-      console.log('----> quiz SCORE ON TEN', quiz.name + ' SCORE -->' + scoreOnTen);
-      quiz.evaluation = scoreOnTen + "/10";
-      quiz.score = quiz.evaluation;
-    });
   }
 
   paginatorInit(){

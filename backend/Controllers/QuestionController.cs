@@ -22,7 +22,6 @@ public class QuestionController :  ControllerBase{
     private readonly IMapper _mapper;
     private readonly TokenHelper _tokenHelper;
 
-    private string[]? columnNames;
 
     public QuestionController(PridContext context, IMapper mapper) {
         _context = context;
@@ -142,15 +141,15 @@ public class QuestionController :  ControllerBase{
             return NotFound();
         }
         Console.WriteLine("---> first Solution  : " + firstSolution );
-        SqlDTO sqlQuery = new SqlDTO{
+        SqlDTO sqlQuery = new() { //creation d'un objet SqlDTO pour la solution --> new SqlDTO()
             QuestionId = sqldto.QuestionId,
             Query = firstSolution.Sql ,
             DbName = sqldto.DbName
         };
 
-        QueryDTO query = sqldto.ExecuteQuery(); //j'execute la query du user
+        QueryDTO query = sqldto.ExecuteQuery(); //execute la requete de l'utilisateur
 
-        if(query.Error.Length > 0)   //dans ma executeQuery je returne une erreur donc je la check ici (sinon tu auras une erreur 500)
+        if(query.Error.Length > 0) //si il y a une erreur dans la requete de l'utilisateur
             return query;
 
         QueryDTO solutionQuery = sqlQuery.ExecuteQuery();

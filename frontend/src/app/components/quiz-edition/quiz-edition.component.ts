@@ -12,7 +12,7 @@ import { MatSort } from '@angular/material/sort';
 import { Router, ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash-es';
 import { QuestionService } from 'src/app/services/question.service';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import {MatRadioModule} from '@angular/material/radio';
 import {FloatLabelType, MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
@@ -27,8 +27,10 @@ import {JsonPipe} from '@angular/common';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatAccordion, MatExpansionModule} from '@angular/material/expansion';
-//import { TruncatePipe } from 'src/app/helpers/truncatePipe';
+import { TruncatePipe } from 'src/app/helpers/truncatePipe';
 import { DataBase } from 'src/app/models/database';
+import { SolutionService } from 'src/app/services/solution.service';
+import { Solution } from 'src/app/models/solution';
 @Component({
   selector: 'quiz-edition',
   templateUrl: './quiz-edition.component.html',
@@ -51,15 +53,22 @@ export class QuizEditionComponent implements OnInit{
   public ctlDateRange!: FormControl;
   public ctlStart!: FormControl;
   public ctlFinish!: FormControl;
+  public ctlQuestionBody!: FormControl;
+  public ctlQuery!: FormControl;
   panelOpenState = false;
+
   DB!: DataBase;
   query = "";
-
+  quiz!: Quiz;
+  questionSolutionGroups: { [questionId: number]: FormGroup[] } = {};
   questions: Question[] = [];
+  solutions: Solution[] = [];
+  solutionGroups: FormGroup[] = [];
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private quizService: QuizService,
+    private solutionService: SolutionService,
   ){
     this.ctlName = this.fb.control('', [
       Validators.required,
@@ -73,6 +82,8 @@ export class QuizEditionComponent implements OnInit{
     this.ctlDateRange = this.fb.control('', []);
     this.ctlStart = this.fb.control('', []);
     this.ctlFinish = this.fb.control('', []);
+    this.ctlQuestionBody = this.fb.control('', [ Validators.required]);
+    this.ctlQuery = this.fb.control('', []);
     this.frm = this.fb.group({
       name: this.ctlName,
       description: this.ctlDescription,
@@ -82,6 +93,8 @@ export class QuizEditionComponent implements OnInit{
       dateRange: this.ctlDateRange,
       start: this.ctlStart,
       finish: this.ctlFinish,
+      questionBody: this.ctlQuestionBody,
+      query: this.ctlQuery,
     });
   }
 
@@ -90,7 +103,9 @@ export class QuizEditionComponent implements OnInit{
       const quizId = +params['id'];
       // l'ID de la question actuelle
       this.quizService.getOne(quizId).subscribe(quiz => {
+        this.quiz = quiz || new Quiz();
         this.isTest = quiz?.isTest;
+        this.DB = quiz!.database;
         this.ctlName.setValue(quiz?.name);
         this.ctlDescription.setValue(quiz?.description);
         this.ctlRadioGroup.setValue(quiz?.isTest ? 'test' : 'trainning');
@@ -99,6 +114,28 @@ export class QuizEditionComponent implements OnInit{
         this.ctlDateRange.setValue(quiz?.start);
         this.ctlStart.setValue(quiz?.start);
         this.ctlFinish.setValue(quiz?.finish);
+        this.questions = quiz?.questions || [];
+
+        quiz!.questions?.forEach((question) => {
+          if (question && question.id !== undefined) {
+              this.ctlQuestionBody.setValue(question.body);
+              console.log('--> Question BODY:', question.body);
+              this.solutionService.getByQuestionId(question.id).subscribe(solutions => {
+                //this.solutions = solutions;
+                console.log('--> Solutions:', solutions);
+                solutions.forEach((solution) => {
+                  if (solution && solution.id !== undefined) {
+                    this.ctlQuery.setValue(solution.sql);
+                    const solutionGroup = this.fb.group({
+                      query: new FormControl(solution.sql || '', Validators.required)
+                    });
+                    this.solutionGroups.push(solutionGroup);
+                  }
+                });
+              });
+          }
+        });
+
         console.log('--> Quiz NAME:', quiz?.name);
         console.log('--> isTest', this.isTest);
         console.log('--> RADIO:', this.ctlRadioGroup.value);
@@ -107,11 +144,19 @@ export class QuizEditionComponent implements OnInit{
         console.log('--> Start DATE:', this.ctlStart.value);
         console.log('--> End DATE:', this.ctlFinish.value);
         console.log('--> Quiz:', quiz);
+        console.log('--> Query:', this.ctlQuery.value);
         this.questions = quiz?.questions ?? [];
+        console.log('--> Questions:', this.questions);
         this.questions = this.questions.map(q => ({ ...q, isOpen: false }));
       });
     });
+
   }
+
+  getFormControl(control: AbstractControl | null): FormControl {
+    return control as FormControl || new FormControl();
+  }
+
 
   // Validateur bidon qui vérifie que la valeur est différente
   forbiddenValue(val: string): any {

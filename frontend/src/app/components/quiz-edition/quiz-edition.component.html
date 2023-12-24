@@ -65,9 +65,7 @@
   <br>
   <h2>Questions</h2>
   <mat-accordion>
-    <mat-expansion-panel *ngFor="let question of questions"
-    (opened)="question.isOpen = true"
-    (closed)="question.isOpen = false">
+    <mat-expansion-panel *ngFor="let question of questions" (opened)="question.isOpen = true" (closed)="question.isOpen = false">
       <mat-expansion-panel-header>
         <mat-panel-title>
           {{ question.isOpen ? ('Question ' + question.order) : (question.order + '. ' + (question.body | truncate:90)) }}
@@ -83,22 +81,24 @@
         <mat-icon>delete_forever</mat-icon>
       </button>
       <p>Intitulé</p>
-      <textarea cols="80" rows="5" style="width: 100%">{{ question.body}}</textarea>
-      <p></p>
-      <code-editor #editor [(ngModel)]="query" [database]="DB"></code-editor>
-      <br>
-      <div hidden>
-        <input id="readonly" type="checkbox" >
-      </div>
-      <div style="display: none;">
-        <textarea [(ngModel)]="query" cols="80" rows="5" style="width: 100%"></textarea>
+      <mat-form-field style="width: 100%;">
+        <textarea matInput required cols="80" rows="5"
+                  placeholder="Entrez le texte de la question ici">{{question.body}}</textarea>
+        <mat-error *ngIf="ctlQuestionBody.hasError('required')">Ce champ est obligatoire</mat-error>
+      </mat-form-field>
+      <div *ngFor=" let solution of question.solutions; let solutionIndex = index ">
+        <p>Solution {{ solutionIndex + 1 }}</p>
+        <button mat-icon-button matTooltip="Up">
+          <mat-icon>keyboard_arrow_up</mat-icon>
+        </button>
+        <button mat-icon-button matTooltip="Down">
+          <mat-icon>keyboard_arrow_down</mat-icon>
+        </button>
+        <code-editor #editor [(ngModel)]="solution.sql" [database]="DB" [ngModelOptions]="{standalone: true}"></code-editor>
       </div>
       <button mat-icon-button tabindex="-1" class="tip" matTooltip="Ajouter une solution">
         <mat-icon>add_box</mat-icon>
       </button>
     </mat-expansion-panel>
   </mat-accordion>
-
-
-
 </form>

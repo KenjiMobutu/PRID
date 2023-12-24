@@ -8,35 +8,35 @@
     <div class="mat-elevation-z2">
         <table mat-table [dataSource]="dataSource" matSort matSortDisableClear>
           <ng-container matColumnDef="nom">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Nom </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="name"> Nom </th>
             <td mat-cell *matCellDef="let row"> {{row.name}} </td>
           </ng-container>
           <ng-container matColumnDef="dataBase" >
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Base de données </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="name"> Base de données </th>
             <td mat-cell *matCellDef="let row"> {{row.database?.name }} </td>
           </ng-container>
           <ng-container matColumnDef="type" >
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Type de quiz </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="isTest"> Type de quiz </th>
             <td mat-cell *matCellDef="let row"> {{row.isTest ? 'Test' : 'Trainning' }} </td>
           </ng-container>
           <ng-container matColumnDef="startDate" >
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> date début </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="start"> date début </th>
             <td mat-cell *matCellDef="let row">
               <ng-container> {{ row.isTest ? (row.start | date:'dd/MM/yyyy') : 'N/A' }} </ng-container>
             </td>
           </ng-container>
           <ng-container matColumnDef="endDate">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> date fin </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="finish"> date fin </th>
             <td mat-cell *matCellDef="let row">
               <ng-container> {{ row.isTest ? (row.finish | date:'dd/MM/yyyy') : 'N/A' }} </ng-container>
             </td>
           </ng-container>
           <ng-container matColumnDef="statut">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Statut </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="statusAsString"> Statut </th>
             <td mat-cell *matCellDef="let row"> {{row.statusAsString}} </td>
           </ng-container>
           <ng-container matColumnDef="evaluation">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Evaluation </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="evaluation"> Evaluation </th>
             <td mat-cell *matCellDef="let row"> {{row.evaluation}} </td>
           </ng-container>
           <ng-container matColumnDef="actions">

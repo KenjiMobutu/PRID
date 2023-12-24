@@ -20,8 +20,8 @@ export class QuizesContainerComponent implements OnInit, AfterViewInit{
   dataSource: MatTableDataSource<Quiz> = new MatTableDataSource();
   state: MatTableState;
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  //@ViewChild(MatPaginator) paginator!: MatPaginator;
+  //@ViewChild(MatSort) sort!: MatSort;
 
     constructor(
         private quizService: QuizService,
