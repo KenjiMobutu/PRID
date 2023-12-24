@@ -7,7 +7,10 @@ public enum QuizStatus{
     Fini = 1,
     PasCommence = 2,
     Cloture = 3,
-    NonTest = 4
+    NonTest = 4,
+    Publie = 5,
+    NonPublie = 6,
+
 }
 
 public class Quiz{

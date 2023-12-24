@@ -20,6 +20,7 @@ public class QuizController :  ControllerBase{
     private readonly IMapper _mapper;
     private readonly TokenHelper _tokenHelper;
 
+
     public QuizController(PridContext context, IMapper mapper) {
         _context = context;
         _mapper = mapper;
@@ -37,18 +38,20 @@ public class QuizController :  ControllerBase{
             .ToListAsync());
     }
 
-    // GET: api/quiz/tp
-    // [AllowAnonymous]
-    // [HttpGet("tp")]
-    // public async Task<ActionResult<IEnumerable<QuizDTO>>> GetTp() {
-    //     return _mapper.Map<List<QuizDTO>>(await _context.Quizzes
-    //         .Include(q => q.Database)
-    //         .Include(q => q.Questions)
-    //         .Include(q => q.Attempts)
-    //         .Where(q => q.IsTest == false)
-    //         .OrderBy(q => q.Name)
-    //         .ToListAsync());
-    // }
+    [AllowAnonymous]
+    [HttpGet("teacher/{userId}")]
+    public async Task<ActionResult<IEnumerable<QuizDTO>>> GetAllForTeacher(int userId) {
+        var quizzes = await _context.Quizzes
+            .Include(q => q.Questions)
+            .Include(q => q.Database)
+            .Include(q => q.Attempts)
+            .ToListAsync();
+
+        var quizzesDto = _mapper.Map<List<QuizDTO>>(quizzes);
+        await UserQuizStatus(quizzesDto, userId);
+        return quizzesDto;
+    }
+
     [AllowAnonymous]
     [HttpGet("{userId}/tp")]
     public async Task<ActionResult<IEnumerable<QuizDTO>>> GetTp(int userId){ // Ajoutez userId comme paramètre si nécessaire
@@ -201,39 +204,38 @@ public class QuizController :  ControllerBase{
 
         foreach (var quiz in quizzes){
             QuizStatus determinedStatus;
-
-            if (quiz.Finish.HasValue && now > quiz.Finish){
-                determinedStatus = QuizStatus.Cloture;
-                quiz.IsClosed = true;
-                quiz.Score = "N/A";
-            }else{
-                var attempt = attempts.FirstOrDefault(a => a.QuizId == quiz.Id);
-                if (attempt != null){
-                    quiz.HaveAttempt = true;
-                    if (attempt is not null  && quiz.IsTest){
-                        determinedStatus = QuizStatus.Fini;
-                        if (quiz.IsTest && questionsCount.TryGetValue(quiz.Id, out var totalQuestions)){
-                            var correctAnswersCount = await _context.Answers
-                                .Where(a => a.AttemptId == attempt.Id && a.IsCorrect)
-                                .CountAsync();
-
-                            quiz.Score = ((double)correctAnswersCount / totalQuestions * 10).ToString() + "/10";
-                        }
-                    }else if (!quiz.IsTest && !quiz.IsClosed){
-                        determinedStatus = QuizStatus.EnCours;
-                    }else{
-                        determinedStatus = QuizStatus.Fini;
-                    }
-                }else if (quiz.IsTest || quiz.IsClosed){
-                    determinedStatus = QuizStatus.PasCommence;
+                if (quiz.Finish.HasValue && now > quiz.Finish){
+                    determinedStatus = QuizStatus.Cloture;
+                    quiz.IsClosed = true;
                     quiz.Score = "N/A";
                 }else{
-                    determinedStatus = QuizStatus.PasCommence;
-                }
-            }
+                    var attempt = attempts.FirstOrDefault(a => a.QuizId == quiz.Id);
+                    if (attempt != null){
+                        quiz.HaveAttempt = true;
+                        if (attempt is not null  && quiz.IsTest){
+                            determinedStatus = QuizStatus.Fini;
+                            if (quiz.IsTest && questionsCount.TryGetValue(quiz.Id, out var totalQuestions)){
+                                var correctAnswersCount = await _context.Answers
+                                    .Where(a => a.AttemptId == attempt.Id && a.IsCorrect)
+                                    .CountAsync();
 
-            quiz.SetExternalStatus(determinedStatus);
-            Console.WriteLine("--> statut : " + determinedStatus);
+                                quiz.Score = ((double)correctAnswersCount / totalQuestions * 10).ToString() + "/10";
+                            }
+                        }else if (!quiz.IsTest && !quiz.IsClosed){
+                            determinedStatus = QuizStatus.EnCours;
+                        }else{
+                            determinedStatus = QuizStatus.Fini;
+                        }
+                    }else if (quiz.IsTest || quiz.IsClosed){
+                        determinedStatus = QuizStatus.PasCommence;
+                        quiz.Score = "N/A";
+                    }else{
+                        determinedStatus = QuizStatus.PasCommence;
+                    }
+                }
+                quiz.SetExternalStatus(determinedStatus);
+                Console.WriteLine("--> statut : " + determinedStatus);
+            
         }
     }
 

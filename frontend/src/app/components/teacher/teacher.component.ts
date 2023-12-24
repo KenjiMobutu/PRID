@@ -25,6 +25,7 @@ export class TeacherComponent implements AfterViewInit {
   filter: string = '';
   state: MatTableState;
   private _isTest?: boolean;
+  private user : number | undefined;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -41,6 +42,7 @@ export class TeacherComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    this.user = this.authService.currentUser?.id;
     // lie le datasource au sorter et au paginator
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;

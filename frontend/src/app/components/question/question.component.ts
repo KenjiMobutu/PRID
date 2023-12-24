@@ -15,6 +15,8 @@ import { AuthenticationService } from 'src/app/services/authentication.service';
 import { User } from 'oidc-client';
 import { Data } from 'popper.js';
 import { DataBase } from 'src/app/models/database';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 @Component({
   selector: 'question',
   templateUrl: './question.component.html',
@@ -66,7 +68,8 @@ export class QuestionComponent implements OnInit{
     private answerService: AnswerService,
     private attemptService: AttemptService,
     private authService: AuthenticationService,
-    private questionService: QuestionService
+    private questionService: QuestionService,
+    public dialog: MatDialog,
 
     ) { }
 
@@ -151,22 +154,56 @@ export class QuestionComponent implements OnInit{
       }
     }
 
+    // close() {
+    //   console.log('Clôture du quiz');
+    //   const dlg = this.dialog.open(ConfirmDialogComponent, { data: { title: 'Clôture du quiz', message: 'Voulez-vous vraiment clôturer le quiz?' } });
+    //   if (this.question?.quizId) {
+    //     this.quizService.closeQuiz(this.question.quizId).subscribe(() => {
+    //       if (this.quiz) {
+    //         this.quiz.isClosed = true;
+    //         this.quiz.status = 1; // constante pour QuizStatus.Fini
+    //         console.log('----> Quiz STATUS:', this.quiz.isClosed);
+    //         this.router.navigate(['/quiz']);
+    //       }
+    //     }, error => {
+    //       console.error('Erreur lors de la clôture du quiz:', error);
+    //     });
+    //   }
+    //   this.closeAttempt();
+    // }
+
     close() {
       console.log('Clôture du quiz');
-      if (this.question?.quizId) {
-        this.quizService.closeQuiz(this.question.quizId).subscribe(() => {
-          if (this.quiz) {
-            this.quiz.isClosed = true;
-            this.quiz.status = 1; // constante pour QuizStatus.Fini
-            console.log('----> Quiz STATUS:', this.quiz.isClosed);
-            this.router.navigate(['/quiz']);
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        data: {
+          title: 'Clôture du quiz',
+          message: 'Voulez-vous vraiment clôturer le quiz?'
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          // L'utilisateur a confirmé la clôture du quiz
+          if (this.question?.quizId) {
+            this.quizService.closeQuiz(this.question.quizId).subscribe(() => {
+              if (this.quiz) {
+                this.quiz.isClosed = true;
+                this.quiz.status = 1; // constante pour QuizStatus.Fini
+                console.log('----> Quiz STATUS:', this.quiz.isClosed);
+                this.router.navigate(['/quiz']);
+              }
+            }, error => {
+              console.error('Erreur lors de la clôture du quiz:', error);
+            });
           }
-        }, error => {
-          console.error('Erreur lors de la clôture du quiz:', error);
-        });
-      }
-      this.closeAttempt();
+          this.closeAttempt();
+        } else {
+          // L'utilisateur a annulé l'action
+          console.log('Clôture du quiz annulée');
+        }
+      });
     }
+
 
     get isTest(): boolean | undefined {
       return this._isTest;
@@ -335,6 +372,6 @@ export class QuestionComponent implements OnInit{
       });
     }
 
-    
+
 }
 

@@ -26,7 +26,7 @@
 <code-editor #editor [(ngModel)]="query" [readOnly]="isQuizFinished" [database]="DB"></code-editor>
 <br>
 <div>
-  <input id="readonly" type="checkbox" [(ngModel)]="isQuizFinished">
+  <input id="readonly" type="checkbox" [(ngModel)]="isQuizFinished" hidden>
 </div>
 <div style="display: none;">
   <textarea [(ngModel)]="query" cols="80" rows="5" style="width: 100%"></textarea>

@@ -28,7 +28,8 @@ export enum QuizStatus{
   EnCours = 0,
   Fini = 1,
   PasCommence = 2,
-  Cloture = 3
+  Cloture = 3,
+  Publié = 5,
 }
 
 export class Answer {

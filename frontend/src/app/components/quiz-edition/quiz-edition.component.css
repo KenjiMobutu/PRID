@@ -64,9 +64,6 @@ input:checked + .slider:before {
 
 
 
-
-
-
 .form {
   display: flex;
   flex-direction: column;
@@ -103,8 +100,34 @@ input:checked + .slider:before {
 }
 
 .form-actions :hover{
-  color: #ff4081;;
+  color: #ff4081;
 
+}
+
+.solution-container {
+  display: flex;
+  align-items: start;
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 50px;
+  margin-right: 10px; /* Adjust spacing */
+}
+
+.editor-container {
+  flex-grow: 1;
+}
+.solutionUp:hover {
+  color: #ff4081;
+  transform: scale(1.3);
+  font-weight: bold;
+}
+.solutionDown:hover {
+  color: #ff4081;
+  transform: scale(1.3);
 }
 
 /* Responsivité */
@@ -125,4 +148,30 @@ input:checked + .slider:before {
   .form-actions {
     justify-content: flex-start;
   }
+
+  .solution-container {
+    display: flex;
+    align-items: start;
+  }
+
+.buttons-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 10px; /* Adjust spacing as needed */
+}
+
+.editor-container {
+    flex-grow: 1;
+}
+.solutionUp:hover {
+  color: #ff4081;
+  transform: scale(1.3);
+}
+
+.solutionDown:hover {
+  color: #ff4081;
+  transform: scale(1.3);
+}
+
 }

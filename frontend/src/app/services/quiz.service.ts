@@ -17,7 +17,13 @@ export class QuizService {
       map(res => plainToInstance(Quiz, res))
     );
   }
-  
+
+  getAllForTeacher(userId: number): Observable<Quiz[]> {
+    return this.http.get<any[]>(`${this.baseUrl}api/quiz/teacher/${userId}`).pipe(
+      map(res => plainToInstance(Quiz, res))
+    );
+  }
+
   getTp(userId: number): Observable<Quiz[]> {
     return this.http.get<any[]>(`${this.baseUrl}api/quiz/${userId}/tp`).pipe(
       map(res => plainToInstance(Quiz, res))

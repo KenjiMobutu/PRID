@@ -38,6 +38,7 @@ public class User
 
 
     public ICollection<Attempt> Attempts { get; set; } = new HashSet<Attempt>();
+    public bool isTeacher() {return this.Role == Role. Teacher;}
 
 }
 
@@ -53,6 +54,7 @@ public class Teacher : User{
         Role = Role.Teacher;
     }
 }
+
 
 public class Student : User{
     public Student() : base() {

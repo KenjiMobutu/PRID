@@ -86,15 +86,19 @@
                   placeholder="Entrez le texte de la question ici">{{question.body}}</textarea>
         <mat-error *ngIf="ctlQuestionBody.hasError('required')">Ce champ est obligatoire</mat-error>
       </mat-form-field>
-      <div *ngFor=" let solution of question.solutions; let solutionIndex = index ">
-        <p>Solution {{ solutionIndex + 1 }}</p>
-        <button mat-icon-button matTooltip="Up">
-          <mat-icon>keyboard_arrow_up</mat-icon>
-        </button>
-        <button mat-icon-button matTooltip="Down">
-          <mat-icon>keyboard_arrow_down</mat-icon>
-        </button>
-        <code-editor #editor [(ngModel)]="solution.sql" [database]="DB" [ngModelOptions]="{standalone: true}"></code-editor>
+      <div *ngFor="let solution of question.solutions; let solutionIndex = index" class="solution-container">
+        <div class="buttons-container">
+            <button mat-icon-button matTooltip="Up" class="solutionUp">
+                <mat-icon>keyboard_arrow_up</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Down" class="solutionDown">
+                <mat-icon>keyboard_arrow_down</mat-icon>
+            </button>
+        </div>
+        <div class="editor-container">
+            <p>Solution {{ solutionIndex + 1 }}</p>
+            <code-editor #editor [(ngModel)]="solution.sql" [database]="DB" [ngModelOptions]="{standalone: true}"></code-editor>
+        </div>
       </div>
       <button mat-icon-button tabindex="-1" class="tip" matTooltip="Ajouter une solution">
         <mat-icon>add_box</mat-icon>

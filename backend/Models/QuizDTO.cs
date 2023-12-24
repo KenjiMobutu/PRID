@@ -28,40 +28,16 @@ public class QuizDTO{
     }
 
     public QuizStatus Status{
-        get {
+        get{
             if (_isExternalStatusSet)
                 return _externalStatus;
             DateTime now = DateTime.Now;
-            if (IsTest){
-                if (now > Finish){
-                    return QuizStatus.Cloture;
-                }else if ( now >= Start && now <= Finish && Attempts.Count > 0){
-                    return QuizStatus.Fini;
-                }
-                else if(now >= Start && now <= Finish && Attempts.Count == 0){
-                    return QuizStatus.PasCommence;
-                }else if (now >= Start && now <= Finish && Attempts.Count == 0){
-                    return QuizStatus.PasCommence;
-                }else{
-                    return QuizStatus.NonTest; // Retourne une valeur par défaut
-                }
-            }else{
-                if (now < Finish){
-                    Console.WriteLine("QuizStatus.Cloture");
-                    return QuizStatus.Cloture;
-                }
-                else if (Attempts.Count == 0){
-                    return QuizStatus.PasCommence;
-                }
-                else if (Attempts.Count > 0 && !IsClosed){
-                    return QuizStatus.EnCours;
-                }
-                else if(IsClosed){
-                    return QuizStatus.Fini;
-                }else{
-                    return QuizStatus.NonTest; // Retourne une valeur par défaut
-                }
-            }
+            return (IsPublished, Finish) switch{
+                (false, _) => QuizStatus.NonPublie,
+                (true, null) => QuizStatus.Publie, // Si Finish est null et IsPublished est true
+                (true, _) when now > Finish => QuizStatus.Cloture, // Si Finish n'est pas null et la date actuelle est après Finish
+                _ => QuizStatus.Publie // Cas par défaut
+            };
         }
     }
 
