@@ -129,6 +129,27 @@ input:checked + .slider:before {
   color: #ff4081;
   transform: scale(1.3);
 }
+.solutionDelete:hover {
+  color: #ff4081;
+  transform: scale(1.3);
+}
+.newSolution:hover {
+  color: #ff4081;
+  transform: scale(1.3);
+}
+.questionUp:hover {
+  color: #ff4081;
+  transform: scale(1.3);
+  font-weight: bold;
+}
+.questionDown:hover {
+  color: #ff4081;
+  transform: scale(1.3);
+}
+.questionDelete:hover {
+  color: #ff4081;
+  transform: scale(1.3);
+}
 
 /* Responsivité */
 @media (max-width: 768px) {

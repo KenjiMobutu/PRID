@@ -168,4 +168,32 @@ export class QuizEditionComponent implements OnInit{
     };
   }
 
+  questionUp(questionIndex: number){
+    console.log('--> Question Up');
+  }
+
+  questionDown(questionIndex: number){
+    console.log('--> Question Down');
+  }
+
+  questionDelete(questionIndex: number){
+    console.log('--> Question Delete');
+  }
+
+  solutionUp(questionIndex: number, solutionIndex: number){
+    console.log('--> Solution Up');
+  }
+
+  solutionDown(questionIndex: number, solutionIndex: number){
+    console.log('--> Solution Down');
+  }
+
+  newSolution(questionIndex: number){
+    console.log('--> New Solution');
+  }
+
+  solutionDelete(questionIndex: number, solutionIndex: number){
+    console.log('--> Solution Delete');
+  }
+
 }

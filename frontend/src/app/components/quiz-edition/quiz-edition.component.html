@@ -65,19 +65,19 @@
   <br>
   <h2>Questions</h2>
   <mat-accordion>
-    <mat-expansion-panel *ngFor="let question of questions" (opened)="question.isOpen = true" (closed)="question.isOpen = false">
+    <mat-expansion-panel *ngFor="let question of questions; let questionIndex = index" (opened)="question.isOpen = true" (closed)="question.isOpen = false">
       <mat-expansion-panel-header>
         <mat-panel-title>
           {{ question.isOpen ? ('Question ' + question.order) : (question.order + '. ' + (question.body | truncate:90)) }}
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <button mat-icon-button matTooltip="Up">
+      <button mat-icon-button matTooltip="Up" class="questionUp"  [disabled]="questionIndex <= 0"  (click)="questionUp(questionIndex)">
         <mat-icon>keyboard_arrow_up</mat-icon>
       </button>
-      <button mat-icon-button matTooltip="Down">
+      <button mat-icon-button matTooltip="Down" class="questionDown"  [disabled]="questionIndex >= questions.length - 1" (click)="questionDown(questionIndex)">
         <mat-icon>keyboard_arrow_down</mat-icon>
       </button>
-      <button mat-icon-button matTooltip="Supprimer">
+      <button mat-icon-button matTooltip="Supprimer" class="questionDelete" (click)="questionDelete(questionIndex)">
         <mat-icon>delete_forever</mat-icon>
       </button>
       <p>Intitulé</p>
@@ -88,11 +88,14 @@
       </mat-form-field>
       <div *ngFor="let solution of question.solutions; let solutionIndex = index" class="solution-container">
         <div class="buttons-container">
-            <button mat-icon-button matTooltip="Up" class="solutionUp">
+            <button mat-icon-button matTooltip="Up" class="solutionUp" (click)="solutionUp(questionIndex, solutionIndex)">
                 <mat-icon>keyboard_arrow_up</mat-icon>
             </button>
-            <button mat-icon-button matTooltip="Down" class="solutionDown">
+            <button mat-icon-button matTooltip="Down" class="solutionDown" (click)="solutionDown(questionIndex, solutionIndex)">
                 <mat-icon>keyboard_arrow_down</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Supprimer" class="solutionDelete" (click)="solutionDelete(questionIndex, solutionIndex)">
+                <mat-icon>delete_forever</mat-icon>
             </button>
         </div>
         <div class="editor-container">
@@ -100,7 +103,7 @@
             <code-editor #editor [(ngModel)]="solution.sql" [database]="DB" [ngModelOptions]="{standalone: true}"></code-editor>
         </div>
       </div>
-      <button mat-icon-button tabindex="-1" class="tip" matTooltip="Ajouter une solution">
+      <button mat-icon-button tabindex="-1" class="tip" matTooltip="Ajouter une solution" class="newSolution" (click)="newSolution(questionIndex)">
         <mat-icon>add_box</mat-icon>
       </button>
     </mat-expansion-panel>
