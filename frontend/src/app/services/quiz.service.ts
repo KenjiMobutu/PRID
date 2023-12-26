@@ -7,6 +7,7 @@ import { catchError, map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { plainToInstance } from 'class-transformer';
 import { NumberInput } from "@angular/cdk/coercion";
+import { DataBase } from "../models/database";
 
 @Injectable({ providedIn: 'root' })
 export class QuizService {
@@ -15,6 +16,12 @@ export class QuizService {
   getAll(): Observable<Quiz[]> {
     return this.http.get<any[]>(`${this.baseUrl}api/quiz`).pipe(
       map(res => plainToInstance(Quiz, res))
+    );
+  }
+
+  getAllDatabase(): Observable<DataBase[]>{
+    return this.http.get<any[]>(`${this.baseUrl}api/quiz/database`).pipe(
+      map(res => plainToInstance(DataBase, res))
     );
   }
 
@@ -67,6 +74,16 @@ export class QuizService {
         })
     );
   }
+
+  public add(q: Quiz): Observable<boolean> {
+    return this.http.post<Quiz>(`${this.baseUrl}api/quiz`, q).pipe(
+        map(res => true),
+        catchError(err => {
+            console.error(err);
+            return of(false);
+        })
+    );
+}
 
   closeQuiz(quizId: number): Observable<any> {
     return this.http.post(`/api/quiz/close/${quizId}`, {});

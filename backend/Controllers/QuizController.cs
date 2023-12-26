@@ -39,6 +39,13 @@ public class QuizController :  ControllerBase{
     }
 
     [AllowAnonymous]
+    [HttpGet("database")]
+    public async Task<ActionResult<IEnumerable<DatabaseDTO>>> GetAllDatabase() {
+        return _mapper.Map<List<DatabaseDTO>>(await _context.Databases
+            .ToListAsync());
+    }
+
+    [AllowAnonymous]
     [HttpGet("teacher/{userId}")]
     public async Task<ActionResult<IEnumerable<QuizDTO>>> GetAllForTeacher(int userId) {
         var quizzes = await _context.Quizzes
@@ -235,8 +242,25 @@ public class QuizController :  ControllerBase{
                 }
                 quiz.SetExternalStatus(determinedStatus);
                 Console.WriteLine("--> statut : " + determinedStatus);
-            
+
         }
+    }
+
+    // POST: api/quiz
+    [AllowAnonymous]
+    [HttpPost]
+    public async Task<ActionResult<QuizDTO>> Create(QuizDTO data) {
+
+        var newQuiz = _mapper.Map<Quiz>(data);
+        var result = await new QuizValidator(_context).ValidateOnCreate(newQuiz);
+        if (!result.IsValid)
+            return BadRequest(result);
+
+        _context.Quizzes.Add(newQuiz);
+        // Sauve les changements
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetOne), new { id = newQuiz.Id }, _mapper.Map<UserDTO>(newQuiz));
     }
 
 

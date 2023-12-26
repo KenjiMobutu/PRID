@@ -67,6 +67,13 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.user = this.authService.currentUser?.id;
     this.paginatorInit();
+    this.dataSource.sortingDataAccessor = (item: any, property: string) => {
+      switch (property) {
+        case 'databaseName': return item.database?.name;
+        default: return item[property];
+      }
+    };
+
     //this.refresh();
   }
 

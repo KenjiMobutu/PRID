@@ -33,6 +33,8 @@ const appRoutes: Routes = [
             data: { roles: [Role.Teacher] }},
     { path: 'quiz-edition/:id', component: QuizEditionComponent,canActivate: [AuthGuard],
             data: { roles: [Role.Teacher] }},
+    { path: 'quiz-edition', component: QuizEditionComponent,canActivate: [AuthGuard],
+            data: { roles: [Role.Teacher] }},
     { path: '**', redirectTo: 'unknown' }
 
 

@@ -6,7 +6,9 @@
 .tip:hover {
   visibility: visible;
   opacity: 1;
-  background-color: #b0b0b0;
+  background-color: #ded9d9d5;
+  color: #ff4081;
+  transform: scale(1.2);
 }
 
 .tip .tooltiptext {

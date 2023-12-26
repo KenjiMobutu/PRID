@@ -12,7 +12,7 @@ import { MatSort } from '@angular/material/sort';
 import { Router, ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash-es';
 import { QuestionService } from 'src/app/services/question.service';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import {MatRadioModule} from '@angular/material/radio';
 import {FloatLabelType, MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
@@ -37,9 +37,10 @@ import { Solution } from 'src/app/models/solution';
   styleUrls: ['./quiz-edition.component.css']
 })
 
-export class QuizEditionComponent implements OnInit{
+export class QuizEditionComponent implements OnInit, AfterViewInit{
   public isNew: boolean = false;
   public isTest?: boolean;
+  public today: Date = new Date();
   range = new FormGroup({
     ctlStart: new FormControl<Date | null>(null),
     ctlEnd: new FormControl<Date | null>(null),
@@ -56,7 +57,7 @@ export class QuizEditionComponent implements OnInit{
   public ctlQuestionBody!: FormControl;
   public ctlQuery!: FormControl;
   panelOpenState = false;
-
+  public databases: DataBase[] = [];
   DB!: DataBase;
   query = "";
   quiz!: Quiz;
@@ -64,11 +65,13 @@ export class QuizEditionComponent implements OnInit{
   questions: Question[] = [];
   solutions: Solution[] = [];
   solutionGroups: FormGroup[] = [];
+  selectedDatabase: string = '';
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private quizService: QuizService,
     private solutionService: SolutionService,
+
   ){
     this.ctlName = this.fb.control('', [
       Validators.required,
@@ -80,8 +83,12 @@ export class QuizEditionComponent implements OnInit{
     this.ctlDataBase = this.fb.control('', []);
     this.ctlPublished = this.fb.control(false);
     this.ctlDateRange = this.fb.control('', []);
-    this.ctlStart = this.fb.control('', []);
-    this.ctlFinish = this.fb.control('', []);
+    this.ctlStart = this.fb.control('', [Validators.required, this.dateNotBeforeTodayValidator()]);
+    this.ctlFinish = this.fb.control('', [Validators.required]);
+    this.range = this.fb.group({
+      ctlStart: this.ctlStart,
+      ctlEnd: this.ctlFinish
+    }, { validators: this.dateRangeValidator });
     this.ctlQuestionBody = this.fb.control('', [ Validators.required]);
     this.ctlQuery = this.fb.control('', []);
     this.frm = this.fb.group({
@@ -101,62 +108,78 @@ export class QuizEditionComponent implements OnInit{
   ngOnInit() {
     this.route.params.subscribe(params => {
       const quizId = +params['id'];
-      // l'ID de la question actuelle
-      this.quizService.getOne(quizId).subscribe(quiz => {
-        this.quiz = quiz || new Quiz();
-        this.isTest = quiz?.isTest;
-        this.DB = quiz!.database;
-        this.ctlName.setValue(quiz?.name);
-        this.ctlDescription.setValue(quiz?.description);
-        this.ctlRadioGroup.setValue(quiz?.isTest ? 'test' : 'trainning');
-        this.ctlPublished.setValue(quiz?.isPublished);
-        this.ctlDataBase.setValue(quiz?.database.name);
-        this.ctlDateRange.setValue(quiz?.start);
-        this.ctlStart.setValue(quiz?.start);
-        this.ctlFinish.setValue(quiz?.finish);
-        this.questions = quiz?.questions || [];
+      this.quizEditInit(quizId);
+    });
+  }
 
-        quiz!.questions?.forEach((question) => {
-          if (question && question.id !== undefined) {
-              this.ctlQuestionBody.setValue(question.body);
-              console.log('--> Question BODY:', question.body);
-              this.solutionService.getByQuestionId(question.id).subscribe(solutions => {
-                //this.solutions = solutions;
-                console.log('--> Solutions:', solutions);
-                solutions.forEach((solution) => {
-                  if (solution && solution.id !== undefined) {
-                    this.ctlQuery.setValue(solution.sql);
-                    const solutionGroup = this.fb.group({
-                      query: new FormControl(solution.sql || '', Validators.required)
-                    });
-                    this.solutionGroups.push(solutionGroup);
-                  }
-                });
-              });
-          }
-        });
+  ngAfterViewInit(): void {
+    this.route.params.subscribe(params => {
+      const quizId = +params['id'];
+      this.quizEditInit(quizId);
+    });
+    this.quizService.getAllDatabase().subscribe(databases => {
+      this.databases = databases;
+      console.log('--> Databases:', this.databases);
+    });
+  }
 
-        console.log('--> Quiz NAME:', quiz?.name);
-        console.log('--> isTest', this.isTest);
-        console.log('--> RADIO:', this.ctlRadioGroup.value);
-        console.log('--> Database:', quiz?.database.name);
-        console.log('--> Range:', this.ctlDateRange.value);
-        console.log('--> Start DATE:', this.ctlStart.value);
-        console.log('--> End DATE:', this.ctlFinish.value);
-        console.log('--> Quiz:', quiz);
-        console.log('--> Query:', this.ctlQuery.value);
-        this.questions = quiz?.questions ?? [];
-        console.log('--> Questions:', this.questions);
-        this.questions = this.questions.map(q => ({ ...q, isOpen: false }));
+  quizEditInit(quizId: number){
+    this.quizService.getOne(quizId).subscribe(quiz => {
+      const now = new Date();
+      this.today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      this.quiz = quiz || new Quiz();
+      this.isTest = quiz?.isTest;
+      this.DB = quiz!.database;
+      this.ctlName.setValue(quiz?.name);
+      this.ctlDescription.setValue(quiz?.description);
+      this.ctlRadioGroup.setValue(quiz?.isTest ? 'test' : 'trainning');
+      this.ctlPublished.setValue(quiz?.isPublished);
+      this.ctlDataBase.setValue(quiz?.database.name);
+      this.ctlDateRange.setValue(quiz?.start);
+      this.ctlStart.setValue(quiz?.start);
+      this.ctlFinish.setValue(quiz?.finish);
+      this.questions = quiz?.questions || [];
+
+      console.log('--> Quiz NAME:', quiz?.name);
+      console.log('--> isTest', this.isTest);
+      console.log('--> RADIO:', this.ctlRadioGroup.value);
+      console.log('--> Database:', quiz?.database.name);
+      console.log('--> Range:', this.ctlDateRange.value);
+      console.log('--> Start DATE:', this.ctlStart.value);
+      console.log('--> End DATE:', this.ctlFinish.value);
+      console.log('--> Quiz:', quiz);
+      console.log('--> Query:', this.ctlQuery.value);
+      this.questions = quiz?.questions ?? [];
+      console.log('--> Questions:', this.questions);
+      this.questions = this.questions.map(q => ({ ...q, isOpen: false }));
+      this.quizService.getAllDatabase().subscribe(databases => {
+        this.databases = databases;
+        console.log('--> Databases:', this.databases);
       });
     });
-
   }
 
   getFormControl(control: AbstractControl | null): FormControl {
     return control as FormControl || new FormControl();
   }
 
+  dateNotBeforeTodayValidator() {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      const forbidden = control.value < this.today;
+      return forbidden ? { 'beforeToday': { value: control.value } } : null;
+    };
+  }
+
+  dateRangeValidator(group: FormGroup): ValidationErrors | null {
+    const startControl = group.get('ctlStart');
+    const finishControl = group.get('ctlFinish');
+    if (!startControl || !finishControl) {
+      return null; // Retourne null si l'un des contrôles n'existe pas
+    }
+    const start = startControl.value;
+    const finish = finishControl.value;
+    return start && finish && start > finish ? { 'dateRangeInvalid': true } : null;
+  }
 
   // Validateur bidon qui vérifie que la valeur est différente
   forbiddenValue(val: string): any {
@@ -168,32 +191,102 @@ export class QuizEditionComponent implements OnInit{
     };
   }
 
+  selectedDatabaseChange (database: string): void {
+    this.selectedDatabase = database
+    console.log('--> Selected Database:', database);
+    this.DB = this.databases.find(db => db.name === database)!;
+  }
+
+  onChangeType(event: any) {
+    console.log('--> Event:', event);
+    console.log('--> Value:', event.value);
+    if (event.value == 'test') {
+      this.isTest = true;
+    } else {
+      this.isTest = false;
+    }
+  }
+
   questionUp(questionIndex: number){
     console.log('--> Question Up');
+    if (questionIndex > 0) {
+      // Échanger la question actuelle avec la question précédente
+      const question = this.questions![questionIndex];
+      this.questions![questionIndex] = this.questions![questionIndex - 1];
+      this.questions![questionIndex - 1] = question;
+    }
   }
 
   questionDown(questionIndex: number){
     console.log('--> Question Down');
+    if (questionIndex < this.questions!.length - 1) {
+      const question = this.questions![questionIndex];
+      this.questions![questionIndex] = this.questions![questionIndex + 1];
+      this.questions![questionIndex + 1] = question;
+    }
+  }
+
+  newQuestion(){
+    console.log('--> New Question');
+    this.questions?.push(new Question());
   }
 
   questionDelete(questionIndex: number){
     console.log('--> Question Delete');
+    //this.questionsToDelete.push(this.questions![questionIndex]);
+    this.questions?.splice(questionIndex, 1);
   }
 
   solutionUp(questionIndex: number, solutionIndex: number){
     console.log('--> Solution Up');
+    if (solutionIndex > 0 && this.questions && this.questions[questionIndex]) {
+      // Échanger la solution actuelle avec la solution précédente
+      const solutions = this.questions[questionIndex].solutions;
+      if (solutions) {
+          const solution = solutions[solutionIndex];
+          solutions[solutionIndex] = solutions[solutionIndex - 1];
+          solutions[solutionIndex - 1] = solution;
+
+          // Mettre à jour le tableau des solutions pour la question
+          this.questions[questionIndex].solutions = solutions;
+      }
+    }
   }
 
   solutionDown(questionIndex: number, solutionIndex: number){
     console.log('--> Solution Down');
+    if (this.questions && this.questions[questionIndex]) {
+      const solutions = this.questions[questionIndex].solutions;
+      if (solutions && solutionIndex < solutions.length - 1) {
+          const solution = solutions[solutionIndex];
+          solutions[solutionIndex] = solutions[solutionIndex + 1];
+          solutions[solutionIndex + 1] = solution;
+
+          // Mettre à jour le tableau des solutions pour la question
+          this.questions[questionIndex].solutions = solutions;
+      }
+    }
   }
 
-  newSolution(questionIndex: number){
+  newSolution(questionIndex: number, questionId?: number){
     console.log('--> New Solution');
+    //this.questions![questionIndex].solutions!.push(new Solution());
+    if (!this.questions[questionIndex].solutions)
+      this.questions[questionIndex].solutions = [];
+    // let newSolution = new Solution();
+    //   newSolution.sql = '';
+    //   newSolution.order = this.questions[questionIndex].solutions.length + 1;
+    //   //newSolution.id = /* valeur appropriée */;
+    //   newSolution.questionId = questionId;
+    //   console.log('--> Question ID:', questionId);
+    //   console.log('--> New Solution:', newSolution);
+    this.questions[questionIndex].solutions.push(new Solution());
   }
 
   solutionDelete(questionIndex: number, solutionIndex: number){
     console.log('--> Solution Delete');
+    //this.solutionToDelete.push(this.questions![questionIndex].solutions![solutionIndex]);
+    this.questions![questionIndex].solutions!.splice(solutionIndex, 1);
   }
 
 }

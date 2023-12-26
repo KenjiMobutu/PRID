@@ -52,6 +52,12 @@ export class TeacherComponent implements AfterViewInit {
       console.log('---> str', str);
       return str.toLowerCase().includes(filter.toLowerCase());
     };
+    this.dataSource.sortingDataAccessor = (item: any, property: string) => {
+      switch (property) {
+        case 'databaseName': return item.database?.name;
+        default: return item[property];
+      }
+    };
 
     this.state.bind(this.dataSource);
     // récupère les données
@@ -91,5 +97,28 @@ export class TeacherComponent implements AfterViewInit {
     });
   }
 
+  newQuiz(){
+    console.log('----> New Quiz');
+    // const quiz = new Quiz();
+    // quiz.isPublished = false;
+    // quiz.isClosed = false;
+    // quiz.isTest = false;
+    // quiz.start = new Date();
+    // quiz.finish = new Date();
+    // //quiz.database = {id: 1, name: 'MySQL'};
+    // quiz.questions = [];
+    // quiz.evaluation = '';
+    // quiz.score = '';
+    // quiz.status = 2;
+    // this.quizService.add(quiz).subscribe(
+    //   res => {
+    //     console.log('----> *1* Résultat:', res);
+    //     //console.log('----> *1* Database:', this.quiz?.database.name);
+    //     console.log('----> *1* Quiz:', res);
+    //     this.router.navigate(['/quiz-edition/']);
+    //   }
+    // );
+    this.router.navigate(['/quiz-edition/']);
+  }
 
 }

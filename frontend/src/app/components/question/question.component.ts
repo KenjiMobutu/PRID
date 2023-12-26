@@ -154,24 +154,6 @@ export class QuestionComponent implements OnInit{
       }
     }
 
-    // close() {
-    //   console.log('Clôture du quiz');
-    //   const dlg = this.dialog.open(ConfirmDialogComponent, { data: { title: 'Clôture du quiz', message: 'Voulez-vous vraiment clôturer le quiz?' } });
-    //   if (this.question?.quizId) {
-    //     this.quizService.closeQuiz(this.question.quizId).subscribe(() => {
-    //       if (this.quiz) {
-    //         this.quiz.isClosed = true;
-    //         this.quiz.status = 1; // constante pour QuizStatus.Fini
-    //         console.log('----> Quiz STATUS:', this.quiz.isClosed);
-    //         this.router.navigate(['/quiz']);
-    //       }
-    //     }, error => {
-    //       console.error('Erreur lors de la clôture du quiz:', error);
-    //     });
-    //   }
-    //   this.closeAttempt();
-    // }
-
     close() {
       console.log('Clôture du quiz');
       const dialogRef = this.dialog.open(ConfirmDialogComponent, {

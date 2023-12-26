@@ -32,18 +32,26 @@
 .tip {
   position: relative;
 }
-
+.tip .close:hover {
+  visibility: visible;
+  opacity: 1;
+  background-color: #e6e0e0c6;
+  color: #ff4081;
+  transform: scale(1.2);
+}
 .tip:hover {
   visibility: visible;
   opacity: 1;
   background-color: #b0b0b0;
+  color: #ff4081;
+  transform: scale(1.2);
 }
 
 .tip .tooltiptext {
   visibility: hidden;
-  width: 120px;
-  font-size: 15px;
-  background-color: #4f4d4d;
+  width: 100px;
+  font-size: 10px;
+  background-color: #cac6c6e6;
   color: #fff;
   text-align: center;
   border-radius: 6px;
@@ -60,7 +68,7 @@
 .tip:hover .tooltiptext {
   visibility: visible;
   opacity: 1;
-  background-color: #6d6767;
+  background-color: #a49f9f;
 }
 
 /* Style pour le tableau */
