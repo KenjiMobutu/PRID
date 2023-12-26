@@ -7,22 +7,22 @@
           <mat-error class="field-error" *ngIf="ctlName.hasError('required')">Required</mat-error>
           <mat-error class="field-error" *ngIf="ctlName.hasError('minlength')">Minimum length is
               {{ctlName.errors?.minlength?.requiredLength}}</mat-error>
-          <mat-error class="field-error" *ngIf="ctlName.hasError('nameUsed')">Pseudo already in use
-          </mat-error>
+          <mat-error class="field-error" *ngIf="ctlName.hasError('nameUsed')">Quiz name already in use</mat-error>
       </mat-form-field>
       <mat-form-field>
           <mat-label>Description</mat-label>
           <input matInput [formControl]="ctlDescription">
       </mat-form-field>
 
-      <mat-card class="form-card">
-          <mat-label>Type de quiz: </mat-label>
-          <mat-radio-group [formControl]="ctlRadioGroup" required (change)="onChangeType($event)">
-            <mat-radio-button value="trainning">Trainning</mat-radio-button>
-            <mat-radio-button value="test">Test</mat-radio-button>
-            <mat-error class="field-error" *ngIf="ctlRadioGroup.hasError('required')">Required</mat-error>
-          </mat-radio-group>
-      </mat-card>
+      <div class="form-card">
+        <mat-label>Type de quiz:</mat-label>
+        <mat-radio-group [formControl]="ctlRadioGroup" required (change)="onChangeType($event)">
+          <mat-radio-button value="trainning">Trainning</mat-radio-button>
+          <mat-radio-button value="test">Test</mat-radio-button>
+        </mat-radio-group>
+        <mat-error *ngIf="ctlRadioGroup.hasError('required')">Required</mat-error>
+      </div>
+
 
     </div>
 
@@ -39,11 +39,11 @@
 
       <div class="publish-and-actions">
         <!-- Publié Toggle -->
-        <mat-slide-toggle [formControl]="ctlPublished">publié</mat-slide-toggle>
+        <mat-slide-toggle [formControl]="ctlPublished" (change)="onChangePublished($event)">publié</mat-slide-toggle>
 
         <!-- Actions Buttons -->
         <div class="form-actions">
-          <button mat-icon-button matTooltip="Sauver" [disabled]="frm.invalid">
+          <button mat-icon-button matTooltip="Sauver" (click)="save()">
             <mat-icon>save</mat-icon>
           </button>
           <button mat-icon-button matTooltip="Supprimer">
@@ -76,7 +76,14 @@
     <mat-expansion-panel *ngFor="let question of questions; let questionIndex = index" (opened)="question.isOpen = true" (closed)="question.isOpen = false">
       <mat-expansion-panel-header>
         <mat-panel-title>
-          {{ question.isOpen ? ('Question ' + question.order) : (question.order + '. ' + (question.body | truncate:90)) }}
+          <!-- {{ question ? (question.isOpen ? ('Question ' + (question.order || 'N/A')) : ((question.order || 'N/A') + '. ' + (question.body | truncate:90))) : 'Nouvelle question' }} -->
+          {{
+            question
+              ? (question.isOpen
+                  ? 'Question ' + (question.order || 'N/A')
+                  : (question.order || 'N/A') + '. ' + (question.body ? (question.body | truncate:90) : 'Contenu en attente'))
+              : 'Nouvelle question'
+          }}
         </mat-panel-title>
       </mat-expansion-panel-header>
       <button mat-icon-button matTooltip="Up" class="questionUp"  [disabled]="questionIndex <= 0"  (click)="questionUp(questionIndex)">
@@ -90,7 +97,7 @@
       </button>
       <p>Intitulé</p>
       <mat-form-field style="width: 100%;">
-        <textarea matInput required cols="80" rows="5"
+        <textarea matInput required cols="80" rows="5" [(ngModel)]="question.body" [ngModelOptions]="{standalone: true}"
                   placeholder="Entrez le texte de la question ici">{{question.body}}</textarea>
         <mat-error *ngIf="ctlQuestionBody.hasError('required')">Ce champ est obligatoire</mat-error>
       </mat-form-field>

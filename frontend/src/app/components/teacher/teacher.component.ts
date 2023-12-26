@@ -118,7 +118,7 @@ export class TeacherComponent implements AfterViewInit {
     //     this.router.navigate(['/quiz-edition/']);
     //   }
     // );
-    this.router.navigate(['/quiz-edition/']);
+    this.router.navigate(['/quiz-edition']);
   }
 
 }

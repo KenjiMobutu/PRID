@@ -9,5 +9,5 @@ public class SolutionDTO{
 
     [ForeignKey(nameof(QuestionDTOId))]
     public int QuestionDTOId { get; set; }
-    public QuestionDTO QuestionDTO { get; set; } = null!;
+    //public QuestionDTO QuestionDTO { get; set; } = null!;
 }

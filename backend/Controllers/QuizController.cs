@@ -260,8 +260,31 @@ public class QuizController :  ControllerBase{
         // Sauve les changements
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetOne), new { id = newQuiz.Id }, _mapper.Map<UserDTO>(newQuiz));
+        return CreatedAtAction(nameof(GetOne), new { id = newQuiz.Id }, _mapper.Map<QuizDTO>(newQuiz));
     }
 
+    [AllowAnonymous]
+    [HttpGet("{name}/name")]
+    public async Task<ActionResult<QuizDTO>> GetByName(string name) {
+        // Récupère en BD le membre dont le pseudo est passé en paramètre dans l'url
+        var quiz = await _context.Quizzes.SingleOrDefaultAsync(u => u.Name == name);
+        // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
+        if (quiz == null)
+            return NotFound();
+        // Retourne le membre
+        return _mapper.Map<QuizDTO>(quiz);
+    }
+
+    [AllowAnonymous]
+    [HttpGet("database/{name}")]
+    public async Task<ActionResult<DatabaseDTO>> GetDatabaseByName(string name) {
+        // Récupère en BD le membre dont le pseudo est passé en paramètre dans l'url
+        var database = await _context.Databases.SingleOrDefaultAsync(u => u.Name == name);
+        // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
+        if (database == null)
+            return NotFound();
+        // Retourne le membre
+        return _mapper.Map<DatabaseDTO>(database);
+    }
 
 }

@@ -1,5 +1,5 @@
 export class DataBase{
-  databaseId!: number;
+  id!: number;
   name!: string;
   description?: string;
 }

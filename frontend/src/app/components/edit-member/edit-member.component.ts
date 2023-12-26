@@ -84,7 +84,7 @@ export class EditMemberComponent {
         };
     }
 
-    // Validateur asynchrone qui vérifie si le pseudo n'est pas déjà utilisé par un autre membre
+    // Validateur asynchrone qui vérifie si le nom du quiz n'est pas déjà utilisé par un autre membre
     pseudoUsed(): any {
         let timeout: NodeJS.Timeout;
         return (ctl: FormControl) => {

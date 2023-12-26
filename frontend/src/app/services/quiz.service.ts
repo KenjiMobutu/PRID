@@ -25,6 +25,12 @@ export class QuizService {
     );
   }
 
+  getDatabaseByName(name: string){
+    return this.http.get<DataBase>(`${this.baseUrl}api/quiz/database/${name}`).pipe(
+      map(res => plainToInstance(DataBase, res))
+    );
+  }
+
   getAllForTeacher(userId: number): Observable<Quiz[]> {
     return this.http.get<any[]>(`${this.baseUrl}api/quiz/teacher/${userId}`).pipe(
       map(res => plainToInstance(Quiz, res))
@@ -83,7 +89,14 @@ export class QuizService {
             return of(false);
         })
     );
-}
+  }
+
+  getByName(name: string) {
+    return this.http.get<Quiz>(`${this.baseUrl}api/quiz/${name}/name`).pipe(
+      map(q => plainToInstance(Quiz, q)),
+      catchError(err => of(null))
+    );
+  }
 
   closeQuiz(quizId: number): Observable<any> {
     return this.http.post(`/api/quiz/close/${quizId}`, {});

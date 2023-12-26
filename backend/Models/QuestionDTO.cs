@@ -7,9 +7,9 @@ public class QuestionDTO{
     public int Order { get; set; }
     public string Body { get; set; } = null!;
 
-    [ForeignKey(nameof(QuizDTO))]
+    [ForeignKey(nameof(QuizId))]
     public int QuizId { get; set; }
-    public QuizDTO QuizDTO { get; set; } = null!;
+    //public QuizDTO QuizDTO { get; set; } = null!;
 
 
     public ICollection<SolutionDTO> Solutions { get; set; } = new HashSet<SolutionDTO>();

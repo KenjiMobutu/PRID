@@ -40,6 +40,7 @@ import { Solution } from 'src/app/models/solution';
 export class QuizEditionComponent implements OnInit, AfterViewInit{
   public isNew: boolean = false;
   public isTest?: boolean;
+  questionControls: FormControl[] = [] ;
   public today: Date = new Date();
   range = new FormGroup({
     ctlStart: new FormControl<Date | null>(null),
@@ -77,7 +78,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       Validators.required,
       Validators.minLength(3),
       this.forbiddenValue('abc')
-    ]);
+    ], [this.nameUsed()]);
     this.ctlDescription = this.fb.control('', []);
     this.ctlRadioGroup = this.fb.control('', []);
     this.ctlDataBase = this.fb.control('', []);
@@ -125,11 +126,12 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
 
   quizEditInit(quizId: number){
     this.quizService.getOne(quizId).subscribe(quiz => {
-      const now = new Date();
-      this.today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      //const now = new Date();
+      //this.today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       this.quiz = quiz || new Quiz();
       this.isTest = quiz?.isTest;
       this.DB = quiz!.database;
+      console.log('--> Quiz:', this.quiz);
       this.ctlName.setValue(quiz?.name);
       this.ctlDescription.setValue(quiz?.description);
       this.ctlRadioGroup.setValue(quiz?.isTest ? 'test' : 'trainning');
@@ -139,7 +141,10 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       this.ctlStart.setValue(quiz?.start);
       this.ctlFinish.setValue(quiz?.finish);
       this.questions = quiz?.questions || [];
-
+      this.questionControls = quiz?.questions.map(q =>
+        this.fb.control(q.body, Validators.required)
+      ) || [];
+      console.log('--> Question Controls:', this.questionControls.map(q => q.value));
       console.log('--> Quiz NAME:', quiz?.name);
       console.log('--> isTest', this.isTest);
       console.log('--> RADIO:', this.ctlRadioGroup.value);
@@ -161,6 +166,25 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
 
   getFormControl(control: AbstractControl | null): FormControl {
     return control as FormControl || new FormControl();
+  }
+
+  nameUsed(): any {
+    let timeout: NodeJS.Timeout;
+    return (ctl: FormControl) => {
+        clearTimeout(timeout);
+        const name = ctl.value;
+        return new Promise(resolve => {
+            timeout = setTimeout(() => {
+                if (ctl.pristine) {
+                    resolve(null);
+                } else {
+                    this.quizService.getByName(name).subscribe(quiz => {
+                        resolve(quiz ? { nameUsed: true } : null);
+                    });
+                }
+            }, 300);
+        });
+    };
   }
 
   dateNotBeforeTodayValidator() {
@@ -207,6 +231,16 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     }
   }
 
+  onChangePublished(event: any) {
+    console.log('--> Published Event:', event);
+    console.log('--> Is Published:', this.ctlPublished.value);
+    // if (event.value == 'published') {
+    //   this.quiz.isPublished = true;
+    // } else {
+    //   this.quiz.isPublished = false;
+    // }
+  }
+
   questionUp(questionIndex: number){
     console.log('--> Question Up');
     if (questionIndex > 0) {
@@ -228,7 +262,14 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
 
   newQuestion(){
     console.log('--> New Question');
-    this.questions?.push(new Question());
+    const newOrder = this.questions.length + 1;
+
+    // nouvelle question avec l'ordre
+    const newQuestion = new Question();
+    newQuestion.order = newOrder;
+
+    // Ajoutez la nouvelle question au tableau
+    this.questions.push(newQuestion);
   }
 
   questionDelete(questionIndex: number){
@@ -288,5 +329,50 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     //this.solutionToDelete.push(this.questions![questionIndex].solutions![solutionIndex]);
     this.questions![questionIndex].solutions!.splice(solutionIndex, 1);
   }
+
+  save() {
+  console.log('--> Save');
+  this.quiz!.name = this.ctlName.value;
+  this.quiz!.description = this.ctlDescription.value;
+  this.quiz!.isTest = this.ctlRadioGroup.value === 'test';
+  this.quiz!.isPublished = this.ctlPublished.value;
+  this.quiz!.start = this.ctlStart.value;
+  this.quiz!.finish = this.ctlFinish.value;
+  const databaseName = this.ctlDataBase.value;
+
+  this.quizService.getDatabaseByName(databaseName).subscribe(database => {
+    this.quiz.database = database;
+    console.log('--> Database:', this.quiz!.database);
+
+    // Mise à jour des questions
+    this.quiz!.questions = this.questions.map((question, index) => {
+      return {
+        ...question,
+        body: question.body,
+      };
+    });
+
+    // Maintenant, ajoutez le quiz
+    this.quizService.add(this.quiz!).subscribe({
+      next: (response) => {
+        console.log('Quiz enregistré avec succès !');
+        // Actions supplémentaires ici
+      },
+      error: (error) => {
+        console.error('Erreur lors de la sauvegarde du quiz:', error);
+        // Gérer l'erreur ici
+      }
+    });
+  }, error => {
+    console.error('Erreur lors de la récupération de la base de données:', error);
+    // Gérer l'erreur de récupération de la base de données ici
+  });
+}
+
+
+  private getFormControlForQuestionBody(index: number): FormControl | null {
+    return this.questionControls[index] || null;
+  }
+
 
 }
