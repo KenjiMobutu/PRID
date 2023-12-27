@@ -12,6 +12,7 @@ import { MatSort } from '@angular/material/sort';
 import { Router, ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash-es';
 import { QuestionService } from 'src/app/services/question.service';
+import { DataBase } from 'src/app/models/database';
 
 @Component({
   selector: 'teacher',
@@ -24,6 +25,7 @@ export class TeacherComponent implements AfterViewInit {
   dataSource: MatTableDataSource<Quiz> = new MatTableDataSource();
   filter: string = '';
   state: MatTableState;
+  public databases: DataBase[] = [];
   private _isTest?: boolean;
   private user : number | undefined;
 
@@ -42,6 +44,10 @@ export class TeacherComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    this.quizService.getAllDatabase().subscribe(databases => {
+      this.databases = databases;
+      console.log('--> Databases:', this.databases);
+    });
     this.user = this.authService.currentUser?.id;
     // lie le datasource au sorter et au paginator
     this.dataSource.paginator = this.paginator;
@@ -94,7 +100,16 @@ export class TeacherComponent implements AfterViewInit {
       this.state.restoreState(this.dataSource);
       // restaure l'état du filtre à partir du state
       this.filter = this.state.filter;
+      quizes.forEach(quiz => {
+        updateDatabaseName(quiz);
+        console.log('--> quiz', quiz.name + ' Database -->' + quiz.databaseName + ' Status -->' + quiz.statusAsString);
+      });
     });
+    const updateDatabaseName = (quiz: Quiz) => {
+      const dbName = this.databases.find(db => db.id === quiz.databaseId)?.name;
+      quiz.databaseName = dbName;
+     //this.databaseName = dbName;
+    };
   }
 
   newQuiz(){

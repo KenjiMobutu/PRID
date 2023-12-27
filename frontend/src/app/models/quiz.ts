@@ -51,6 +51,8 @@ export class Quiz {
     start?: Date;
     finish?: Date;
     database!: DataBase;
+    databaseName?: string;
+    databaseId: number | undefined;
     evaluation?: string;
     score?: string;
     status: QuizStatus = QuizStatus.PasCommence;

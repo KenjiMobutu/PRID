@@ -136,7 +136,8 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       this.ctlDescription.setValue(quiz?.description);
       this.ctlRadioGroup.setValue(quiz?.isTest ? 'test' : 'trainning');
       this.ctlPublished.setValue(quiz?.isPublished);
-      this.ctlDataBase.setValue(quiz?.database.name);
+      const database =  this.databases.find(db => db.id === quiz?.databaseId)
+      this.ctlDataBase.setValue(database!.name);
       this.ctlDateRange.setValue(quiz?.start);
       this.ctlStart.setValue(quiz?.start);
       this.ctlFinish.setValue(quiz?.finish);
@@ -338,10 +339,15 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
   this.quiz!.isPublished = this.ctlPublished.value;
   this.quiz!.start = this.ctlStart.value;
   this.quiz!.finish = this.ctlFinish.value;
+  this.quiz!.databaseId= this.DB.id;
   const databaseName = this.ctlDataBase.value;
 
+  // const database =  this.databases.find(db => db.name === databaseName)!;
+  // if (database) {
+  //   this.quiz!.databaseId = database.id; // Assigner seulement l'identifiant
+  // }
   this.quizService.getDatabaseByName(databaseName).subscribe(database => {
-    this.quiz.database = database;
+    //this.quiz.database = database;
     console.log('--> Database:', this.quiz!.database);
 
     // Mise à jour des questions

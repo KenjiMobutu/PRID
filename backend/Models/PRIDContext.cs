@@ -46,10 +46,10 @@ public class PridContext : DbContext{
         //     .HasValue<User>(Role.Teacher)
         //     .HasValue<User>(Role.Admin);
 
-        // modelBuilder.Entity<Quiz>()
-        //             .HasOne(q => q.Database)
-        //             .WithMany(d => d.Quizzes)
-        //             .HasForeignKey(q => q.DatabaseId);
+        modelBuilder.Entity<Quiz>()
+                    .HasOne(q => q.Database)
+                    .WithMany(d => d.Quizzes)
+                    .HasForeignKey(q => q.DatabaseId);
 
         /* ----------  DATABASE   -------- */
         modelBuilder.Entity<Database>().HasData(

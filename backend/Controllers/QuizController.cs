@@ -34,6 +34,7 @@ public class QuizController :  ControllerBase{
         return _mapper.Map<List<QuizDTO>>(await _context.Quizzes
             .Include(q => q.Questions)
             .Include(q => q.Database)
+
             .Include(q => q.Attempts)
             .ToListAsync());
     }
@@ -41,8 +42,11 @@ public class QuizController :  ControllerBase{
     [AllowAnonymous]
     [HttpGet("database")]
     public async Task<ActionResult<IEnumerable<DatabaseDTO>>> GetAllDatabase() {
-        return _mapper.Map<List<DatabaseDTO>>(await _context.Databases
-            .ToListAsync());
+        var databases = await _context.Databases
+            .Include(d => d.Quizzes)
+            .ToListAsync();
+        var databasesDto = _mapper.Map<List<DatabaseDTO>>(databases);
+        return databasesDto;
     }
 
     [AllowAnonymous]
@@ -252,6 +256,7 @@ public class QuizController :  ControllerBase{
     public async Task<ActionResult<QuizDTO>> Create(QuizDTO data) {
 
         var newQuiz = _mapper.Map<Quiz>(data);
+        newQuiz.DatabaseId = data.DatabaseId;
         var result = await new QuizValidator(_context).ValidateOnCreate(newQuiz);
         if (!result.IsValid)
             return BadRequest(result);
@@ -279,7 +284,9 @@ public class QuizController :  ControllerBase{
     [HttpGet("database/{name}")]
     public async Task<ActionResult<DatabaseDTO>> GetDatabaseByName(string name) {
         // Récupère en BD le membre dont le pseudo est passé en paramètre dans l'url
-        var database = await _context.Databases.SingleOrDefaultAsync(u => u.Name == name);
+        var database = await _context.Databases
+            .Include(d => d.Quizzes)
+            .SingleOrDefaultAsync(u => u.Name == name);
         // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
         if (database == null)
             return NotFound();

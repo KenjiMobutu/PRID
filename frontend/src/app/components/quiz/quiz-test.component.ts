@@ -16,6 +16,7 @@ import { th } from 'date-fns/locale';
 import { AnswerService } from 'src/app/services/answer.service';
 import { AttemptService } from 'src/app/services/attempt.service';
 import { forkJoin, tap } from 'rxjs';
+import { DataBase } from 'src/app/models/database';
 
 @Component({
   selector: 'quiz-test',
@@ -31,7 +32,8 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
   answerCount: number = 0;
   private user : number | undefined;
   quiz?: Quiz;
-
+  databaseName?: string;
+  public databases: DataBase[] = [];
   evaluations: string[] = [];
 
   private _isTest?: boolean;
@@ -62,11 +64,17 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.user = this.authService.currentUser?.id;
     this.columsInit();
+    this.quizService.getAllDatabase().subscribe(databases => {
+      this.databases = databases;
+      console.log('--> Databases:', this.databases);
+    });
   }
 
   ngAfterViewInit(): void {
     this.user = this.authService.currentUser?.id;
     this.paginatorInit();
+
+    //console.log('----> Database:', this.quiz?.database.id);
     this.dataSource.sortingDataAccessor = (item: any, property: string) => {
       switch (property) {
         case 'databaseName': return item.database?.name;
@@ -131,33 +139,38 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
   }
 
   refresh() {
+    const updateDatabaseName = (quiz: Quiz) => {
+      const dbName = this.databases.find(db => db.id === quiz.databaseId)?.name;
+      quiz.databaseName = dbName;
+     //this.databaseName = dbName;
+    };
+
     if (!this._isTest) {
       this.quizService.getTp(this.user!).subscribe(quizes => {
-            // assigne toutes les données récupérées au datasource
-            this.dataSource.data = quizes;
-            this.state.restoreState(this.dataSource);
-            // restaure l'état du filtre à partir du state
-            this._filter = this.state.filter;
-            quizes.forEach((quiz) => {
-              console.log('--> quiz', quiz.name + ' Status -->' + quiz.statusAsString);
-            });
-          });
+        this.dataSource.data = quizes;
+        this.state.restoreState(this.dataSource);
+        this._filter = this.state.filter;
+        quizes.forEach(quiz => {
+          updateDatabaseName(quiz);
+          console.log('--> quiz', quiz.name + ' Database -->' + quiz.databaseName + ' Status -->' + quiz.statusAsString);
+        });
+      });
     } else {
       this.quizService.getTest(this.user!).subscribe(quizes => {
         this.dataSource.data = quizes;
         this.state.restoreState(this.dataSource);
         this._filter = this.state.filter;
-        console.log('----> Quizes:', quizes);
-        quizes.forEach((quiz) => {
+        quizes.forEach(quiz => {
           if (this.quiz) {
             this.quiz.score = quiz.score;
           }
-          console.log('----> quiz', quiz.name + ' Status -->' + quiz.statusAsString + ' ' + quiz.score);
+          updateDatabaseName(quiz);
+          console.log('----> quiz', quiz.name + ' Database -->' + quiz.databaseName + ' Status -->' + quiz.statusAsString + ' ' + quiz.score);
         });
-        //this.getScore(quizes);
       });
     }
   }
+
 
   paginatorInit(){
     this.dataSource.paginator = this.paginator;

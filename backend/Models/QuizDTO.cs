@@ -12,9 +12,9 @@ public class QuizDTO{
     public DateTime? Start { get; set; }
     public DateTime? Finish { get; set; }
 
-    [ForeignKey(nameof(DatabaseDTOId))]
-    public int DatabaseDTOId { get; set; }
-    public DatabaseDTO Database { get; set; } = null!;
+    [ForeignKey(nameof(DatabaseId))]
+    public int DatabaseId { get; set; }
+    //public DatabaseDTO Database { get; set; } = null!;
 
     public bool HaveAttempt { get; set; }
     public string? Score { get; set; }

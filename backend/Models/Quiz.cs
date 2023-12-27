@@ -24,6 +24,8 @@ public class Quiz{
     public DateTime? Start { get; set; }
     public DateTime? Finish { get; set; }
 
+    
+
     [ForeignKey(nameof(DatabaseId))]
     public int DatabaseId { get; set; }
     public Database Database { get; set; } = null!;
