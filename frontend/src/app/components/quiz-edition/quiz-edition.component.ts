@@ -31,6 +31,7 @@ import { TruncatePipe } from 'src/app/helpers/truncatePipe';
 import { DataBase } from 'src/app/models/database';
 import { SolutionService } from 'src/app/services/solution.service';
 import { Solution } from 'src/app/models/solution';
+import { da } from 'date-fns/locale';
 @Component({
   selector: 'quiz-edition',
   templateUrl: './quiz-edition.component.html',
@@ -65,6 +66,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
   questionSolutionGroups: { [questionId: number]: FormGroup[] } = {};
   questions: Question[] = [];
   solutions: Solution[] = [];
+  deletedSolutions: Solution[] = [];
   solutionGroups: FormGroup[] = [];
   selectedDatabase: string = '';
   constructor(
@@ -191,10 +193,18 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
 
   dateNotBeforeTodayValidator() {
     return (control: AbstractControl): { [key: string]: any } | null => {
-      const forbidden = control.value < this.today;
+      const controlDate = new Date(control.value);
+      const currentDate = new Date();
+
+      // ignorer l'heure, les minutes, les secondes et les millisecondes pour comparer uniquement les dates
+      controlDate.setHours(0, 0, 0, 0);
+      currentDate.setHours(0, 0, 0, 0);
+
+      const forbidden = controlDate < currentDate;
       return forbidden ? { 'beforeToday': { value: control.value } } : null;
     };
   }
+
 
   dateRangeValidator(group: FormGroup): ValidationErrors | null {
     const startControl = group.get('ctlStart');
@@ -243,24 +253,34 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     }
   }
 
-  questionUp(questionIndex: number){
+  questionUp(questionIndex: number) {
     console.log('--> Question Up');
     if (questionIndex > 0) {
-      // Échanger la question actuelle avec la question précédente
-      const question = this.questions![questionIndex];
-      this.questions![questionIndex] = this.questions![questionIndex - 1];
-      this.questions![questionIndex - 1] = question;
+        // Échanger la question actuelle avec la question précédente
+        const tempOrder = this.questions[questionIndex].order;
+        this.questions[questionIndex].order = this.questions[questionIndex - 1].order;
+        this.questions[questionIndex - 1].order = tempOrder;
+
+        const tempQuestion = this.questions[questionIndex];
+        this.questions[questionIndex] = this.questions[questionIndex - 1];
+        this.questions[questionIndex - 1] = tempQuestion;
     }
   }
 
-  questionDown(questionIndex: number){
+  questionDown(questionIndex: number) {
     console.log('--> Question Down');
-    if (questionIndex < this.questions!.length - 1) {
-      const question = this.questions![questionIndex];
-      this.questions![questionIndex] = this.questions![questionIndex + 1];
-      this.questions![questionIndex + 1] = question;
+    if (questionIndex < this.questions.length - 1) {
+        // Échanger la question actuelle avec la question suivante
+        const tempOrder = this.questions[questionIndex].order;
+        this.questions[questionIndex].order = this.questions[questionIndex + 1].order;
+        this.questions[questionIndex + 1].order = tempOrder;
+
+        const tempQuestion = this.questions[questionIndex];
+        this.questions[questionIndex] = this.questions[questionIndex + 1];
+        this.questions[questionIndex + 1] = tempQuestion;
     }
   }
+
 
   newQuestion(){
     console.log('--> New Question');
@@ -280,36 +300,41 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     this.questions?.splice(questionIndex, 1);
   }
 
-  solutionUp(questionIndex: number, solutionIndex: number){
-    console.log('--> Solution Up');
+  solutionUp(questionIndex: number, solutionIndex: number) {
     if (solutionIndex > 0 && this.questions && this.questions[questionIndex]) {
-      // Échanger la solution actuelle avec la solution précédente
       const solutions = this.questions[questionIndex].solutions;
       if (solutions) {
-          const solution = solutions[solutionIndex];
-          solutions[solutionIndex] = solutions[solutionIndex - 1];
-          solutions[solutionIndex - 1] = solution;
+        // Échanger les valeurs `order`
+        const tempOrder = solutions[solutionIndex].order;
+        solutions[solutionIndex].order = solutions[solutionIndex - 1].order;
+        solutions[solutionIndex - 1].order = tempOrder;
 
-          // Mettre à jour le tableau des solutions pour la question
-          this.questions[questionIndex].solutions = solutions;
+        // Échanger les solutions
+        const tempSolution = solutions[solutionIndex];
+        solutions[solutionIndex] = solutions[solutionIndex - 1];
+        solutions[solutionIndex - 1] = tempSolution;
       }
     }
   }
 
-  solutionDown(questionIndex: number, solutionIndex: number){
-    console.log('--> Solution Down');
+
+  solutionDown(questionIndex: number, solutionIndex: number) {
     if (this.questions && this.questions[questionIndex]) {
       const solutions = this.questions[questionIndex].solutions;
       if (solutions && solutionIndex < solutions.length - 1) {
-          const solution = solutions[solutionIndex];
-          solutions[solutionIndex] = solutions[solutionIndex + 1];
-          solutions[solutionIndex + 1] = solution;
+        // Échanger les valeurs `order`
+        const tempOrder = solutions[solutionIndex].order;
+        solutions[solutionIndex].order = solutions[solutionIndex + 1].order;
+        solutions[solutionIndex + 1].order = tempOrder;
 
-          // Mettre à jour le tableau des solutions pour la question
-          this.questions[questionIndex].solutions = solutions;
+        // Échanger les solutions
+        const tempSolution = solutions[solutionIndex];
+        solutions[solutionIndex] = solutions[solutionIndex + 1];
+        solutions[solutionIndex + 1] = tempSolution;
       }
     }
   }
+
 
   newSolution(questionIndex: number, questionId?: number){
     console.log('--> New Solution');
@@ -324,13 +349,20 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     this.questions[questionIndex].solutions.push(new Solution());
   }
 
-  solutionDelete(questionIndex: number, solutionIndex: number){
+  solutionDelete(questionIndex: number, solutionIndex: number) {
     console.log('--> Solution Delete');
-    //this.solutionToDelete.push(this.questions![questionIndex].solutions![solutionIndex]);
-    this.questions![questionIndex].solutions!.splice(solutionIndex, 1);
+    const deletedSolution = this.questions[questionIndex].solutions[solutionIndex];
+    if (deletedSolution && deletedSolution.id) {
+      // Ajouter à la liste des solutions supprimées si elle a un ID (donc existait dans la base de données)
+      this.deletedSolutions.push(deletedSolution);
+      console.log('--> Deleted Solutions:', this.deletedSolutions);
+    }
+    // Retirer de la liste des solutions actuelles
+    this.questions[questionIndex].solutions.splice(solutionIndex, 1);
   }
 
-  save() {
+
+  saveAAA() {
     console.log('--> Save');
     this.quiz!.name = this.ctlName.value;
     this.quiz!.description = this.ctlDescription.value;
@@ -346,29 +378,123 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
         this.quiz!.start = this.ctlStart.value;
         this.quiz!.finish = this.ctlFinish.value;
     }
-
-    this.quiz!.databaseId = this.DB.id;
-    console.log('--> Database:', this.quiz!.database);
+    console.log('--> *SAVE* 1 Database:', this.quiz!.database);
+    console.log('--> *SAVE* 1 DatabaseId:', this.quiz!.databaseId);
+    const dataB = this.databases.find(db => db.id === this.quiz!.databaseId)
+    this.quiz!.databaseId = dataB!.id;
+    //const dataB = this.databases.find(db => db.id === this.quiz!.databaseId)
+      //this.DB = dataB!;
+    console.log('--> *SAVE* 2 Database:', this.quiz!.databaseId);
 
     // Mise à jour des questions
-    this.quiz!.questions = this.questions.map((question, index) => {
+    this.quiz!.questions = this.questions.map(question => {
         return {
             ...question,
             body: question.body,
         };
     });
+    const dataToSave = {
+      ...this.quiz,
+      deletedSolutions: this.deletedSolutions // Ajoutez ici la liste des solutions supprimées
+    };
 
-    // Ajouter le quiz
-    this.quizService.add(this.quiz!).subscribe({
-        next: (response) => {
-            console.log('Quiz enregistré avec succès !', response);
-            this.router.navigate(['/teacher']);
-        },
-        error: (error) => {
-            console.error('Erreur lors de la sauvegarde du quiz:', error);
-        }
-    });
+    if (this.quiz!.id! > 0) {
+      // Mise à jour du quiz existant
+
+      //this.quiz!.databaseId = dataB!.id;
+      this.quizService.update(this.quiz!.id!, this.quiz!).subscribe({
+          next: (response) => {
+              console.log('Quiz mis à jour avec succès !', response);
+              this.router.navigate(['/teacher']);
+          },
+          error: (error) => {
+              console.error('Erreur lors de la mise à jour du quiz:', error);
+          }
+      });
+    } else {
+        // Ajout d'un nouveau quiz
+        this.quizService.add(this.quiz!).subscribe({
+            next: (response) => {
+                console.log('Quiz enregistré avec succès !', response);
+                this.router.navigate(['/teacher']);
+            },
+            error: (error) => {
+                console.error('Erreur lors de la sauvegarde du quiz:', error);
+            }
+        });
+    }
   }
+
+  save() {
+    console.log('--> Save');
+    // if (!this.frm.valid) {
+    //     console.error('Le formulaire n\'est pas valide.');
+    //     return;
+    // }
+
+    // Préparation des données du quiz
+    const dataB = this.databases.find(db => db.id === this.quiz!.databaseId);
+    const quizData = {
+        id: this.quiz!.id,
+        name: this.ctlName.value,
+        description: this.ctlDescription.value,
+        isTest: this.ctlRadioGroup.value === 'test',
+        isPublished: this.ctlPublished.value,
+        start: this.quiz!.isTest ? this.ctlStart.value : null,
+        finish: this.quiz!.isTest ? this.ctlFinish.value : null,
+        databaseId: dataB!.id,
+        questions: this.questions.map(question => ({
+            ...question,
+            body: question.body
+        })),
+        //deletedSolutions: this.deletedSolutions,
+        isClosed: this.quiz!.isClosed,
+        database: this.quiz!.database,
+        status: this.quiz!.status,
+        attempts: this.quiz!.attempts,
+        statusAsString: this.quiz!.statusAsString,
+        display: this.quiz!.display
+    };
+
+    if (this.deletedSolutions.length > 0) {
+      console.log('--> Deleted Solutions:', this.deletedSolutions);
+      this.deletedSolutions.forEach(solution => {
+        this.solutionService.deleteById(solution.id!).subscribe({
+          next: response => {
+              console.log('Solution supprimée avec succès !', response);
+          },
+          error: error => {
+              console.error('Erreur lors de la suppression de la solution:', error);
+          }
+        });
+      });
+    }
+
+    if (quizData.id! > 0) {
+        // Mise à jour du quiz existant
+        this.quizService.update(quizData.id!, quizData!).subscribe({
+            next: response => {
+                console.log('Quiz mis à jour avec succès !', response);
+                this.router.navigate(['/teacher']);
+            },
+            error: error => {
+                console.error('Erreur lors de la mise à jour du quiz:', error);
+            }
+        });
+    } else {
+        // Ajout d'un nouveau quiz
+        this.quizService.add(quizData!).subscribe({
+            next: response => {
+                console.log('Quiz enregistré avec succès !', response);
+                this.router.navigate(['/teacher']);
+            },
+            error: error => {
+                console.error('Erreur lors de la sauvegarde du quiz:', error);
+            }
+        });
+    }
+  }
+
 
 
 

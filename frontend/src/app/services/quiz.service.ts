@@ -71,8 +71,8 @@ export class QuizService {
   }
 
 
-  public update(q: Quiz): Observable<boolean> {
-    return this.http.put<Quiz>(`${this.baseUrl}api/quiz`, q).pipe(
+  public update(quizId:number ,q: Quiz): Observable<boolean> {
+    return this.http.put<Quiz>(`${this.baseUrl}api/quiz/${quizId}`, q).pipe(
         map(res => true),
         catchError(err => {
             console.error(err);

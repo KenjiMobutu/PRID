@@ -227,4 +227,20 @@ public class SolutionController : ControllerBase{
     Console.WriteLine("---> dataRows COUNT : " + dataRows.Count());
     return dataRows;
   }
+  [AllowAnonymous]
+  [Authorized(Role.Teacher, Role.Admin)]
+  [HttpDelete("{id}")]
+  public async Task<IActionResult> DeleteSolution(int id) {
+    // Récupère en BD la solution à supprimer
+    var solution = await _context.Solutions.FindAsync(id);//findAsync que sur la clé primaire
+    // Si aucune solution n'a été trouvée, renvoyer une erreur 404 Not Found
+    if (solution == null)
+      return NotFound();
+    // Indique au contexte EF qu'il faut supprimer cette solution
+    _context.Solutions.Remove(solution);
+    // Sauve les changements
+    await _context.SaveChangesAsync();
+    // Retourne un statut 204 avec une réponse vide
+    return NoContent();
+  }
 }

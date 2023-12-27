@@ -33,4 +33,8 @@ export class SolutionService {
       map(res => plainToInstance(Solution, res))
     );
   }
+
+  deleteById(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}api/solution/${id}`);
+  }
 }

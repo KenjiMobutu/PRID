@@ -152,7 +152,8 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
         this._filter = this.state.filter;
         quizes.forEach(quiz => {
           updateDatabaseName(quiz);
-          console.log('--> quiz', quiz.name + ' Database -->' + quiz.databaseName + ' Status -->' + quiz.statusAsString);
+          console.log('----> 1 quiz TEST ', quiz);
+          console.log('--> 2 quiz', quiz.name + ' Database -->' + quiz.databaseName + ' Status -->' + quiz.statusAsString);
         });
       });
     } else {
@@ -165,6 +166,7 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
             this.quiz.score = quiz.score;
           }
           updateDatabaseName(quiz);
+          console.log('----> 1 quiz TP : ', quiz);
           console.log('----> quiz', quiz.name + ' Database -->' + quiz.databaseName + ' Status -->' + quiz.statusAsString + ' ' + quiz.score);
         });
       });

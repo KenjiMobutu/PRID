@@ -34,7 +34,6 @@ public class QuizController :  ControllerBase{
         return _mapper.Map<List<QuizDTO>>(await _context.Quizzes
             .Include(q => q.Questions)
             .Include(q => q.Database)
-
             .Include(q => q.Attempts)
             .ToListAsync());
     }
@@ -115,8 +114,8 @@ public class QuizController :  ControllerBase{
     public async Task<ActionResult<QuizDTO>> GetOne(int id) {
         // Récupère en BD le quiz avec ses questions liées
         var quiz = await _context.Quizzes
-            .Include(q => q.Questions)
-            .ThenInclude(q => q.Solutions)
+            .Include(q => q.Questions.OrderBy(q => q.Order))
+            .ThenInclude(q => q.Solutions.OrderBy(s => s.Order))
             .Include(q => q.Database)
             .Include(q => q.Attempts)
             .FirstOrDefaultAsync(q => q.Id == id);
@@ -292,6 +291,25 @@ public class QuizController :  ControllerBase{
             return NotFound();
         // Retourne le membre
         return _mapper.Map<DatabaseDTO>(database);
+    }
+
+    // PUT: api/quiz/id
+    [AllowAnonymous]
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, QuizDTO data) {
+        // Si l'id est différent du quiz à modifier, on renvoie une erreur 400 Bad Request
+        if (id != data.Id)
+            return BadRequest();
+        // Récupère en BD le quiz à modifier
+        var quiz = await _context.Quizzes.FindAsync(id);
+        // Si le quiz n'existe pas, on renvoie une erreur 404 Not Found
+        if (quiz == null)
+            return NotFound();
+        // Met à jour le quiz avec les données reçues
+        _mapper.Map(data, quiz);
+        // Sauve les changements
+        await _context.SaveChangesAsync();
+        return NoContent();
     }
 
 }
