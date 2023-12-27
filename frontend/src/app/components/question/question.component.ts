@@ -58,6 +58,7 @@ export class QuestionComponent implements OnInit{
   badQuery!: boolean;
   correctMessage: string = "";
   correctQuery: boolean = false;
+  public databases: DataBase[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -94,15 +95,21 @@ export class QuestionComponent implements OnInit{
 
     questionInit(question: Question) {
         const quizId = question?.quizId ?? 0;
+        this.quizService.getAllDatabase().subscribe(databases => {
+          this.databases = databases;
+          console.log('--> Databases:', this.databases);
+        });
         this.quizService.getOne(quizId).subscribe(quiz => {
           this.quiz = quiz;
-          this.DB = this.quiz!.database;
-          this.database = quiz?.database.name ?? '';
+          const db = this.databases.find(db => db.id === quiz!.databaseId);
+          console.log('---> Database INIT!!:', db);
+          this.DB = db!;
+          this.database = db!.name ?? '';
           this._isTest = this.quiz?.isTest;
           console.log('---> Quiz!!:', this.quiz);
           this.isQuizFinished = this.quiz?.status === QuizStatus.Fini;
           console.log('---> Quiz STATUS FINISHED:', this.isQuizFinished );
-          console.log('---> Database NAME!!:', this.quiz?.database.name);
+          console.log('---> Database NAME!!:', db!.name);
           this.questions = quiz?.questions || [];
           console.log('---->  Questions:', this.questions);
           this.solutionService.getByQuestionId(question?.id ?? 0).subscribe(solutions => {
@@ -246,12 +253,12 @@ export class QuestionComponent implements OnInit{
       //this.showAnswer();
       //this.showSolutions = false;
       this.quizService.getOne(this.question?.quizId ?? 0).subscribe(quiz => {
-        if (quiz?.database.name !== undefined) {
-          this.answerService.postQuery(this.question?.id ?? 0, this.query,quiz?.database.name).subscribe(res => {
+        if (this.database !== undefined) {
+          this.answerService.postQuery(this.question?.id ?? 0, this.query,this.database).subscribe(res => {
           console.log('----> *2* ID:', this.question?.id);
           console.log('----> *2* Query:', this.query);
           console.log('----> ** Résultat:', res);
-          console.log('----> *sendAnswer* Database:', quiz?.database.name);
+          console.log('----> *sendAnswer* Database:', this.database);
           this.res = res;
           if (this.question?.id !== undefined && quiz?.attempts[0]?.id !== undefined) {
             var attempt = quiz?.attempts?.[quiz?.attempts.length -1];

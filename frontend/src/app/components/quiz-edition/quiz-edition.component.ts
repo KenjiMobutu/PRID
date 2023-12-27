@@ -69,6 +69,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
   selectedDatabase: string = '';
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private fb: FormBuilder,
     private quizService: QuizService,
     private solutionService: SolutionService,
@@ -149,7 +150,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       console.log('--> Quiz NAME:', quiz?.name);
       console.log('--> isTest', this.isTest);
       console.log('--> RADIO:', this.ctlRadioGroup.value);
-      console.log('--> Database:', quiz?.database.name);
+      console.log('--> Database:', database!.name);
       console.log('--> Range:', this.ctlDateRange.value);
       console.log('--> Start DATE:', this.ctlStart.value);
       console.log('--> End DATE:', this.ctlFinish.value);
@@ -235,11 +236,11 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
   onChangePublished(event: any) {
     console.log('--> Published Event:', event);
     console.log('--> Is Published:', this.ctlPublished.value);
-    // if (event.value == 'published') {
-    //   this.quiz.isPublished = true;
-    // } else {
-    //   this.quiz.isPublished = false;
-    // }
+    if (event.value == 'published') {
+      this.quiz.isPublished = true;
+    } else {
+      this.quiz.isPublished = false;
+    }
   }
 
   questionUp(questionIndex: number){
@@ -312,16 +313,14 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
 
   newSolution(questionIndex: number, questionId?: number){
     console.log('--> New Solution');
-    //this.questions![questionIndex].solutions!.push(new Solution());
+    this.quizService.getOne(this.quiz!.id!).subscribe(quiz => {
+      const dataB = this.databases.find(db => db.id === quiz?.databaseId)
+      this.DB = dataB!;
+      console.log('--> Database New Solution:', this.DB);
+      console.log('--> Quiz New Solution:', quiz);
+    });
     if (!this.questions[questionIndex].solutions)
       this.questions[questionIndex].solutions = [];
-    // let newSolution = new Solution();
-    //   newSolution.sql = '';
-    //   newSolution.order = this.questions[questionIndex].solutions.length + 1;
-    //   //newSolution.id = /* valeur appropriée */;
-    //   newSolution.questionId = questionId;
-    //   console.log('--> Question ID:', questionId);
-    //   console.log('--> New Solution:', newSolution);
     this.questions[questionIndex].solutions.push(new Solution());
   }
 
@@ -332,53 +331,45 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
   }
 
   save() {
-  console.log('--> Save');
-  this.quiz!.name = this.ctlName.value;
-  this.quiz!.description = this.ctlDescription.value;
-  this.quiz!.isTest = this.ctlRadioGroup.value === 'test';
-  this.quiz!.isPublished = this.ctlPublished.value;
-  this.quiz!.start = this.ctlStart.value;
-  this.quiz!.finish = this.ctlFinish.value;
-  this.quiz!.databaseId= this.DB.id;
-  const databaseName = this.ctlDataBase.value;
+    console.log('--> Save');
+    this.quiz!.name = this.ctlName.value;
+    this.quiz!.description = this.ctlDescription.value;
+    this.quiz!.isTest = this.ctlRadioGroup.value === 'test';
+    this.quiz!.isPublished = this.ctlPublished.value;
 
-  // const database =  this.databases.find(db => db.name === databaseName)!;
-  // if (database) {
-  //   this.quiz!.databaseId = database.id; // Assigner seulement l'identifiant
-  // }
-  this.quizService.getDatabaseByName(databaseName).subscribe(database => {
-    //this.quiz.database = database;
+    // Si le quiz est un trainning, les dates doivent être null
+    if (!this.quiz!.isTest) {
+        this.quiz!.start = undefined;
+        this.quiz!.finish = undefined;
+    } else {
+        // Sinon, utilisez les valeurs fournies
+        this.quiz!.start = this.ctlStart.value;
+        this.quiz!.finish = this.ctlFinish.value;
+    }
+
+    this.quiz!.databaseId = this.DB.id;
     console.log('--> Database:', this.quiz!.database);
 
     // Mise à jour des questions
     this.quiz!.questions = this.questions.map((question, index) => {
-      return {
-        ...question,
-        body: question.body,
-      };
+        return {
+            ...question,
+            body: question.body,
+        };
     });
 
-    // Maintenant, ajoutez le quiz
+    // Ajouter le quiz
     this.quizService.add(this.quiz!).subscribe({
-      next: (response) => {
-        console.log('Quiz enregistré avec succès !');
-        // Actions supplémentaires ici
-      },
-      error: (error) => {
-        console.error('Erreur lors de la sauvegarde du quiz:', error);
-        // Gérer l'erreur ici
-      }
+        next: (response) => {
+            console.log('Quiz enregistré avec succès !', response);
+            this.router.navigate(['/teacher']);
+        },
+        error: (error) => {
+            console.error('Erreur lors de la sauvegarde du quiz:', error);
+        }
     });
-  }, error => {
-    console.error('Erreur lors de la récupération de la base de données:', error);
-    // Gérer l'erreur de récupération de la base de données ici
-  });
-}
-
-
-  private getFormControlForQuestionBody(index: number): FormControl | null {
-    return this.questionControls[index] || null;
   }
+
 
 
 }

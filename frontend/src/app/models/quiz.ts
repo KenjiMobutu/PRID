@@ -30,6 +30,7 @@ export enum QuizStatus{
   PasCommence = 2,
   Cloture = 3,
   Publié = 5,
+  NonPublié = 6
 }
 
 export class Answer {
