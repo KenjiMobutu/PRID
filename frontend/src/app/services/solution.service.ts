@@ -37,4 +37,8 @@ export class SolutionService {
   deleteById(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}api/solution/${id}`);
   }
+
+  deleteByQuestionId(questionId: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}api/solution/${questionId}/solutions`);
+  }
 }

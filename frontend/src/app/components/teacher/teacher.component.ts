@@ -52,15 +52,19 @@ export class TeacherComponent implements AfterViewInit {
     // lie le datasource au sorter et au paginator
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+    // définit le filtre initial
     this.dataSource.filterPredicate = (data: Quiz, filter: string) => {
-      const str = data.name + ' ' + data.database?.name + ' ' + data.statusAsString + ' ';
+      const dbName = this.databases.find(db => db.id === data.databaseId)?.name;
+      const str = data.name + ' ' + dbName + ' ' + data.statusAsString + ' ';
       console.log('---> Database', data.database);
       console.log('---> str', str);
       return str.toLowerCase().includes(filter.toLowerCase());
     };
+    // permet de trier la colonne "database" en utilisant le nom de la database
     this.dataSource.sortingDataAccessor = (item: any, property: string) => {
+      const dbName = this.databases.find(db => db.id === item.databaseId)?.name;
       switch (property) {
-        case 'databaseName': return item.database?.name;
+        case 'databaseName': return dbName;
         default: return item[property];
       }
     };
@@ -114,25 +118,6 @@ export class TeacherComponent implements AfterViewInit {
 
   newQuiz(){
     console.log('----> New Quiz');
-    // const quiz = new Quiz();
-    // quiz.isPublished = false;
-    // quiz.isClosed = false;
-    // quiz.isTest = false;
-    // quiz.start = new Date();
-    // quiz.finish = new Date();
-    // //quiz.database = {id: 1, name: 'MySQL'};
-    // quiz.questions = [];
-    // quiz.evaluation = '';
-    // quiz.score = '';
-    // quiz.status = 2;
-    // this.quizService.add(quiz).subscribe(
-    //   res => {
-    //     console.log('----> *1* Résultat:', res);
-    //     //console.log('----> *1* Database:', this.quiz?.database.name);
-    //     console.log('----> *1* Quiz:', res);
-    //     this.router.navigate(['/quiz-edition/']);
-    //   }
-    // );
     this.router.navigate(['/quiz-edition']);
   }
 

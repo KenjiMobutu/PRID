@@ -30,8 +30,10 @@ import {MatAccordion, MatExpansionModule} from '@angular/material/expansion';
 import { TruncatePipe } from 'src/app/helpers/truncatePipe';
 import { DataBase } from 'src/app/models/database';
 import { SolutionService } from 'src/app/services/solution.service';
+
 import { Solution } from 'src/app/models/solution';
 import { da } from 'date-fns/locale';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 @Component({
   selector: 'quiz-edition',
   templateUrl: './quiz-edition.component.html',
@@ -57,7 +59,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
   public ctlStart!: FormControl;
   public ctlFinish!: FormControl;
   public ctlQuestionBody!: FormControl;
-  public ctlQuery!: FormControl;
+  //public ctlQuery!: FormControl;
   panelOpenState = false;
   public databases: DataBase[] = [];
   DB!: DataBase;
@@ -67,14 +69,18 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
   questions: Question[] = [];
   solutions: Solution[] = [];
   deletedSolutions: Solution[] = [];
+  deletedQuestions: Question[] = [];
   solutionGroups: FormGroup[] = [];
   selectedDatabase: string = '';
+  quizIsTest: boolean = false;
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private fb: FormBuilder,
     private quizService: QuizService,
+    private questionService: QuestionService,
     private solutionService: SolutionService,
+    public dialog: MatDialog,
 
   ){
     this.ctlName = this.fb.control('', [
@@ -94,7 +100,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       ctlEnd: this.ctlFinish
     }, { validators: this.dateRangeValidator });
     this.ctlQuestionBody = this.fb.control('', [ Validators.required]);
-    this.ctlQuery = this.fb.control('', []);
+    //this.ctlQuery = this.fb.control('', []);
     this.frm = this.fb.group({
       name: this.ctlName,
       description: this.ctlDescription,
@@ -104,9 +110,10 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       dateRange: this.ctlDateRange,
       start: this.ctlStart,
       finish: this.ctlFinish,
-      questionBody: this.ctlQuestionBody,
-      query: this.ctlQuery,
+      //questionBody: this.ctlQuestionBody,
+      //query: this.ctlQuery,
     });
+    console.log('--> Form:', this.frm);
   }
 
   ngOnInit() {
@@ -129,8 +136,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
 
   quizEditInit(quizId: number){
     this.quizService.getOne(quizId).subscribe(quiz => {
-      //const now = new Date();
-      //this.today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
       this.quiz = quiz || new Quiz();
       this.isTest = quiz?.isTest;
       this.DB = quiz!.database;
@@ -141,9 +147,10 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       this.ctlPublished.setValue(quiz?.isPublished);
       const database =  this.databases.find(db => db.id === quiz?.databaseId)
       this.ctlDataBase.setValue(database!.name);
-      this.ctlDateRange.setValue(quiz?.start);
+      this.ctlDateRange.setValue(this.ctlStart.value + ' - ' + this.ctlFinish.value);
       this.ctlStart.setValue(quiz?.start);
       this.ctlFinish.setValue(quiz?.finish);
+      this.ctlQuestionBody.setValue(quiz?.questions.map(q => q.body));
       this.questions = quiz?.questions || [];
       this.questionControls = quiz?.questions.map(q =>
         this.fb.control(q.body, Validators.required)
@@ -156,8 +163,9 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       console.log('--> Range:', this.ctlDateRange.value);
       console.log('--> Start DATE:', this.ctlStart.value);
       console.log('--> End DATE:', this.ctlFinish.value);
+      console.log('--> Question Body:', this.ctlQuestionBody.value);
       console.log('--> Quiz:', quiz);
-      console.log('--> Query:', this.ctlQuery.value);
+      //console.log('--> Query:', this.ctlQuery.value);
       this.questions = quiz?.questions ?? [];
       console.log('--> Questions:', this.questions);
       this.questions = this.questions.map(q => ({ ...q, isOpen: false }));
@@ -231,6 +239,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     this.selectedDatabase = database
     console.log('--> Selected Database:', database);
     this.DB = this.databases.find(db => db.name === database)!;
+    console.log('--> THIS.DB:', this.DB);
   }
 
   onChangeType(event: any) {
@@ -238,8 +247,10 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     console.log('--> Value:', event.value);
     if (event.value == 'test') {
       this.isTest = true;
+      this.quizIsTest = true;
     } else {
       this.isTest = false;
+      this.quizIsTest = false;
     }
   }
 
@@ -296,7 +307,8 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
 
   questionDelete(questionIndex: number){
     console.log('--> Question Delete');
-    //this.questionsToDelete.push(this.questions![questionIndex]);
+    this.deletedQuestions.push(this.questions![questionIndex]);
+    console.log('--> Deleted Questions:', this.deletedQuestions);
     this.questions?.splice(questionIndex, 1);
   }
 
@@ -338,15 +350,18 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
 
   newSolution(questionIndex: number, questionId?: number){
     console.log('--> New Solution');
-    this.quizService.getOne(this.quiz!.id!).subscribe(quiz => {
-      const dataB = this.databases.find(db => db.id === quiz?.databaseId)
-      this.DB = dataB!;
-      console.log('--> Database New Solution:', this.DB);
-      console.log('--> Quiz New Solution:', quiz);
-    });
-    if (!this.questions[questionIndex].solutions)
-      this.questions[questionIndex].solutions = [];
-    this.questions[questionIndex].solutions.push(new Solution());
+    if(this.quiz?.id) {
+      this.quizService.getOne(this.quiz!.id!).subscribe(quiz => {
+        const dataB = this.databases.find(db => db.id === quiz?.databaseId)
+        this.DB = dataB!;
+        console.log('--> Database New Solution:', this.DB);
+        console.log('--> Quiz New Solution:', quiz);
+      });
+    }
+      if (!this.questions[questionIndex].solutions)
+        this.questions[questionIndex].solutions = [];
+      this.questions[questionIndex].solutions.push(new Solution());
+
   }
 
   solutionDelete(questionIndex: number, solutionIndex: number) {
@@ -361,100 +376,99 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     this.questions[questionIndex].solutions.splice(solutionIndex, 1);
   }
 
-
-  saveAAA() {
-    console.log('--> Save');
-    this.quiz!.name = this.ctlName.value;
-    this.quiz!.description = this.ctlDescription.value;
-    this.quiz!.isTest = this.ctlRadioGroup.value === 'test';
-    this.quiz!.isPublished = this.ctlPublished.value;
-
-    // Si le quiz est un trainning, les dates doivent être null
-    if (!this.quiz!.isTest) {
-        this.quiz!.start = undefined;
-        this.quiz!.finish = undefined;
-    } else {
-        // Sinon, utilisez les valeurs fournies
-        this.quiz!.start = this.ctlStart.value;
-        this.quiz!.finish = this.ctlFinish.value;
-    }
-    console.log('--> *SAVE* 1 Database:', this.quiz!.database);
-    console.log('--> *SAVE* 1 DatabaseId:', this.quiz!.databaseId);
-    const dataB = this.databases.find(db => db.id === this.quiz!.databaseId)
-    this.quiz!.databaseId = dataB!.id;
-    //const dataB = this.databases.find(db => db.id === this.quiz!.databaseId)
-      //this.DB = dataB!;
-    console.log('--> *SAVE* 2 Database:', this.quiz!.databaseId);
-
-    // Mise à jour des questions
-    this.quiz!.questions = this.questions.map(question => {
-        return {
-            ...question,
-            body: question.body,
-        };
-    });
-    const dataToSave = {
-      ...this.quiz,
-      deletedSolutions: this.deletedSolutions // Ajoutez ici la liste des solutions supprimées
-    };
-
-    if (this.quiz!.id! > 0) {
-      // Mise à jour du quiz existant
-
-      //this.quiz!.databaseId = dataB!.id;
-      this.quizService.update(this.quiz!.id!, this.quiz!).subscribe({
-          next: (response) => {
-              console.log('Quiz mis à jour avec succès !', response);
-              this.router.navigate(['/teacher']);
-          },
-          error: (error) => {
-              console.error('Erreur lors de la mise à jour du quiz:', error);
-          }
-      });
-    } else {
-        // Ajout d'un nouveau quiz
-        this.quizService.add(this.quiz!).subscribe({
-            next: (response) => {
-                console.log('Quiz enregistré avec succès !', response);
-                this.router.navigate(['/teacher']);
-            },
-            error: (error) => {
-                console.error('Erreur lors de la sauvegarde du quiz:', error);
-            }
-        });
-    }
-  }
-
   save() {
+    function adjustDateForTimezone(date: string | number | Date) {
+      if (!date) return null;
+      const newDate = new Date(date);
+      newDate.setMinutes(newDate.getMinutes() - newDate.getTimezoneOffset());
+      return newDate;
+    }
     console.log('--> Save');
-    // if (!this.frm.valid) {
-    //     console.error('Le formulaire n\'est pas valide.');
-    //     return;
-    // }
+    console.log('Form validity:', this.frm.valid);
+    console.log('Name validity:', this.ctlName.valid);
+    console.log('Description validity:', this.ctlDescription.valid);
+    console.log('Radio Group validity:', this.ctlRadioGroup.valid);
+    console.log('Published validity:', this.ctlPublished.valid);
+    console.log('Start validity:', this.ctlStart.valid);
+    console.log('Finish validity:', this.ctlFinish.valid);
+    console.log('Question Body validity:', this.ctlQuestionBody.valid);
+    console.log('Database validity:', this.ctlDataBase.valid);
+    console.log('Date Range validity:', this.ctlDateRange.valid);
+    console.log('Form value:', this.frm.value);
 
+     // Vérifier la validité de chaque question
+    this.questionControls.forEach((control, index) => {
+      console.log(`Question ${index} validity:`, control.valid);
+    });
+    if (!this.frm.valid || this.questions.length === 0 || this.questions.some(q => q.solutions.length === 0)) {
+      console.error('Le formulaire n\'est pas valide ou manque de questions ou de solutions.');
+      return;
+    }
     // Préparation des données du quiz
+    const quizExists = this.quiz!.id! > 0;
     const dataB = this.databases.find(db => db.id === this.quiz!.databaseId);
+    let startValue = null;
+    let finishValue = null;
+
+    if (this.quiz.isTest) {
+      startValue = this.ctlStart.value;
+      finishValue = this.ctlFinish.value;
+    }else if(this.quizIsTest){
+      startValue = this.ctlStart.value;
+      finishValue = this.ctlFinish.value;
+    }
+    const startValueAdjusted = adjustDateForTimezone(startValue);
+    const finishValueAdjusted = adjustDateForTimezone(finishValue);
+    console.log('--> 1 *SAVE* Start Value:', startValue);
     const quizData = {
         id: this.quiz!.id,
         name: this.ctlName.value,
         description: this.ctlDescription.value,
         isTest: this.ctlRadioGroup.value === 'test',
         isPublished: this.ctlPublished.value,
-        start: this.quiz!.isTest ? this.ctlStart.value : null,
-        finish: this.quiz!.isTest ? this.ctlFinish.value : null,
-        databaseId: dataB!.id,
+        start: startValueAdjusted!,
+        finish: finishValueAdjusted!,
+        databaseId: quizExists ? dataB!.id : this.DB.id,
         questions: this.questions.map(question => ({
             ...question,
-            body: question.body
+            body: question.body,
+            solutions: question.solutions.map(solution => ({
+              ...solution,
+              questionId: question.id
+          }))
         })),
-        //deletedSolutions: this.deletedSolutions,
         isClosed: this.quiz!.isClosed,
-        database: this.quiz!.database,
+        database: dataB!,
         status: this.quiz!.status,
         attempts: this.quiz!.attempts,
         statusAsString: this.quiz!.statusAsString,
         display: this.quiz!.display
     };
+
+    console.log('--> QUestion BODY', this.ctlQuestionBody);
+    console.log('--> 2 *SAVE* Start Value:', startValue);
+    console.log('--> Quiz Data QUESTIONS:', quizData.questions);
+    if(this.deletedQuestions.length > 0) {
+      console.log('--> Deleted Questions:', this.deletedQuestions);
+      this.deletedQuestions.forEach(question => {
+        this.questionService.deleteById(question.id!).subscribe({
+          next: response => {
+              console.log('Question supprimée avec succès !', response);
+              this.solutionService.deleteByQuestionId(question.id!).subscribe({
+                next: response => {
+                    console.log('Solution supprimée avec succès !', response);
+                },
+                error: error => {
+                    console.error('Erreur lors de la suppression de la solution:', error);
+                }
+              });
+          },
+          error: error => {
+              console.error('Erreur lors de la suppression de la question:', error);
+          }
+        });
+      });
+    }
 
     if (this.deletedSolutions.length > 0) {
       console.log('--> Deleted Solutions:', this.deletedSolutions);
@@ -486,6 +500,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
         this.quizService.add(quizData!).subscribe({
             next: response => {
                 console.log('Quiz enregistré avec succès !', response);
+                console.log('New Quiz Data:', quizData);
                 this.router.navigate(['/teacher']);
             },
             error: error => {
@@ -495,7 +510,92 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     }
   }
 
+  delete() {
+    console.log('--> Delete');
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Suppression du quiz',
+        message: 'Voulez-vous vraiment supprimer le quiz?'
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        if (this.quiz!.id! > 0) {
+          //delete solutions
+          this.quiz!.questions.forEach(question => {
+            question.solutions.forEach(solution => {
+              this.solutionService.deleteByQuestionId(solution.id!).subscribe({
 
+              });
+            });
+          });
+
+          //delete answers
+          this.quiz!.questions.forEach(question => {
+            question.answers.forEach(answer => {
+              this.quizService.deleteAnswer(answer.id!).subscribe({
+                next: response => {
+                    console.log('Answer supprimée avec succès !', response);
+
+                },
+                error: error => {
+                    console.error('Erreur lors de la suppression de la answer:', error);
+                }
+              });
+            });
+          });
+
+          //delete questions
+        this.quiz!.questions.forEach(question => {
+            this.questionService.deleteByQuizId(this.quiz!.id!).subscribe({
+                next: response => {
+                    console.log('Question supprimée avec succès !', response);
+                    this.solutionService.deleteByQuestionId(question.id!).subscribe({
+                        next: response => {
+                            console.log('Solution supprimée avec succès !', response);
+
+                        },
+                        error: error => {
+                            console.error('Erreur lors de la suppression de la solution:', error);
+                        }
+                    });
+                },
+                error: error => {
+                    console.error('Erreur lors de la suppression de la question:', error);
+                }
+            });
+        });
+
+          //delete attempts
+          // this.quiz!.attempts.forEach(attempt => {
+          //   this.quizService.deleteAttempt(attempt.id!).subscribe({
+          //     next: response => {
+          //         console.log('Attempt supprimée avec succès !', response);
+
+          //     },
+          //     error: error => {
+          //         console.error('Erreur lors de la suppression de la attempt:', error);
+          //     }
+          //   });
+          // });
+
+          //delete quiz
+          this.quizService.delete(this.quiz!.id!).subscribe({
+              next: response => {
+                  console.log('Quiz supprimé avec succès !', response);
+                  this.router.navigate(['/teacher']);
+              },
+              error: error => {
+                  console.error('Erreur lors de la suppression du quiz:', error);
+              }
+          });
+        }
+      }else {
+        // L'utilisateur a annulé l'action
+        console.log('Suppression du quiz annulée');
+      }
+    });
+  }
 
 
 }

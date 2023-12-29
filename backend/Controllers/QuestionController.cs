@@ -161,4 +161,16 @@ public class QuestionController :  ControllerBase{
         return query;
     }
 
+    // delete: api/question/id
+    [Authorized(Role.Teacher, Role.Admin)]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id) {
+        var question = await _context.Questions.FindAsync(id);
+        if (question == null)
+            return NotFound();
+        _context.Questions.Remove(question);
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
 }

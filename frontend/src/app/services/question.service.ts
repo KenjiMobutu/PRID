@@ -80,4 +80,14 @@ export class QuestionService {
       map(res => res)
     );
   }
+
+  deleteById(questionId: number): Observable<boolean> {
+    const url = `${this.baseUrl}api/question/${questionId}`;
+    return this.http.delete<boolean>(url);
+  }
+
+  deleteByQuizId(quizId: number): Observable<boolean> {
+    const url = `${this.baseUrl}api/quiz/${quizId}/questions`;
+    return this.http.delete<boolean>(url);
+  }
 }

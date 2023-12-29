@@ -73,16 +73,14 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.user = this.authService.currentUser?.id;
     this.paginatorInit();
-
-    //console.log('----> Database:', this.quiz?.database.id);
+    // permet de trier la colonne "database" en utilisant le nom de la database
     this.dataSource.sortingDataAccessor = (item: any, property: string) => {
+      const dbName = this.databases.find(db => db.id === item.databaseId)?.name;
       switch (property) {
-        case 'databaseName': return item.database?.name;
+        case 'databaseName': return dbName;
         default: return item[property];
       }
     };
-
-    //this.refresh();
   }
 
   // appelée quand on clique sur le bouton "edit"
@@ -132,7 +130,6 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
     this.attemptService.add(quiz?.id!, this.user!).subscribe(
       res => {
         console.log('----> *1* Résultat:', res);
-        //console.log('----> *1* Database:', this.quiz?.database.name);
         console.log('----> *1* Attempt:', res);
       }
     );
@@ -142,7 +139,6 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
     const updateDatabaseName = (quiz: Quiz) => {
       const dbName = this.databases.find(db => db.id === quiz.databaseId)?.name;
       quiz.databaseName = dbName;
-     //this.databaseName = dbName;
     };
 
     if (!this._isTest) {
@@ -152,7 +148,7 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
         this._filter = this.state.filter;
         quizes.forEach(quiz => {
           updateDatabaseName(quiz);
-          console.log('----> 1 quiz TEST ', quiz);
+          console.log('----> 1 quiz TP ', quiz);
           console.log('--> 2 quiz', quiz.name + ' Database -->' + quiz.databaseName + ' Status -->' + quiz.statusAsString);
         });
       });
@@ -166,19 +162,19 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
             this.quiz.score = quiz.score;
           }
           updateDatabaseName(quiz);
-          console.log('----> 1 quiz TP : ', quiz);
+          console.log('----> 1 quiz TEST : ', quiz);
           console.log('----> quiz', quiz.name + ' Database -->' + quiz.databaseName + ' Status -->' + quiz.statusAsString + ' ' + quiz.score);
         });
       });
     }
   }
 
-
   paginatorInit(){
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = (data: Quiz, filter: string) => {
-      const str = data.name + ' ' + data.database?.name + ' ' + data.statusAsString + ' ';
+      const dbName = this.databases.find(db => db.id === data.databaseId)?.name;
+      const str = data.name + ' ' + dbName + ' ' + data.statusAsString + ' ';
       console.log('---> Database', data.database);
       console.log('---> str', str);
       return str.toLowerCase().includes(filter.toLowerCase());

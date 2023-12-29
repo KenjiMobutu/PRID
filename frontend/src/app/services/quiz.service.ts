@@ -105,4 +105,13 @@ export class QuizService {
   openQuiz(quizId: number): Observable<any> {
     return this.http.post(`/api/quiz/open/${quizId}`, {});
   }
+
+  delete(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}api/quiz/${id}`);
+  }
+
+  deleteAnswer(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}api/quiz/${id}/answer`);
+  }
+  
 }

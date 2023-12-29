@@ -7,7 +7,7 @@ public class SolutionDTO{
     public int Order { get; set; }
     public string Sql { get; set; } = "";
 
-    [ForeignKey(nameof(QuestionDTOId))]
-    public int QuestionDTOId { get; set; }
+    [ForeignKey(nameof(QuestionId))]
+    public int QuestionId { get; set; }
     //public QuestionDTO QuestionDTO { get; set; } = null!;
 }

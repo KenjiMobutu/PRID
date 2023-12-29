@@ -107,7 +107,7 @@ export class QuestionComponent implements OnInit{
           this.database = db!.name ?? '';
           this._isTest = this.quiz?.isTest;
           console.log('---> Quiz!!:', this.quiz);
-          this.isQuizFinished = this.quiz?.status === QuizStatus.Fini;
+          this.isQuizFinished = this.quiz?.isClosed!;
           console.log('---> Quiz STATUS FINISHED:', this.isQuizFinished );
           console.log('---> Database NAME!!:', db!.name);
           this.questions = quiz?.questions || [];

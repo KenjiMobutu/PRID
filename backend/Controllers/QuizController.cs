@@ -312,4 +312,22 @@ public class QuizController :  ControllerBase{
         return NoContent();
     }
 
+    // DELETE: api/quiz/id
+    [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin)]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id) {
+        // Récupère en BD le quiz à supprimer
+        var quiz = await _context.Quizzes.FindAsync(id);
+        // Si le quiz n'existe pas, on renvoie une erreur 404 Not Found
+        if (quiz == null)
+            return NotFound();
+        // Indique au contexte EF qu'il faut supprimer ce quiz
+        _context.Quizzes.Remove(quiz);
+        // Sauve les changements
+        await _context.SaveChangesAsync();
+        // Retourne un statut 204 avec une réponse vide
+        return NoContent();
+    }
+
 }
