@@ -55,7 +55,8 @@ export class TeacherComponent implements AfterViewInit {
     // définit le filtre initial
     this.dataSource.filterPredicate = (data: Quiz, filter: string) => {
       const dbName = this.databases.find(db => db.id === data.databaseId)?.name;
-      const str = data.name + ' ' + dbName + ' ' + data.statusAsString + ' ';
+      const dataType = data.isTest ? 'Test' : 'Training';
+      const str = data.name + ' ' + dbName + ' ' +dataType + ' '+ data.statusAsString + ' ';
       console.log('---> Database', data.database);
       console.log('---> str', str);
       return str.toLowerCase().includes(filter.toLowerCase());

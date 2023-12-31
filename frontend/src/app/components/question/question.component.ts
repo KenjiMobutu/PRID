@@ -292,7 +292,7 @@ export class QuestionComponent implements OnInit{
 
     envoyer() {
       this.showAnswer();
-        this.questionService.postQuery(this.question!.id!, this.query,this.database!).subscribe(
+        this.questionService.postQuery(this.question!.id!, this.query, this.database!).subscribe(
           (data:any) => {
             if(this.query === "")
               this.answerMessage = `Vous n'avez pas entré de requête SQL!`;
@@ -300,7 +300,7 @@ export class QuestionComponent implements OnInit{
             if(this.errors.length >0){
               this.res = false;
               this.badQuery = true;
-              this.answerMessage = data.error;
+              this.answerMessage = "Erreur : \n" +  data.error;
             }
             if(data.correctMessage){
               this.res = true;

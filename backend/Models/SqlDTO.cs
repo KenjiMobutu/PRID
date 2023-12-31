@@ -32,7 +32,7 @@ public class SqlDTO{
             // Handle the exception
             Console.WriteLine($"-->Error: {e.Message}");
             return new QueryDTO{
-                Error = new string[] { e.Message }
+                Error = new string[] { e.Message }.ToList()
             };
         }
 

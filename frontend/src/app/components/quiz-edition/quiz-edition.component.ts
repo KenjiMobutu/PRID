@@ -32,7 +32,7 @@ import { DataBase } from 'src/app/models/database';
 import { SolutionService } from 'src/app/services/solution.service';
 
 import { Solution } from 'src/app/models/solution';
-import { da } from 'date-fns/locale';
+import { da, el } from 'date-fns/locale';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 @Component({
   selector: 'quiz-edition',
@@ -72,7 +72,9 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
   deletedQuestions: Question[] = [];
   solutionGroups: FormGroup[] = [];
   selectedDatabase: string = '';
+  errorMessage: string = '';
   quizIsTest: boolean = false;
+  quizIsTrainning: boolean = false;
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -107,9 +109,9 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       radioGroup: this.ctlRadioGroup,
       dataBase: this.ctlDataBase,
       published: this.ctlPublished,
-      dateRange: this.ctlDateRange,
-      start: this.ctlStart,
-      finish: this.ctlFinish,
+      //dateRange: this.ctlDateRange,
+      //start: this.ctlStart,
+      //finish: this.ctlFinish,
       //questionBody: this.ctlQuestionBody,
       //query: this.ctlQuery,
     });
@@ -136,10 +138,11 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
 
   quizEditInit(quizId: number){
     this.quizService.getOne(quizId).subscribe(quiz => {
-
+      const dataB = this.databases.find(db => db.id === quiz?.databaseId)
+      this.DB = dataB!;
       this.quiz = quiz || new Quiz();
       this.isTest = quiz?.isTest;
-      this.DB = quiz!.database;
+      //this.DB = quiz!.database;
       console.log('--> Quiz:', this.quiz);
       this.ctlName.setValue(quiz?.name);
       this.ctlDescription.setValue(quiz?.description);
@@ -150,7 +153,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       this.ctlDateRange.setValue(this.ctlStart.value + ' - ' + this.ctlFinish.value);
       this.ctlStart.setValue(quiz?.start);
       this.ctlFinish.setValue(quiz?.finish);
-      this.ctlQuestionBody.setValue(quiz?.questions.map(q => q.body));
+      this.ctlQuestionBody.setValue(this.questionControls.map(q => q.value));
       this.questions = quiz?.questions || [];
       this.questionControls = quiz?.questions.map(q =>
         this.fb.control(q.body, Validators.required)
@@ -215,6 +218,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
 
 
   dateRangeValidator(group: FormGroup): ValidationErrors | null {
+
     const startControl = group.get('ctlStart');
     const finishControl = group.get('ctlFinish');
     if (!startControl || !finishControl) {
@@ -251,6 +255,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     } else {
       this.isTest = false;
       this.quizIsTest = false;
+      this.quizIsTrainning = true;
     }
   }
 
@@ -292,7 +297,6 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     }
   }
 
-
   newQuestion(){
     console.log('--> New Question');
     const newOrder = this.questions.length + 1;
@@ -329,7 +333,6 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     }
   }
 
-
   solutionDown(questionIndex: number, solutionIndex: number) {
     if (this.questions && this.questions[questionIndex]) {
       const solutions = this.questions[questionIndex].solutions;
@@ -347,7 +350,6 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     }
   }
 
-
   newSolution(questionIndex: number, questionId?: number){
     console.log('--> New Solution');
     if(this.quiz?.id) {
@@ -358,9 +360,24 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
         console.log('--> Quiz New Solution:', quiz);
       });
     }
-      if (!this.questions[questionIndex].solutions)
-        this.questions[questionIndex].solutions = [];
-      this.questions[questionIndex].solutions.push(new Solution());
+    const currentQuestion = this.questions[questionIndex];
+    if (!currentQuestion.solutions) {
+        currentQuestion.solutions = [];
+    }
+
+    // Déterminer le nouvel ordre en se basant sur le nombre de solutions existantes
+    const newOrder = currentQuestion.solutions.length + 1;
+
+    // Créer la nouvelle solution avec l'ordre approprié
+    const newSolution = new Solution();
+    newSolution.order = newOrder;
+    newSolution.questionId = currentQuestion.id;
+
+     // Ajouter la nouvelle solution au tableau des solutions de la question
+    currentQuestion.solutions.push(newSolution);
+
+     // Mettre à jour le tableau des questions
+    this.questions[questionIndex] = currentQuestion;
 
   }
 
@@ -401,24 +418,50 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       console.log(`Question ${index} validity:`, control.valid);
     });
     if (!this.frm.valid || this.questions.length === 0 || this.questions.some(q => q.solutions.length === 0)) {
+      const formValid = this.frm.valid;
+      const questionsExist = this.questions.length > 0;
+      const solutionsExist = this.questions.every(q => q.solutions.length > 0);
+
+      // Initialiser une liste pour stocker les messages d'erreur
+      const errorMessages: string[] = [];
+
+      // Vérifier la validité du formulaire
+      if (!formValid) {
+          errorMessages.push("Le formulaire n'est pas valide.");
+      }
+
+      // Vérifier l'existence des questions
+      if (!questionsExist) {
+          errorMessages.push("Aucune question n'a été ajoutée.");
+      }
+
+      // Vérifier l'existence des solutions pour chaque question
+      if (!solutionsExist) {
+          errorMessages.push("Il manque des solutions pour certaines questions.");
+      }
+
+      // Afficher les messages d'erreur
+      if (errorMessages.length > 0) {
+          // Afficher les messages d'erreur sur l'interface utilisateur
+          this.errorMessage = errorMessages.join("\n");
+      }
       console.error('Le formulaire n\'est pas valide ou manque de questions ou de solutions.');
       return;
     }
+
     // Préparation des données du quiz
     const quizExists = this.quiz!.id! > 0;
     const dataB = this.databases.find(db => db.id === this.quiz!.databaseId);
     let startValue = null;
     let finishValue = null;
 
-    if (this.quiz.isTest) {
-      startValue = this.ctlStart.value;
-      finishValue = this.ctlFinish.value;
-    }else if(this.quizIsTest){
+    if (this.quiz.isTest || this.quizIsTest) {
       startValue = this.ctlStart.value;
       finishValue = this.ctlFinish.value;
     }
     const startValueAdjusted = adjustDateForTimezone(startValue);
     const finishValueAdjusted = adjustDateForTimezone(finishValue);
+    console.log('--> 0 *SAVE* Start Value:', startValue);
     console.log('--> 1 *SAVE* Start Value:', startValue);
     const quizData = {
         id: this.quiz!.id,

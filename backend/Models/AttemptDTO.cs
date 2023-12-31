@@ -9,11 +9,9 @@ public class AttemptDTO{
 
     [ForeignKey(nameof(StudentId))]
     public int StudentId { get; set; }
-    //public Student Student { get; set; } = null!;
 
     [ForeignKey(nameof(QuizId))]
     public int QuizId { get; set; }
-    //public QuizDTO QuizDTO { get; set; } = null!;
 
     public ICollection<AnswerDTO> Answers { get; set; } = new HashSet<AnswerDTO>();
 }

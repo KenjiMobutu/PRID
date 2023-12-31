@@ -14,7 +14,6 @@ public class QuizDTO{
 
     [ForeignKey(nameof(DatabaseId))]
     public int DatabaseId { get; set; }
-    //public DatabaseDTO Database { get; set; } = null!;
 
     public bool HaveAttempt { get; set; }
     public string? Score { get; set; }

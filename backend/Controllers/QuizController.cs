@@ -251,7 +251,8 @@ public class QuizController :  ControllerBase{
 
     // POST: api/quiz
     [AllowAnonymous]
-    [HttpPost]
+    [Authorized(Role.Teacher, Role.Admin)]
+    [HttpPost("create")]
     public async Task<ActionResult<QuizDTO>> Create(QuizDTO data) {
 
         var newQuiz = _mapper.Map<Quiz>(data);
@@ -295,6 +296,7 @@ public class QuizController :  ControllerBase{
 
     // PUT: api/quiz/id
     [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin)]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, QuizDTO data) {
         // Si l'id est différent du quiz à modifier, on renvoie une erreur 400 Bad Request

@@ -149,7 +149,7 @@ public class QuestionController :  ControllerBase{
 
         QueryDTO query = sqldto.ExecuteQuery(); //execute la requete de l'utilisateur
 
-        if(query.Error.Length > 0) //si il y a une erreur dans la requete de l'utilisateur
+        if(query.Error.Count > 0) //si il y a une erreur dans la requete de l'utilisateur
             return query;
 
         QueryDTO solutionQuery = sqlQuery.ExecuteQuery();
@@ -157,7 +157,7 @@ public class QuestionController :  ControllerBase{
         if (query.Data is not null && solutionQuery.Data is not null)
             query.CheckQueries(solutionQuery);
         else
-            query.Error = new string[] { "Errors while sending the data" };
+            query.Error = new string[] { "Errors while sending the data" }.ToList();
         return query;
     }
 

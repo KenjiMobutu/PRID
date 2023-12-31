@@ -73,6 +73,7 @@
   </div>
   <br>
   <h2>Questions</h2>
+  <p class="error"> {{errorMessage}}</p>
   <mat-accordion>
     <mat-expansion-panel *ngFor="let question of questions; let questionIndex = index" (opened)="question.isOpen = true" (closed)="question.isOpen = false">
       <mat-expansion-panel-header>

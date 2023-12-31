@@ -35,6 +35,7 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
   databaseName?: string;
   public databases: DataBase[] = [];
   evaluations: string[] = [];
+  public today: Date = new Date();
 
   private _isTest?: boolean;
   public haveAttempt: boolean = false;
@@ -68,6 +69,7 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
       this.databases = databases;
       console.log('--> Databases:', this.databases);
     });
+    console.log('TODAY:', this.today);
   }
 
   ngAfterViewInit(): void {
@@ -140,13 +142,13 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
       const dbName = this.databases.find(db => db.id === quiz.databaseId)?.name;
       quiz.databaseName = dbName;
     };
-
     if (!this._isTest) {
       this.quizService.getTp(this.user!).subscribe(quizes => {
-        this.dataSource.data = quizes;
+        const publishedQuizes = quizes.filter(quiz => quiz.isPublished);
+        this.dataSource.data = publishedQuizes;
         this.state.restoreState(this.dataSource);
         this._filter = this.state.filter;
-        quizes.forEach(quiz => {
+        publishedQuizes.forEach(quiz => {
           updateDatabaseName(quiz);
           console.log('----> 1 quiz TP ', quiz);
           console.log('--> 2 quiz', quiz.name + ' Database -->' + quiz.databaseName + ' Status -->' + quiz.statusAsString);
@@ -154,19 +156,31 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
       });
     } else {
       this.quizService.getTest(this.user!).subscribe(quizes => {
-        this.dataSource.data = quizes;
+        // Filtrer pour n'afficher que les quiz publiés
+        const publishedQuizes = quizes.filter(quiz => quiz.isPublished);
+
+        this.dataSource.data = publishedQuizes;
         this.state.restoreState(this.dataSource);
         this._filter = this.state.filter;
-        quizes.forEach(quiz => {
-          if (this.quiz) {
-            this.quiz.score = quiz.score;
-          }
-          updateDatabaseName(quiz);
-          console.log('----> 1 quiz TEST : ', quiz);
-          console.log('----> quiz', quiz.name + ' Database -->' + quiz.databaseName + ' Status -->' + quiz.statusAsString + ' ' + quiz.score);
+        publishedQuizes.forEach(quiz => {
+            if (this.quiz) {
+                this.quiz.score = quiz.score;
+            }
+            updateDatabaseName(quiz);
+            console.log('----> 1 quiz TEST : ', quiz);
+            console.log('----> quiz', quiz.name + ' Database -->' + quiz.databaseName + ' Status -->' + quiz.statusAsString + ' ' + quiz.score);
         });
       });
     }
+  }
+
+  isQuizStartable(startDate: Date): boolean {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // ignorer l'heure actuelle pour comparer seulement les dates
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+
+    return start <= today;
   }
 
   paginatorInit(){

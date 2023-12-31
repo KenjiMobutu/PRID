@@ -82,7 +82,7 @@ export class QuizService {
   }
 
   public add(q: Quiz): Observable<boolean> {
-    return this.http.post<Quiz>(`${this.baseUrl}api/quiz`, q).pipe(
+    return this.http.post<Quiz>(`${this.baseUrl}api/quiz/create`, q).pipe(
         map(res => true),
         catchError(err => {
             console.error(err);
@@ -113,5 +113,5 @@ export class QuizService {
   deleteAnswer(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}api/quiz/${id}/answer`);
   }
-  
+
 }

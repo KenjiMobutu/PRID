@@ -14,6 +14,32 @@ public class QuizValidator : AbstractValidator<Quiz>{
             .Must(id => id == default(int)).WithMessage("L'ID est auto-incrémenté et ne doit pas être spécifié manuellement.");
     });
 
+    RuleSet("create", () => {
+            RuleFor(q => q.Name)
+            .NotEmpty().WithMessage("Le nom du quiz est obligatoire.")
+            .Length(3, 50).WithMessage("Le nom du quiz doit avoir une longueur comprise entre 3 et 50 caractères.")
+            .MustAsync(async (name, cancellation) => await BeUniqueQuizName(name))
+            .WithMessage("Le nom du quiz est déjà utilisé.");
+    });
+
+    RuleSet("create", () => {
+      RuleFor(q => q.Start)
+      .NotEmpty().WithMessage("La date de début est obligatoire.")
+      .When(q => q.IsTest);
+    });
+    
+    RuleSet("create", () => {
+      RuleFor(q => q.Finish)
+      .NotEmpty().WithMessage("La date de fin est obligatoire.")
+      .When(q => q.IsTest);
+    });
+
+  }
+
+  private async Task<bool> BeUniqueQuizName(string name) {
+        // Check if the pseudo is unique in DB
+        var existingName = await _context.Quizzes.FirstOrDefaultAsync(q => q.Name == name);
+        return existingName == null;
   }
 
   public async Task<FluentValidation.Results.ValidationResult> ValidateOnCreate(Quiz quiz) {

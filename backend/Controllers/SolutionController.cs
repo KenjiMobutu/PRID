@@ -227,6 +227,7 @@ public class SolutionController : ControllerBase{
     Console.WriteLine("---> dataRows COUNT : " + dataRows.Count());
     return dataRows;
   }
+  
   [AllowAnonymous]
   [Authorized(Role.Teacher, Role.Admin)]
   [HttpDelete("{id}")]
