@@ -2,13 +2,11 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace prid_2324_a11.Models;
 
-public enum Role
-{
+public enum Role{
     Admin = 2, Teacher = 1, Student = 0
 }
 
-public class User
-{
+public class User{
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
@@ -46,7 +44,6 @@ public class Admin : User{
     public Admin() : base() {
         Role = Role.Admin;
     }
-
 }
 
 public class Teacher : User{

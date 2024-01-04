@@ -40,7 +40,5 @@ public class MappingProfile : Profile{
         CreateMap<Solution, SolutionDTO>();
         CreateMap<SolutionDTO, Solution>();
 
-        /*CreateMap<User, UserDTO>()
-            .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => src.BirthDate ?? DateTime.MinValue));*/
     }
 }

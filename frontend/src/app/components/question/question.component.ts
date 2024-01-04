@@ -9,7 +9,7 @@ import { Solution } from 'src/app/models/solution';
 import { SolutionService } from 'src/app/services/solution.service';
 import { CodeEditorComponent } from '../code-editor/code-editor.component';
 import { AnswerService } from 'src/app/services/answer.service';
-import { da, tr } from 'date-fns/locale';
+import { da, el, tr } from 'date-fns/locale';
 import { AttemptService } from 'src/app/services/attempt.service';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { User } from 'oidc-client';
@@ -44,12 +44,14 @@ export class QuestionComponent implements OnInit{
   heure = this.now.toLocaleTimeString();
   date = this.now.toLocaleDateString();
   horodatage = `${this.date} ${this.heure}`;
+  //horodatage = this.now.toISOString();
   answerMessage : string ="";
   res : boolean = false;
   showAnswerTable: boolean = false;
   columnNames: string[] = []; // Initialisation noms de colonnes
   dataRows: string[][] = []; // Initialisation des lignes de données
   isQuizFinished = false;
+  isQuizClosed = false;
   user : number | undefined;
   database: string = "";
   DB!: DataBase;
@@ -58,7 +60,9 @@ export class QuestionComponent implements OnInit{
   badQuery!: boolean;
   correctMessage: string = "";
   correctQuery: boolean = false;
+  public haveAttempt: boolean = false;
   public databases: DataBase[] = [];
+  public attempts: Attempt [] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -75,6 +79,11 @@ export class QuestionComponent implements OnInit{
     ) { }
 
     ngOnInit() {
+
+    }
+
+    ngAfterViewInit(): void {
+      this.editor.focus();
       this.user = this.authService.currentUser?.id;
       this.route.params.subscribe(params => {
         const questionId = +params['id'];
@@ -89,16 +98,12 @@ export class QuestionComponent implements OnInit{
       });
     }
 
-    ngAfterViewInit(): void {
-      this.editor.focus();
-    }
-
     questionInit(question: Question) {
-        const quizId = question?.quizId ?? 0;
-        this.quizService.getAllDatabase().subscribe(databases => {
-          this.databases = databases;
-          console.log('--> Databases:', this.databases);
-        });
+      const quizId = question?.quizId ?? 0;
+      this.quizService.getAllDatabase().subscribe(databases => {
+        this.databases = databases;
+        console.log('--> Databases:', this.databases);
+      });
         this.quizService.getOne(quizId).subscribe(quiz => {
           this.quiz = quiz;
           const db = this.databases.find(db => db.id === quiz!.databaseId);
@@ -107,8 +112,16 @@ export class QuestionComponent implements OnInit{
           this.database = db!.name ?? '';
           this._isTest = this.quiz?.isTest;
           console.log('---> Quiz!!:', this.quiz);
-          this.isQuizFinished = this.quiz?.isClosed!;
-          console.log('---> Quiz STATUS FINISHED:', this.isQuizFinished );
+          if(quiz?.isTest){
+            this.quizService.getTestByUserAndQuiz(this.user!, quizId).subscribe(q => {
+              console.log('---> getTestByUserAndQuiz TEST:', q);
+              this.isQuizFinished = q?.status === QuizStatus.Fini;
+              console.log('---> Quiz STATUS FINISHED 1:', this.isQuizFinished );
+            });
+          }
+
+          this.isQuizClosed = this.quiz?.isClosed!;
+          console.log('---> Quiz STATUS FINISHED 2:', this.isQuizFinished );
           console.log('---> Database NAME!!:', db!.name);
           this.questions = quiz?.questions || [];
           console.log('---->  Questions:', this.questions);
@@ -117,17 +130,16 @@ export class QuestionComponent implements OnInit{
             this.solution = this.solutions.find(s => s.questionId === this.currentQuestionId );
             console.log('$$---->  currentQuestionId:', this.currentQuestionId );
             console.log('***---->  Solution:', this.solution);
-            this.query = this.solutions[0].sql ?? '';
             this.questions[this.currentQuestionIndex].solutions = this.solutions;
             console.log('--->  Solutions:', this.solutions);
           });
         });
+        this.getAnswerForCurrentQuestion(quizId);
     }
 
     next() {
-      this.showAnswers = false;
-      this.showAnswerTable = false;
-      this.showRowsCount = false;
+      this.resetAnswerState();
+
       // Vérifier si l'ID de la question actuelle est dans la liste des questions
       console.log('----> currentQuestionIndex:', this.currentQuestionIndex);
       const nextQuestionIndex = this.questions.findIndex(q => q.id === this.currentQuestionId) + 1;
@@ -137,15 +149,17 @@ export class QuestionComponent implements OnInit{
         this.currentQuestionIndex = nextQuestionIndex;
         const nextQuestionId = this.questions[nextQuestionIndex].id;
         this.router.navigate(['/question', nextQuestionId]);
+        const question = this.questions[nextQuestionIndex];
+        console.log('----> *** Question:', question);
+
+        this.questionInit(question);
       } else {
         console.log('Il n\'y a pas de question suivante.');
       }
     }
 
     previous() {
-      this.showAnswers = false;
-      this.showAnswerTable = false;
-      this.showRowsCount = false;
+      this.resetAnswerState();
       // Vérifier si l'ID de la question actuelle est dans la liste des questions
       console.log("----> currentQuestionId:",this.currentQuestionId )
       console.log('----> currentQuestionIndex:', this.currentQuestionIndex);
@@ -156,6 +170,8 @@ export class QuestionComponent implements OnInit{
         this.currentQuestionIndex = previousQuestionIndex;
         const previousQuestionId = this.questions[previousQuestionIndex].id;
         this.router.navigate(['/question', previousQuestionId]);
+        const question = this.questions[previousQuestionIndex];
+        this.questionInit(question);
       } else {
         console.log('Il n\'y a pas de question précédente.');
       }
@@ -217,9 +233,17 @@ export class QuestionComponent implements OnInit{
       this.showAnswerTable = false;
       this.showRowsCount = false;
     }
+    updateHorodatage() {
+      this.now = new Date();
+      this.heure = this.now.toLocaleTimeString();
+      this.date = this.now.toLocaleDateString();
+      this.horodatage = `${this.date} ${this.heure}`;
+    }
 
     send(){
       //this.newAttempt(this.quiz!);
+      this.updateHorodatage();
+      console.log('----> *send* HORODATAGE:', this.updateHorodatage());
       this.showSolutions = false;
       this.envoyer();
       this.sendAnswer();
@@ -249,49 +273,28 @@ export class QuestionComponent implements OnInit{
     }
 
     sendAnswer() {
-      //this.newAttempt(this.quiz!);
-      //this.showAnswer();
-      //this.showSolutions = false;
       this.quizService.getOne(this.question?.quizId ?? 0).subscribe(quiz => {
         if (this.database !== undefined) {
           this.answerService.postQuery(this.question?.id ?? 0, this.query,this.database).subscribe(res => {
-          console.log('----> *2* ID:', this.question?.id);
-          console.log('----> *2* Query:', this.query);
-          console.log('----> ** Résultat:', res);
-          console.log('----> *sendAnswer* Database:', this.database);
-          this.res = res;
-          if (this.question?.id !== undefined && quiz?.attempts[0]?.id !== undefined) {
-            var attempt = quiz?.attempts?.[quiz?.attempts.length -1];
-            if(attempt?.id !== undefined)
-              this.answerService.sendAnswer(this.question.id, attempt.id, this.query, res).subscribe(res => {
-                  console.log('----> *3* Résultat:', res);
-              });
-          }
-          // if(this.query === ""){
-          //   this.answerMessage = `Vous n'avez pas entré de requête SQL!`;
-          // }else{
-          //   if ( res === true) {
-          //     console.log('----> ** Message texte:', res);
-          //     this.answerMessage = `Votre requête a retourné une réponse correcte!\n
-          //     Néanmoins, comparez votre solution avec celle(s) ci-dessous pour voir si vous n'avez pas eu un peu de chance... ;)`;
-          //     this.showSolutions = true;
-          //     this.showTable();
-          //     this.showRowCount();
-          //   }else{
-          //     console.log('----> ** Message texte:', res);
-          //     this.answerMessage = `Votre requête n'a pas retourné de réponse correcte!`;
-          //   }
-          // }
-        });
+            console.log('----> *2* ID:', this.question?.id);
+            console.log('----> *2* Query:', this.query);
+            console.log('----> ** Résultat:', res);
+            console.log('----> *sendAnswer* Database:', this.database);
+            this.res = res;
+            if (this.question?.id !== undefined && quiz?.attempts[0]?.id !== undefined) {
+              var attempt = quiz?.attempts?.[quiz?.attempts.length -1];
+              if(attempt?.id !== undefined)
+                this.answerService.sendAnswer(this.question.id, attempt.id, this.query, res).subscribe(res => {
+                    console.log('----> *3* Résultat:', res);
+                });
+            }
+          });
         }
       });
-
-      //this.answerMessage ="";
-      //this.showSolutions = false;
     }
 
     envoyer() {
-      this.showAnswer();
+      console.log('----> *envoyer* HORODATAGE:', this.horodatage);
         this.questionService.postQuery(this.question!.id!, this.query, this.database!).subscribe(
           (data:any) => {
             if(this.query === "")
@@ -305,9 +308,10 @@ export class QuestionComponent implements OnInit{
             if(data.correctMessage){
               this.res = true;
               this.answerMessage = data.correctMessage;
+              //this.horodatage = data.timeStamp;
               this.correctQuery = true;
             }
-
+            this.showAnswer();
             this.showRowsCount = !this.showRowsCount;
             this.showAnswerTable = !this.showAnswerTable;
 
@@ -322,6 +326,7 @@ export class QuestionComponent implements OnInit{
             console.log('----> *envoyer* RowsCount:', this.rowsCount);
             console.log('----> *envoyer* Rows:', this.dataRows);
             console.log('----> *envoyer* Columns:', this.columnNames);
+            //console.log('----> *envoyer* HORODATAGE:', this.horodatage);
             this.showSolutions = true;
           }
         );
@@ -361,6 +366,31 @@ export class QuestionComponent implements OnInit{
       });
     }
 
+    resetAnswerState() {
+      this.query = '';
+      this.answerMessage = '';
+      this.showAnswers = false;
+      this.showAnswerTable = false;
+      this.showRowsCount = false;
+    }
+
+    getAnswerForCurrentQuestion(quizId: number) {
+      this.attemptService.getByQuizIdAndUserId(quizId, this.user!).subscribe(attempts => {
+        console.log('----> 1 Attempts:', attempts);
+        if (attempts) {
+          this.attempts = attempts; // Accéder à la dernière tentative
+          const lastAttempt = attempts[attempts.length - 1];
+          this.answerService.getByAttemptAndQuestionId(lastAttempt.id!, this.currentQuestionId!).subscribe(answer => {
+            if (answer) {
+              this.query = answer.sql ?? '';
+              this.horodatage = answer.timeStamp instanceof Date ? answer.timeStamp.toISOString() : '';
+              console.log('----> 1 Answer:', answer);
+              this.envoyer();
+            }
+          });
+        }
+      });
+    }
 
 }
 

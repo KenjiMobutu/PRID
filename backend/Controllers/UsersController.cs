@@ -46,6 +46,7 @@ public class UsersController : ControllerBase{ //DTO: pas toutes les donnes sont
     }
 
     // GET: api/Members/ben
+    [Authorized(Role.Teacher, Role.Admin)]
     [HttpGet("{id}")]
     public async Task<ActionResult<UserDTO>> GetOne(int id) {
         // Récupère en BD le membre dont le pseudo est passé en paramètre dans l'url
@@ -58,6 +59,7 @@ public class UsersController : ControllerBase{ //DTO: pas toutes les donnes sont
     }
 
     [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin)]
     [HttpPost]
     public async Task<ActionResult<UserDTO>> PostUser(UserWithPasswordDTO user) {
         // Utilise le mapper pour convertir le DTO qu'on a reçu en une instance de Member
@@ -120,6 +122,7 @@ public class UsersController : ControllerBase{ //DTO: pas toutes les donnes sont
         return NoContent();
     }
 
+    [Authorized(Role.Teacher, Role.Admin)]
     [HttpGet("byPseudo/{pseudo}")]
     public async Task<ActionResult<UserDTO>> ByPseudo(string pseudo) {
         // Récupère en BD le membre dont le pseudo est passé en paramètre dans l'url
@@ -131,6 +134,7 @@ public class UsersController : ControllerBase{ //DTO: pas toutes les donnes sont
         return _mapper.Map<UserDTO>(user);
     }
 
+    [Authorized(Role.Teacher, Role.Admin)]
     [HttpGet("byEmail/{email}")]
     public async Task<ActionResult<UserDTO>> ByEmail(string email) {
         // Récupère en BD le membre dont le pseudo est passé en paramètre dans l'url
@@ -143,18 +147,21 @@ public class UsersController : ControllerBase{ //DTO: pas toutes les donnes sont
     }
 
     [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin)]
     [HttpGet("available/{pseudo}")]
     public async Task<ActionResult<bool>> IsAvailable(string pseudo) {
         return await _context.Users.SingleOrDefaultAsync(u => u.Pseudo == pseudo) == null;
     }
 
     [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpPost("signup")]
     public async Task<ActionResult<UserDTO>> SignUp(UserWithPasswordDTO data) {
         return await PostUser(data);
     }
 
     [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpPost("authenticate")]
     public async Task<ActionResult<UserDTO>> Authenticate(UserLoginDTO dto) {
         var user = await Authenticate(dto.Pseudo, dto.Password);

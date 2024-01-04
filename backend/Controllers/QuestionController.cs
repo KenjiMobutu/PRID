@@ -31,6 +31,7 @@ public class QuestionController :  ControllerBase{
 
     // GET: api/Questions
     [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<QuestionDTO>>> GetAll() {
         return _mapper.Map<List<QuestionDTO>>(await _context.Questions
@@ -42,6 +43,7 @@ public class QuestionController :  ControllerBase{
 
     // GET: api/Question/id
     [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("{id}")]
     public async Task<ActionResult<QuestionDTO>> GetOne(int id) {
         // Récupère en BD le membre dont le pseudo est passé en paramètre dans l'url
@@ -61,6 +63,7 @@ public class QuestionController :  ControllerBase{
 
     // GET: api/question/id/quiz
     [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("{id}/quiz")]
     public async Task<ActionResult<QuizDTO>> GetQuiz(int id) {
         // Récupère en BD le membre dont le pseudo est passé en paramètre dans l'url

@@ -23,18 +23,18 @@
     <p>{{ question.body }}</p>
   </div>
 </div>
-<code-editor #editor [(ngModel)]="query" [readOnly]="isQuizFinished" [database]="DB"></code-editor>
+<code-editor #editor [(ngModel)]="query" [readOnly]="isQuizFinished || isQuizClosed" [database]="DB"></code-editor>
 <br>
 <div>
-  <input id="readonly" type="checkbox" [(ngModel)]="isQuizFinished" hidden>
+  <input id="readonly" type="checkbox" [(ngModel)]="isQuizFinished || isQuizClosed" hidden>
 </div>
 <div style="display: none;">
   <textarea [(ngModel)]="query" cols="80" rows="5" style="width: 100%"></textarea>
 </div>
 
 <div>
-  <button style="margin-right: 10px;"  (click)="send()" >Envoyer</button>
-  <button style="margin-right: 10px;" *ngIf="!isQuizFinished" (click)="clear()">Effacer</button>
+  <button style="margin-right: 10px;" [disabled]="isQuizFinished || isQuizClosed" (click)="send()" >Envoyer</button>
+  <button style="margin-right: 10px;" [disabled]="isQuizFinished || isQuizClosed" (click)="clear()">Effacer</button>
   <button style="margin-right: 10px;" *ngIf="!isTest && !isQuizFinished" (click)="showSolution()">Voir Solutions</button>
 </div>
 <br>

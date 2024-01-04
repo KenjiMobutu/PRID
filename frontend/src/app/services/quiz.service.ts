@@ -48,6 +48,11 @@ export class QuizService {
       map(res => plainToInstance(Quiz, res))
     );
   }
+  getTestByUserAndQuiz(userId: number, quizId: number): Observable<Quiz> {
+    return this.http.get<any>(`${this.baseUrl}api/quiz/${userId}/${quizId}/test`).pipe(
+      map(res => plainToInstance(Quiz, res))
+    );
+  }
 
   getOne(id: number) {
     return this.http.get<Quiz>(`${this.baseUrl}api/quiz/${id}`).pipe(

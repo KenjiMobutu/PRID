@@ -9,6 +9,8 @@ export class Attempt {
   quizId: number | undefined;
   userId: number | undefined;
   answers: Answer[] = [];
+  start: Date | undefined;
+  finish: Date | undefined;
 }
 export class Question {
     id: number | undefined;

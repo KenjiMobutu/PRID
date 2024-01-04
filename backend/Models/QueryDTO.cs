@@ -47,6 +47,7 @@ public class QueryDTO{
     public string DbName { get; set; } = null!;
     public string CorrectMessage { get; set; } = "";
     public int QuestionId { get; set; }
+    public DateTime Timestamp { get; set; }
 
     // Validation du résultat d'une requête
     public QueryDTO CheckQueries(QueryDTO query){

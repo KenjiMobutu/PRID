@@ -29,6 +29,7 @@ public class QuizController :  ControllerBase{
 
     // GET: api/Quizes
     [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<QuizDTO>>> GetAll() {
         return _mapper.Map<List<QuizDTO>>(await _context.Quizzes
@@ -39,6 +40,7 @@ public class QuizController :  ControllerBase{
     }
 
     [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("database")]
     public async Task<ActionResult<IEnumerable<DatabaseDTO>>> GetAllDatabase() {
         var databases = await _context.Databases
@@ -49,6 +51,7 @@ public class QuizController :  ControllerBase{
     }
 
     [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("teacher/{userId}")]
     public async Task<ActionResult<IEnumerable<QuizDTO>>> GetAllForTeacher(int userId) {
         var quizzes = await _context.Quizzes
@@ -63,6 +66,7 @@ public class QuizController :  ControllerBase{
     }
 
     [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("{userId}/tp")]
     public async Task<ActionResult<IEnumerable<QuizDTO>>> GetTp(int userId){ // Ajoutez userId comme paramètre si nécessaire
         var quizzes = await _context.Quizzes
@@ -87,6 +91,7 @@ public class QuizController :  ControllerBase{
 
     // GET: api/quiz/test
     [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("{userId}/test")]
     public async Task<ActionResult<IEnumerable<QuizDTO>>> GetTest(int userId) {
         var quizzes = await _context.Quizzes
@@ -108,8 +113,29 @@ public class QuizController :  ControllerBase{
         return quizzesDto;
     }
 
+    [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin, Role.Student)]
+    [HttpGet("{userId}/{quizId}/test")]
+    public async Task<ActionResult<QuizDTO>> GetTestById(int userId, int quizId) {
+        var quiz = await _context.Quizzes
+            .Include(q => q.Database)
+            .Include(q => q.Questions)
+            .ThenInclude(q => q.Solutions)
+            .Include(q => q.Attempts)
+            .FirstOrDefaultAsync(q => q.Id == quizId);
+
+        var quizDto = _mapper.Map<QuizDTO>(quiz);
+
+        Console.WriteLine(" QUIZZZZ ---> " + " :" + quizDto.Name);
+        // Mettre à jour le statut pour chaque quiz en fonction de l'utilisateur
+        await UserQuizStatus(new List<QuizDTO> { quizDto }, userId);
+
+        return quizDto;
+    }
+
     // GET: api/quiz/id
     [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("{id}")]
     public async Task<ActionResult<QuizDTO>> GetOne(int id) {
         // Récupère en BD le quiz avec ses questions liées
@@ -129,6 +155,7 @@ public class QuizController :  ControllerBase{
 
     // GET: api/quiz/id/questions
     [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("{id}/questions")]
     public async Task<ActionResult<IEnumerable<QuestionDTO>>> GetQuestions(int id) {
         // Récupère en BD le quiz avec ses questions liées
@@ -146,6 +173,7 @@ public class QuizController :  ControllerBase{
 
     // GET: api/quiz/questionId/quiz
     [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("{id}/quiz")]
     public async Task<ActionResult<QuizDTO>> GetByQuestionId(int id) {
         // Récupère en BD le quiz avec ses questions liées
@@ -172,6 +200,7 @@ public class QuizController :  ControllerBase{
     }
 
     [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpPost("close/{quizId}")]
     public async Task<ActionResult<QuizDTO>> CloseQuiz(int quizId) {
     // Trouver le quiz par ID
@@ -186,6 +215,7 @@ public class QuizController :  ControllerBase{
     }
 
     [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpPost("open/{quizId}")]
     public async Task<ActionResult<QuizDTO>> OpenQuiz(int quizId) {
     // Trouver le quiz par ID
@@ -269,6 +299,7 @@ public class QuizController :  ControllerBase{
     }
 
     [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("{name}/name")]
     public async Task<ActionResult<QuizDTO>> GetByName(string name) {
         // Récupère en BD le membre dont le pseudo est passé en paramètre dans l'url
@@ -281,6 +312,7 @@ public class QuizController :  ControllerBase{
     }
 
     [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("database/{name}")]
     public async Task<ActionResult<DatabaseDTO>> GetDatabaseByName(string name) {
         // Récupère en BD le membre dont le pseudo est passé en paramètre dans l'url

@@ -30,7 +30,7 @@ import {MatAccordion, MatExpansionModule} from '@angular/material/expansion';
 import { TruncatePipe } from 'src/app/helpers/truncatePipe';
 import { DataBase } from 'src/app/models/database';
 import { SolutionService } from 'src/app/services/solution.service';
-
+import { AttemptService } from 'src/app/services/attempt.service';
 import { Solution } from 'src/app/models/solution';
 import { da, el } from 'date-fns/locale';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
@@ -75,6 +75,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
   errorMessage: string = '';
   quizIsTest: boolean = false;
   quizIsTrainning: boolean = false;
+  public haveAttempt: boolean = false;
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -82,6 +83,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     private quizService: QuizService,
     private questionService: QuestionService,
     private solutionService: SolutionService,
+    private attemptService: AttemptService,
     public dialog: MatDialog,
 
   ){
@@ -129,6 +131,11 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     this.route.params.subscribe(params => {
       const quizId = +params['id'];
       this.quizEditInit(quizId);
+      this.attemptService.getByQuizId(quizId).subscribe(attempts => {
+        if(attempts.length > 0) {
+          this.haveAttempt = true;
+        }
+      });
     });
     this.quizService.getAllDatabase().subscribe(databases => {
       this.databases = databases;

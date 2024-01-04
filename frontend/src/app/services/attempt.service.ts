@@ -20,6 +20,12 @@ export class AttemptService {
     );
   }
 
+  getByQuizIdAndUserId(quizId: number, userId: number): Observable<Attempt[]> {
+    return this.http.get<Attempt[]>(`${this.baseUrl}api/attempt/${quizId}/${userId}/attempt`).pipe(
+      map(res => plainToInstance(Attempt, res))
+    );
+  }
+
   public add(quizId: number, userId: number): Observable<Attempt> {
     return this.http.post<Attempt>(`${this.baseUrl}api/attempt/${quizId}/${userId}`,{}).pipe(
     );

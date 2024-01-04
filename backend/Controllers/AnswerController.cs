@@ -34,6 +34,7 @@ public class AnswerController : ControllerBase{
 
   // GET: api/questionId/answer
   [AllowAnonymous]
+  [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet("{questionId}/answer")]
   public async Task<ActionResult<IEnumerable<AnswerDTO>>> GetAnswers(int questionId) {
     // Récupère en BD la question dont l'id est passé en paramètre dans l'url
@@ -49,6 +50,7 @@ public class AnswerController : ControllerBase{
 
   // GET: api/attemptId/answers
   [AllowAnonymous]
+  [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet("{attemptId}/{userId}/answers")]
   public async Task<ActionResult<IEnumerable<AnswerDTO>>> GetByAttemptId(int attemptId,int userId) {
     // Récupère en BD l'attempt dont l'id est passé en paramètre dans l'url
@@ -66,6 +68,7 @@ public class AnswerController : ControllerBase{
 
   // GET: api/answer/id
   [AllowAnonymous]
+  [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet("{id}")]
   public async Task<ActionResult<AnswerDTO>> GetOne(int id) {
     // Récupère en BD la réponse dont l'id est passé en paramètre dans l'url
@@ -78,6 +81,7 @@ public class AnswerController : ControllerBase{
   }
 
     [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpPost("queryPost")]
     // Vérifie si la requête SQL est valide
     public ActionResult CheckSql(SqlDTO sqlDTO){
@@ -170,6 +174,7 @@ public class AnswerController : ControllerBase{
 
   // Récupère les noms des colonnes d'un DataTable
   [AllowAnonymous]
+  [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet("{sql}/{dbName}/columns")]
   public ActionResult<string[]> GetColumnNames(string sql,string dbName){
     string connectionString = $"server=localhost;database={dbName};uid=root;password=root";
@@ -191,6 +196,7 @@ public class AnswerController : ControllerBase{
 
   // Récupère les données d'un DataTable
   [AllowAnonymous]
+  [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet("{sql}/{dbName}/rows")]
   public ActionResult<string[][]> GetDataRows(string sql,string dbName){
     string connectionString = $"server=localhost;database={dbName};uid=root;password=root";
@@ -228,6 +234,7 @@ public class AnswerController : ControllerBase{
 
   // POST: api/answer
   [AllowAnonymous]
+  [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpPost("sendAnswer")]
   public async Task<ActionResult<AnswerDTO>> PostAnswer(AnswerDTO answerDTO) {
   //   // Récupère en BD la question dont l'id est passé en paramètre dans l'url
@@ -245,4 +252,19 @@ public class AnswerController : ControllerBase{
     // Retourne un statut 201 Created avec l'entité créée
     return CreatedAtAction(nameof(GetOne), new { id = answer.Id }, _mapper.Map<AnswerDTO>(answer));
   }
+
+  [AllowAnonymous]
+  [Authorized(Role.Teacher, Role.Admin, Role.Student)]
+  [HttpGet("{attemptId}/{questionId}/answer")]
+  public async Task<ActionResult<AnswerDTO>> GetAnswerByAttemptIdAndQuestionId(int attemptId, int questionId) {
+    // Récupère en BD la réponse dont l'id est passé en paramètre dans l'url
+    var answer = await _context.Answers.FirstOrDefaultAsync(a => a.AttemptId == attemptId && a.QuestionId == questionId);
+    // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
+    if (answer == null)
+      return NotFound();
+    // Retourne le membre
+    return _mapper.Map<AnswerDTO>(answer);
+  }
+
+
 }

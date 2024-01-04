@@ -52,4 +52,10 @@ export class AnswerService {
       map(res => res)
     );
   }
+
+  getByAttemptAndQuestionId(attemptId: number, questionId: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}api/answer/${attemptId}/${questionId}/answer`).pipe(
+      map(res => res)
+    );
+  }
 }
