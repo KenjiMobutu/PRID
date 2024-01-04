@@ -38,7 +38,7 @@ export enum QuizStatus{
 export class Answer {
   id: number | undefined;
   sql?: string;
-  timeStamp: Date | undefined;
+  timestamp: Date | undefined;
   isCorrect: boolean = false;
   question: Question | undefined;
   attempt: Attempt | undefined;

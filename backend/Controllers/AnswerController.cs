@@ -243,7 +243,8 @@ public class AnswerController : ControllerBase{
       AttemptId = answerDTO.AttemptId,
       QuestionId = answerDTO.QuestionId,
       Sql = answerDTO.Sql,
-      IsCorrect = answerDTO.IsCorrect
+      IsCorrect = answerDTO.IsCorrect,
+      Timestamp = DateTime.Now,
     };
     // Ajouter la réponse à l'attempt
     _context.Answers.Add(answer);

@@ -41,10 +41,10 @@ export class QuestionComponent implements OnInit{
   private _isTest?: boolean;
   query = "";
   now = new Date();
-  heure = this.now.toLocaleTimeString();
-  date = this.now.toLocaleDateString();
-  horodatage = `${this.date} ${this.heure}`;
-  //horodatage = this.now.toISOString();
+  heure = this.now;
+  date = this.now;
+  //horodatage = `${this.date}`;
+  horodatage = new Date();
   answerMessage : string ="";
   res : boolean = false;
   showAnswerTable: boolean = false;
@@ -60,9 +60,12 @@ export class QuestionComponent implements OnInit{
   badQuery!: boolean;
   correctMessage: string = "";
   correctQuery: boolean = false;
+  havePrevious: boolean = true;
+  haveNext: boolean = true;
   public haveAttempt: boolean = false;
   public databases: DataBase[] = [];
   public attempts: Attempt [] = [];
+  public lastAttempt: Attempt | undefined;
 
   constructor(
     private route: ActivatedRoute,
@@ -119,7 +122,6 @@ export class QuestionComponent implements OnInit{
               console.log('---> Quiz STATUS FINISHED 1:', this.isQuizFinished );
             });
           }
-
           this.isQuizClosed = this.quiz?.isClosed!;
           console.log('---> Quiz STATUS FINISHED 2:', this.isQuizFinished );
           console.log('---> Database NAME!!:', db!.name);
@@ -138,43 +140,48 @@ export class QuestionComponent implements OnInit{
     }
 
     next() {
-      this.resetAnswerState();
-
-      // Vérifier si l'ID de la question actuelle est dans la liste des questions
-      console.log('----> currentQuestionIndex:', this.currentQuestionIndex);
       const nextQuestionIndex = this.questions.findIndex(q => q.id === this.currentQuestionId) + 1;
-      console.log('----> nextQuestionIndex:', nextQuestionIndex);
-      if (nextQuestionIndex < this.questions.length) {
-        this.showSolutions = false;
+      this.haveNext = nextQuestionIndex < this.questions.length;
+
+      if (this.haveNext) {
+        this.resetAnswerState();
         this.currentQuestionIndex = nextQuestionIndex;
         const nextQuestionId = this.questions[nextQuestionIndex].id;
-        this.router.navigate(['/question', nextQuestionId]);
-        const question = this.questions[nextQuestionIndex];
-        console.log('----> *** Question:', question);
-
-        this.questionInit(question);
+        this.currentQuestionId = nextQuestionId!;
+        this.questionInit(this.questions[nextQuestionIndex]);
+        this.getAnswerForCurrentQuestion(this.quiz!.id!);
+        this.router.navigate(['/question', nextQuestionId]).then(() => {
+          this.updateButtonState();
+        });
       } else {
         console.log('Il n\'y a pas de question suivante.');
       }
     }
 
     previous() {
-      this.resetAnswerState();
-      // Vérifier si l'ID de la question actuelle est dans la liste des questions
-      console.log("----> currentQuestionId:",this.currentQuestionId )
-      console.log('----> currentQuestionIndex:', this.currentQuestionIndex);
       const previousQuestionIndex = this.questions.findIndex(q => q.id === this.currentQuestionId) - 1;
-      console.log('----> previousQuestionIndex:', previousQuestionIndex);
-      if (previousQuestionIndex >= 0) {
-        this.showSolutions = false;
+      this.havePrevious = previousQuestionIndex >= 0;
+
+      if (this.havePrevious) {
+        this.resetAnswerState();
         this.currentQuestionIndex = previousQuestionIndex;
         const previousQuestionId = this.questions[previousQuestionIndex].id;
-        this.router.navigate(['/question', previousQuestionId]);
-        const question = this.questions[previousQuestionIndex];
-        this.questionInit(question);
+        this.currentQuestionId = previousQuestionId!;
+        this.questionInit(this.questions[previousQuestionIndex]);
+        this.getAnswerForCurrentQuestion(this.quiz!.id!);
+        this.router.navigate(['/question', previousQuestionId]).then(() => {
+          this.updateButtonState();
+        });
       } else {
         console.log('Il n\'y a pas de question précédente.');
       }
+    }
+
+    // Mise à jour de l'état des boutons
+    updateButtonState() {
+      const currentIndex = this.questions.findIndex(q => q.id === this.currentQuestionId);
+      this.haveNext = currentIndex < this.questions.length - 1;
+      this.havePrevious = currentIndex > 0;
     }
 
     close() {
@@ -228,22 +235,22 @@ export class QuestionComponent implements OnInit{
     clear() {
       this.query = ''; // Efface le contenu du textarea
       this.answerMessage = '';
-      this.horodatage = '';
+      this.horodatage = new Date();
       this.showSolutions = false;
       this.showAnswerTable = false;
       this.showRowsCount = false;
     }
-    updateHorodatage() {
-      this.now = new Date();
-      this.heure = this.now.toLocaleTimeString();
-      this.date = this.now.toLocaleDateString();
-      this.horodatage = `${this.date} ${this.heure}`;
-    }
+    // updateHorodatage() {
+    //   this.now = new Date();
+    //   this.heure = this.now;
+    //   this.date = this.now;
+    //   this.horodatage = this.now.toISOString();
+    // }
 
     send(){
       //this.newAttempt(this.quiz!);
-      this.updateHorodatage();
-      console.log('----> *send* HORODATAGE:', this.updateHorodatage());
+      //this.updateHorodatage();
+      //console.log('----> *send* HORODATAGE:', this.updateHorodatage());
       this.showSolutions = false;
       this.envoyer();
       this.sendAnswer();
@@ -299,6 +306,10 @@ export class QuestionComponent implements OnInit{
           (data:any) => {
             if(this.query === "")
               this.answerMessage = `Vous n'avez pas entré de requête SQL!`;
+            // this.answerService.getByAttemptAndQuestionId(this.lastAttempt!.id!, this.currentQuestionId!).subscribe(answer => {
+            //   console.log('--> Answer TIMESTAMP:', answer.timestamp!);
+            //   this.horodatage = answer.timestamp!;
+            // } );
             this.errors = data.error;
             if(this.errors.length >0){
               this.res = false;
@@ -308,7 +319,6 @@ export class QuestionComponent implements OnInit{
             if(data.correctMessage){
               this.res = true;
               this.answerMessage = data.correctMessage;
-              //this.horodatage = data.timeStamp;
               this.correctQuery = true;
             }
             this.showAnswer();
@@ -369,6 +379,7 @@ export class QuestionComponent implements OnInit{
     resetAnswerState() {
       this.query = '';
       this.answerMessage = '';
+      this.showSolutions = false;
       this.showAnswers = false;
       this.showAnswerTable = false;
       this.showRowsCount = false;
@@ -380,11 +391,12 @@ export class QuestionComponent implements OnInit{
         if (attempts) {
           this.attempts = attempts; // Accéder à la dernière tentative
           const lastAttempt = attempts[attempts.length - 1];
+          this.lastAttempt = lastAttempt;
           this.answerService.getByAttemptAndQuestionId(lastAttempt.id!, this.currentQuestionId!).subscribe(answer => {
             if (answer) {
               this.query = answer.sql ?? '';
-              this.horodatage = answer.timeStamp instanceof Date ? answer.timeStamp.toISOString() : '';
-              console.log('----> 1 Answer:', answer);
+              this.horodatage = answer.timestamp!;
+              console.log('----> 111 Answer:', answer.timestamp);
               this.envoyer();
             }
           });

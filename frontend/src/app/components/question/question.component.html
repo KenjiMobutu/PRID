@@ -1,9 +1,9 @@
 <div class="button-container">
-  <button mat-icon-button tabindex="-1" (click)="previous()" class="tip" >
+  <button mat-icon-button tabindex="-1" [disabled]="!havePrevious" (click)="previous()" class="tip" >
     <mat-icon>arrow_back_ios</mat-icon>
     <span class="tooltiptext">Previous</span>
   </button>
-  <button mat-icon-button tabindex="-1" (click)="next()" class="tip">
+  <button mat-icon-button tabindex="-1" [disabled]="!haveNext" (click)="next()" class="tip">
     <mat-icon>arrow_forward_ios</mat-icon>
     <span class="tooltiptext">Next</span>
   </button>
@@ -12,7 +12,7 @@
     <p>{{ quiz.name }}</p>
   </div>
 
-  <button mat-icon-button tabindex="-1"  (click)="close()" class="tip close">
+  <button mat-icon-button tabindex="-1" [disabled]="isQuizClosed"  (click)="close()" class="tip close">
     <mat-icon>close</mat-icon>
     <span class="tooltiptext">Cloturer le quiz</span>
   </button>
@@ -40,7 +40,7 @@
 <br>
 
 <div *ngIf="showAnswers && !isTest">
-  <p>{{horodatage}}</p>
+  <p>{{horodatage | date:'dd/MM/yyyy - H:mm:ss'}}</p>
   <div [ngClass]="{'correct-answer': res === true, 'incorrect-answer': res === false}">
     <p [innerText]="answerMessage"></p>
   </div>
