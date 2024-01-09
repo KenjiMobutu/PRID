@@ -97,11 +97,15 @@ export class QuizService {
   }
 
   getByName(name: string) {
-    return this.http.get<Quiz>(`${this.baseUrl}api/quiz/${name}/name`).pipe(
+    return this.http.get<Quiz>(`${this.baseUrl}api/quiz/name/${name}`).pipe(
       map(q => plainToInstance(Quiz, q)),
       catchError(err => of(null))
     );
   }
+
+  public isQuizNameAvailable(name: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.baseUrl}api/quiz/available/${name}`);
+}
 
   closeQuiz(quizId: number): Observable<any> {
     return this.http.post(`/api/quiz/close/${quizId}`, {});

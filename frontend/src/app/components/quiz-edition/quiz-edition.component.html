@@ -43,7 +43,7 @@
 
         <!-- Actions Buttons -->
         <div class="form-actions">
-          <button mat-icon-button matTooltip="Sauver" (click)="save()" [disabled]="frm.invalid || frm.pending || haveAttempt">
+          <button mat-icon-button matTooltip="Sauver" (click)="save()" [disabled]="frm.invalid || haveAttempt">
             <mat-icon>save</mat-icon>
           </button>
           <button mat-icon-button matTooltip="Supprimer" (click)="delete()" [disabled]="haveAttempt">
@@ -99,9 +99,11 @@
       </button>
       <p>Intitulé</p>
       <mat-form-field style="width: 100%;">
-        <textarea matInput required cols="80" rows="5" [(ngModel)]="question.body" [ngModelOptions]="{standalone: true}"
+        <textarea matInput required cols="80" rows="2" [(ngModel)]="question.body" [ngModelOptions]="{standalone: true}"
                   placeholder="Entrez le texte de la question ici" [disabled]="haveAttempt">{{question.body}}</textarea>
-        <mat-error *ngIf="ctlQuestionBody.hasError('required')">Ce champ est obligatoire</mat-error>
+        <!-- <mat-error *ngIf="ctlQuestionBody.hasError('required')">Ce champ est obligatoire</mat-error> -->
+        <!-- Afficher les erreurs pour chaque question -->
+        <mat-error *ngIf="question.body === ''">Ce champ est obligatoire et doit contenir minimun 3 caractères !</mat-error>
       </mat-form-field>
       <div *ngFor="let solution of question.solutions; let solutionIndex = index" class="solution-container">
         <div class="buttons-container">
@@ -118,6 +120,7 @@
         <div class="editor-container">
             <p>Solution {{ solutionIndex + 1 }}</p>
             <code-editor #editor [(ngModel)]="solution.sql" [database]="DB" [ngModelOptions]="{standalone: true}" [readOnly]="haveAttempt"></code-editor>
+            <mat-error *ngIf="solution.sql === ''">Ce champ est obligatoire !</mat-error>
         </div>
       </div>
       <button mat-icon-button tabindex="-1" matTooltip="Ajouter une solution" class="newSolution" (click)="newSolution(questionIndex, question.id)" [disabled]="haveAttempt">

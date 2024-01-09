@@ -35,23 +35,23 @@
 <div>
   <button style="margin-right: 10px;" [disabled]="isQuizFinished || isQuizClosed" (click)="send()" >Envoyer</button>
   <button style="margin-right: 10px;" [disabled]="isQuizFinished || isQuizClosed" (click)="clear()">Effacer</button>
-  <button style="margin-right: 10px;" *ngIf="!isTest && !isQuizFinished" (click)="showSolution()">Voir Solutions</button>
+  <button style="margin-right: 10px;" *ngIf="!isTest && !isQuizFinished" (click)="showSolution()">Voir/Cacher Solution(s)</button>
 </div>
 <br>
 
-<div *ngIf="showAnswers && !isTest">
+<div *ngIf="showAnswers">
   <p>{{horodatage | date:'dd/MM/yyyy - H:mm:ss'}}</p>
   <div [ngClass]="{'correct-answer': res === true, 'incorrect-answer': res === false}">
     <p [innerText]="answerMessage"></p>
   </div>
 </div>
 <br>
-<div *ngIf="showRowsCount && !isTest" >
+<div *ngIf="showRowsCount" >
   <p>La réponse compte {{rowsCount}} lignes</p>
 </div>
 
 
-<div *ngIf="showAnswerTable && !isTest">
+<div *ngIf="showAnswerTable">
   <table>
     <thead>
       <tr>
@@ -70,7 +70,7 @@
   </table>
 </div>
 <br>
-<div *ngIf="showSolutions && !isTest">
+<div *ngIf="showSolutions">
   <ng-container *ngFor="let solution of solutions; let i = index">
     <p>Solution {{ solution.order }}</p>
     <div class="solutionBody">

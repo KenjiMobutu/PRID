@@ -58,7 +58,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
   public ctlDateRange!: FormControl;
   public ctlStart!: FormControl;
   public ctlFinish!: FormControl;
-  public ctlQuestionBody!: FormControl;
+  //public ctlQuestionBody!: FormControl;
   //public ctlQuery!: FormControl;
   panelOpenState = false;
   public databases: DataBase[] = [];
@@ -97,13 +97,17 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     this.ctlDataBase = this.fb.control('', []);
     this.ctlPublished = this.fb.control(false);
     this.ctlDateRange = this.fb.control('', []);
-    this.ctlStart = this.fb.control('', [Validators.required, this.dateNotBeforeTodayValidator()]);
-    this.ctlFinish = this.fb.control('', [Validators.required]);
+    this.ctlStart = this.fb.control('', []);
+    this.ctlFinish = this.fb.control('', []);
     this.range = this.fb.group({
       ctlStart: this.ctlStart,
       ctlEnd: this.ctlFinish
     }, { validators: this.dateRangeValidator });
-    this.ctlQuestionBody = this.fb.control('', [ Validators.required]);
+    //this.ctlQuestionBody = this.fb.control('', [ Validators.required]);
+    this.questionControls.forEach(control => {
+      control.setValidators([Validators.required, Validators.minLength(3)]);
+      control.updateValueAndValidity();
+    });
     //this.ctlQuery = this.fb.control('', []);
     this.frm = this.fb.group({
       name: this.ctlName,
@@ -111,10 +115,10 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       radioGroup: this.ctlRadioGroup,
       dataBase: this.ctlDataBase,
       published: this.ctlPublished,
-      //dateRange: this.ctlDateRange,
-      //start: this.ctlStart,
-      //finish: this.ctlFinish,
-      //questionBody: this.ctlQuestionBody,
+      dateRange: this.ctlDateRange,
+      start: this.ctlStart,
+      finish: this.ctlFinish,
+      questionBody: this.questionControls.map(q => q.value),
       //query: this.ctlQuery,
     });
     console.log('--> Form:', this.frm);
@@ -148,9 +152,11 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       const dataB = this.databases.find(db => db.id === quiz?.databaseId)
       this.DB = dataB!;
       this.quiz = quiz || new Quiz();
+
       this.isTest = quiz?.isTest;
       //this.DB = quiz!.database;
       console.log('--> Quiz:', this.quiz);
+      // Réinitialisation du contrôle du nom
       this.ctlName.setValue(quiz?.name);
       this.ctlDescription.setValue(quiz?.description);
       this.ctlRadioGroup.setValue(quiz?.isTest ? 'test' : 'trainning');
@@ -160,7 +166,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       this.ctlDateRange.setValue(this.ctlStart.value + ' - ' + this.ctlFinish.value);
       this.ctlStart.setValue(quiz?.start);
       this.ctlFinish.setValue(quiz?.finish);
-      this.ctlQuestionBody.setValue(this.questionControls.map(q => q.value));
+      //this.ctlQuestionBody.setValue(this.questionControls.map(q => q.value));
       this.questions = quiz?.questions || [];
       this.questionControls = quiz?.questions.map(q =>
         this.fb.control(q.body, Validators.required)
@@ -173,7 +179,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       console.log('--> Range:', this.ctlDateRange.value);
       console.log('--> Start DATE:', this.ctlStart.value);
       console.log('--> End DATE:', this.ctlFinish.value);
-      console.log('--> Question Body:', this.ctlQuestionBody.value);
+     // console.log('--> Question Body:', this.ctlQuestionBody.value);
       console.log('--> Quiz:', quiz);
       //console.log('--> Query:', this.ctlQuery.value);
       this.questions = quiz?.questions ?? [];
@@ -259,6 +265,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     if (event.value == 'test') {
       this.isTest = true;
       this.quizIsTest = true;
+      this.ctlStart.setValidators([this.dateNotBeforeTodayValidator()]);
     } else {
       this.isTest = false;
       this.quizIsTest = false;
@@ -410,12 +417,13 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     console.log('--> Save');
     console.log('Form validity:', this.frm.valid);
     console.log('Name validity:', this.ctlName.valid);
+    console.log('Name value:', this.ctlName);
     console.log('Description validity:', this.ctlDescription.valid);
     console.log('Radio Group validity:', this.ctlRadioGroup.valid);
     console.log('Published validity:', this.ctlPublished.valid);
     console.log('Start validity:', this.ctlStart.valid);
     console.log('Finish validity:', this.ctlFinish.valid);
-    console.log('Question Body validity:', this.ctlQuestionBody.valid);
+    console.log('Question Body validity:', this.questionControls.forEach((control, index) => { console.log(`Question ${index} validity:`, control.valid);}));
     console.log('Database validity:', this.ctlDataBase.valid);
     console.log('Date Range validity:', this.ctlDateRange.valid);
     console.log('Form value:', this.frm.value);
@@ -424,7 +432,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     this.questionControls.forEach((control, index) => {
       console.log(`Question ${index} validity:`, control.valid);
     });
-    if (!this.frm.valid || this.questions.length === 0 || this.questions.some(q => q.solutions.length === 0)) {
+    if (!this.frm.valid || this.questions.length === 0 || this.questions.some(q => q.solutions.length === 0) || this.questions.some(q => q.body === '') || this.questions.some(q => q.body.length < 3)) {
       const formValid = this.frm.valid;
       const questionsExist = this.questions.length > 0;
       const solutionsExist = this.questions.every(q => q.solutions.length > 0);
@@ -435,6 +443,10 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       // Vérifier la validité du formulaire
       if (!formValid) {
           errorMessages.push("Le formulaire n'est pas valide.");
+      }
+
+      if(this.questions.some(q => q.body === '') || this.questions.some(q => q.body.length < 3)){
+        errorMessages.push("Le titre de la question ne peut etre vide ou inférieur à 3.");
       }
 
       // Vérifier l'existence des questions
@@ -466,18 +478,21 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       startValue = this.ctlStart.value;
       finishValue = this.ctlFinish.value;
     }
+
+
     const startValueAdjusted = adjustDateForTimezone(startValue);
     const finishValueAdjusted = adjustDateForTimezone(finishValue);
     console.log('--> 0 *SAVE* Start Value:', startValue);
     console.log('--> 1 *SAVE* Start Value:', startValue);
+    const name = this.ctlName.value;
     const quizData = {
         id: this.quiz!.id,
-        name: this.ctlName.value,
+        name: name,
         description: this.ctlDescription.value,
         isTest: this.ctlRadioGroup.value === 'test',
         isPublished: this.ctlPublished.value,
-        start: startValueAdjusted!,
-        finish: finishValueAdjusted!,
+        start: startValueAdjusted ? startValueAdjusted : null,
+        finish: finishValueAdjusted ? finishValueAdjusted : null,
         databaseId: quizExists ? dataB!.id : this.DB.id,
         questions: this.questions.map(question => ({
             ...question,
@@ -495,7 +510,8 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
         display: this.quiz!.display
     };
 
-    console.log('--> QUestion BODY', this.ctlQuestionBody);
+
+    //console.log('--> QUestion BODY', this.ctlQuestionBody);
     console.log('--> 2 *SAVE* Start Value:', startValue);
     console.log('--> Quiz Data QUESTIONS:', quizData.questions);
     if(this.deletedQuestions.length > 0) {
@@ -549,6 +565,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
         // Ajout d'un nouveau quiz
         this.quizService.add(quizData!).subscribe({
             next: response => {
+
                 console.log('Quiz enregistré avec succès !', response);
                 console.log('New Quiz Data:', quizData);
                 this.router.navigate(['/teacher']);
@@ -572,62 +589,49 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       if (result) {
         if (this.quiz!.id! > 0) {
           //delete solutions
-          this.quiz!.questions.forEach(question => {
-            question.solutions.forEach(solution => {
-              this.solutionService.deleteByQuestionId(solution.id!).subscribe({
+          // this.quiz!.questions.forEach(question => {
+          //   question.solutions.forEach(solution => {
+          //     this.solutionService.deleteByQuestionId(solution.id!).subscribe({
 
-              });
-            });
-          });
-
-          //delete answers
-          this.quiz!.questions.forEach(question => {
-            question.answers.forEach(answer => {
-              this.quizService.deleteAnswer(answer.id!).subscribe({
-                next: response => {
-                    console.log('Answer supprimée avec succès !', response);
-
-                },
-                error: error => {
-                    console.error('Erreur lors de la suppression de la answer:', error);
-                }
-              });
-            });
-          });
-
-          //delete questions
-        this.quiz!.questions.forEach(question => {
-            this.questionService.deleteByQuizId(this.quiz!.id!).subscribe({
-                next: response => {
-                    console.log('Question supprimée avec succès !', response);
-                    this.solutionService.deleteByQuestionId(question.id!).subscribe({
-                        next: response => {
-                            console.log('Solution supprimée avec succès !', response);
-
-                        },
-                        error: error => {
-                            console.error('Erreur lors de la suppression de la solution:', error);
-                        }
-                    });
-                },
-                error: error => {
-                    console.error('Erreur lors de la suppression de la question:', error);
-                }
-            });
-        });
-
-          //delete attempts
-          // this.quiz!.attempts.forEach(attempt => {
-          //   this.quizService.deleteAttempt(attempt.id!).subscribe({
-          //     next: response => {
-          //         console.log('Attempt supprimée avec succès !', response);
-
-          //     },
-          //     error: error => {
-          //         console.error('Erreur lors de la suppression de la attempt:', error);
-          //     }
+          //     });
           //   });
           // });
+
+          //delete answers
+          // this.quiz!.questions.forEach(question => {
+          //   question.answers.forEach(answer => {
+          //     this.quizService.deleteAnswer(answer.id!).subscribe({
+          //       next: response => {
+          //           console.log('Answer supprimée avec succès !', response);
+
+          //       },
+          //       error: error => {
+          //           console.error('Erreur lors de la suppression de la answer:', error);
+          //       }
+          //     });
+          //   });
+          // });
+
+          //delete questions
+        // this.quiz!.questions.forEach(question => {
+        //     this.questionService.deleteByQuizId(this.quiz!.id!).subscribe({
+        //         next: response => {
+        //             console.log('Question supprimée avec succès !', response);
+        //             this.solutionService.deleteByQuestionId(question.id!).subscribe({
+        //                 next: response => {
+        //                     console.log('Solution supprimée avec succès !', response);
+
+        //                 },
+        //                 error: error => {
+        //                     console.error('Erreur lors de la suppression de la solution:', error);
+        //                 }
+        //             });
+        //         },
+        //         error: error => {
+        //             console.error('Erreur lors de la suppression de la question:', error);
+        //         }
+        //     });
+        // });
 
           //delete quiz
           this.quizService.delete(this.quiz!.id!).subscribe({

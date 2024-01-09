@@ -252,19 +252,25 @@ public class QuizController :  ControllerBase{
                     var attempt = attempts.FirstOrDefault(a => a.QuizId == quiz.Id);
                     if (attempt != null){
                         quiz.HaveAttempt = true;
-                        if (attempt is not null  && quiz.IsTest){
+                        if (attempt.Finish is not null  && quiz.IsTest){
                             determinedStatus = QuizStatus.Fini;
                             if (quiz.IsTest && questionsCount.TryGetValue(quiz.Id, out var totalQuestions)){
                                 var correctAnswersCount = await _context.Answers
                                     .Where(a => a.AttemptId == attempt.Id && a.IsCorrect)
                                     .CountAsync();
-
                                 quiz.Score = ((double)correctAnswersCount / totalQuestions * 10).ToString() + "/10";
                             }
-                        }else if (!quiz.IsTest && !quiz.IsClosed){
+                        }else if (!quiz.IsClosed){
                             determinedStatus = QuizStatus.EnCours;
+                            quiz.Score = "N/A";
                         }else{
                             determinedStatus = QuizStatus.Fini;
+                            if (quiz.IsTest && questionsCount.TryGetValue(quiz.Id, out var totalQuestions)){
+                                var correctAnswersCount = await _context.Answers
+                                    .Where(a => a.AttemptId == attempt.Id && a.IsCorrect)
+                                    .CountAsync();
+                                quiz.Score = ((double)correctAnswersCount / totalQuestions * 10).ToString("F1") + "/10";
+                            }
                         }
                     }else if (quiz.IsTest || quiz.IsClosed){
                         determinedStatus = QuizStatus.PasCommence;
@@ -275,7 +281,6 @@ public class QuizController :  ControllerBase{
                 }
                 quiz.SetExternalStatus(determinedStatus);
                 Console.WriteLine("--> statut : " + determinedStatus);
-
         }
     }
 
@@ -300,7 +305,7 @@ public class QuizController :  ControllerBase{
 
     [AllowAnonymous]
     [Authorized(Role.Teacher, Role.Admin, Role.Student)]
-    [HttpGet("{name}/name")]
+    [HttpGet("name/{name}")]
     public async Task<ActionResult<QuizDTO>> GetByName(string name) {
         // Récupère en BD le membre dont le pseudo est passé en paramètre dans l'url
         var quiz = await _context.Quizzes.SingleOrDefaultAsync(u => u.Name == name);
@@ -362,6 +367,13 @@ public class QuizController :  ControllerBase{
         await _context.SaveChangesAsync();
         // Retourne un statut 204 avec une réponse vide
         return NoContent();
+    }
+
+    [AllowAnonymous]
+    [Authorized(Role.Teacher, Role.Admin)]
+    [HttpGet("available/{name}")]
+    public async Task<ActionResult<bool>> IsAvailable(string name) {
+        return await _context.Quizzes.SingleOrDefaultAsync(q  => q.Name == name) == null;
     }
 
 }

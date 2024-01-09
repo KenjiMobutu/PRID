@@ -51,8 +51,8 @@ export class Quiz {
     isPublished: boolean = false;
     isClosed: boolean = false;
     isTest: boolean = false;
-    start?: Date;
-    finish?: Date;
+    start?: Date | null;
+    finish?: Date | null;
     database!: DataBase;
     databaseName?: string;
     databaseId: number | undefined;

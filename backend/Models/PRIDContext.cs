@@ -40,16 +40,59 @@ public class PridContext : DbContext{
                     .WithOne(a => a.Student)
                     .OnDelete(DeleteBehavior.Cascade);
 
-        // modelBuilder.Entity<User>()
-        //     .HasDiscriminator(u => u.Role)
-        //     .HasValue<User>(Role.Student)
-        //     .HasValue<User>(Role.Teacher)
-        //     .HasValue<User>(Role.Admin);
+        modelBuilder.Entity<User>()
+            .HasDiscriminator(u => u.Role)
+            .HasValue<User>(Role.Student)
+            .HasValue<User>(Role.Teacher)
+            .HasValue<User>(Role.Admin);
 
         modelBuilder.Entity<Quiz>()
                     .HasOne(q => q.Database)
                     .WithMany(d => d.Quizzes)
-                    .HasForeignKey(q => q.DatabaseId);
+                    .HasForeignKey(q => q.DatabaseId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Question>()
+                    .HasOne(q => q.Quiz)
+                    .WithMany(q => q.Questions)
+                    .HasForeignKey(q => q.QuizId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Solution>()
+                    .HasOne(s => s.Question)
+                    .WithMany(q => q.Solutions)
+                    .HasForeignKey(s => s.QuestionId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Answer>()
+                    .HasOne(a => a.Question)
+                    .WithMany(q => q.Answers)
+                    .HasForeignKey(a => a.QuestionId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Attempt>()
+                    .HasOne(a => a.Quiz)
+                    .WithMany(q => q.Attempts)
+                    .HasForeignKey(a => a.QuizId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Attempt>()
+                    .HasOne(a => a.Student)
+                    .WithMany(s => s.Attempts)
+                    .HasForeignKey(a => a.StudentId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Answer>()
+                    .HasOne(a => a.Attempt)
+                    .WithMany(a => a.Answers)
+                    .HasForeignKey(a => a.AttemptId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Answer>()
+                    .HasOne(a => a.Question)
+                    .WithMany(q => q.Answers)
+                    .HasForeignKey(a => a.QuestionId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
         /* ----------  DATABASE   -------- */
         modelBuilder.Entity<Database>().HasData(

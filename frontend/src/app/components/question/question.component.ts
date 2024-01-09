@@ -82,7 +82,12 @@ export class QuestionComponent implements OnInit{
     ) { }
 
     ngOnInit() {
-
+      this.quizService.getAllDatabase().subscribe(databases => {
+        this.databases = databases;
+        console.log('--> Databases:', this.databases);
+      });
+      const db = this.databases.find(db => db.id === this.quiz!.databaseId);
+      this.database = db!.name ?? '';
     }
 
     ngAfterViewInit(): void {
@@ -96,7 +101,6 @@ export class QuestionComponent implements OnInit{
           this.question = question;
           this.questionInit(this.question);
           console.log('!!$!$!$!$!$$!  Question:', this.question);
-
         });
       });
     }
@@ -123,6 +127,7 @@ export class QuestionComponent implements OnInit{
             });
           }
           this.isQuizClosed = this.quiz?.isClosed!;
+          console.log('---> Quiz STATUS CLOSED:', this.isQuizClosed );
           console.log('---> Quiz STATUS FINISHED 2:', this.isQuizFinished );
           console.log('---> Database NAME!!:', db!.name);
           this.questions = quiz?.questions || [];
@@ -216,7 +221,6 @@ export class QuestionComponent implements OnInit{
       });
     }
 
-
     get isTest(): boolean | undefined {
       return this._isTest;
     }
@@ -233,24 +237,10 @@ export class QuestionComponent implements OnInit{
     }
 
     clear() {
-      this.query = ''; // Efface le contenu du textarea
-      this.answerMessage = '';
-      this.horodatage = new Date();
-      this.showSolutions = false;
-      this.showAnswerTable = false;
-      this.showRowsCount = false;
+      this.resetAnswerState();
     }
-    // updateHorodatage() {
-    //   this.now = new Date();
-    //   this.heure = this.now;
-    //   this.date = this.now;
-    //   this.horodatage = this.now.toISOString();
-    // }
 
     send(){
-      //this.newAttempt(this.quiz!);
-      //this.updateHorodatage();
-      //console.log('----> *send* HORODATAGE:', this.updateHorodatage());
       this.showSolutions = false;
       this.envoyer();
       this.sendAnswer();
@@ -302,14 +292,11 @@ export class QuestionComponent implements OnInit{
 
     envoyer() {
       console.log('----> *envoyer* HORODATAGE:', this.horodatage);
+      console.log('----> *envoyer* Database:', this.database);
         this.questionService.postQuery(this.question!.id!, this.query, this.database!).subscribe(
           (data:any) => {
             if(this.query === "")
               this.answerMessage = `Vous n'avez pas entré de requête SQL!`;
-            // this.answerService.getByAttemptAndQuestionId(this.lastAttempt!.id!, this.currentQuestionId!).subscribe(answer => {
-            //   console.log('--> Answer TIMESTAMP:', answer.timestamp!);
-            //   this.horodatage = answer.timestamp!;
-            // } );
             this.errors = data.error;
             if(this.errors.length >0){
               this.res = false;
@@ -343,6 +330,8 @@ export class QuestionComponent implements OnInit{
     }
 
     showAnswer(){
+      //this.resetAnswerState();
+      this.showRowsCount = !this.showRowsCount;
       this.showAnswers = !this.showAnswers;
     }
 
