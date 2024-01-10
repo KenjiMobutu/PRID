@@ -69,6 +69,7 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
       this.databases = databases;
       console.log('--> Databases:', this.databases);
     });
+    this.refresh();
     console.log('TODAY:', this.today);
   }
 

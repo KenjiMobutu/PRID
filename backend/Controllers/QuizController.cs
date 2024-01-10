@@ -255,10 +255,9 @@ public class QuizController :  ControllerBase{
                         if (attempt.Finish is not null  && quiz.IsTest){
                             determinedStatus = QuizStatus.Fini;
                             if (quiz.IsTest && questionsCount.TryGetValue(quiz.Id, out var totalQuestions)){
-                                var correctAnswersCount = await _context.Answers
-                                    .Where(a => a.AttemptId == attempt.Id && a.IsCorrect)
-                                    .CountAsync();
-                                quiz.Score = ((double)correctAnswersCount / totalQuestions * 10).ToString() + "/10";
+                                var model = new CalculateQuizScoreModel { Quiz = quiz, Attempt = attempt };
+                                var result = await CalculateQuizScore(model);
+                                quiz.Score = result;
                             }
                         }else if (!quiz.IsClosed){
                             determinedStatus = QuizStatus.EnCours;
@@ -266,10 +265,9 @@ public class QuizController :  ControllerBase{
                         }else{
                             determinedStatus = QuizStatus.Fini;
                             if (quiz.IsTest && questionsCount.TryGetValue(quiz.Id, out var totalQuestions)){
-                                var correctAnswersCount = await _context.Answers
-                                    .Where(a => a.AttemptId == attempt.Id && a.IsCorrect)
-                                    .CountAsync();
-                                quiz.Score = ((double)correctAnswersCount / totalQuestions * 10).ToString("F1") + "/10";
+                                var model = new CalculateQuizScoreModel { Quiz = quiz, Attempt = attempt };
+                                var result = await CalculateQuizScore(model);
+                                quiz.Score = result;
                             }
                         }
                     }else if (quiz.IsTest || quiz.IsClosed){
@@ -283,6 +281,40 @@ public class QuizController :  ControllerBase{
                 Console.WriteLine("--> statut : " + determinedStatus);
         }
     }
+
+    [HttpPost("calculateQuizScore")]
+    public async Task<string> CalculateQuizScore([FromBody] CalculateQuizScoreModel model){
+        // Récupérer le nombre total de questions dans le quiz
+        int totalQuestions = model.Quiz.Questions.Count;
+
+        // Récupérer la dernière réponse pour chaque question
+        var latestAnswers = await _context.Answers
+            .Where(a => a.AttemptId == model.Attempt.Id)
+            .GroupBy(a => a.QuestionId)
+            .Select(group => group.OrderByDescending(a => a.Timestamp).First())
+            .ToListAsync();
+        Console.WriteLine("**** latestAnswers : " + latestAnswers.Count);
+        latestAnswers.ForEach((a) => Console.WriteLine("**** latestAnswers : " + a.QuestionId + " " + a.Sql));
+        // Calculer le score total du quiz
+        double totalScore = 0;
+
+        foreach (var question in model.Quiz.Questions)
+        {
+            // Vérifier si la dernière réponse pour cette question existe
+            var latestAnswer = latestAnswers.FirstOrDefault(a => a.QuestionId == question.Id);
+            Console.WriteLine("**** latestAnswer : " + latestAnswer?.QuestionId + " " + latestAnswer?.Sql);
+            if (latestAnswer!.IsCorrect)
+            {
+                // Incrémenter le score en fonction de la présence d'une réponse
+                totalScore += 1.0 / totalQuestions * 10;
+            }
+        }
+
+        // Mettre à jour la propriété Score du quiz
+        return totalScore.ToString("0.##") + "/10";
+
+    }
+
 
     // POST: api/quiz
     [AllowAnonymous]

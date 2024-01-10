@@ -125,8 +125,20 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
   }
 
   ngOnInit() {
+    this.quizService.getAllDatabase().subscribe(databases => {
+      this.databases = databases;
+      console.log('--> Databases:', this.databases);
+    });
     this.route.params.subscribe(params => {
       const quizId = +params['id'];
+      this.quizService.getOne(quizId).subscribe(quiz => {
+        const dataB = this.databases.find(db => db.id === quiz?.databaseId!)
+        console.log('--> INIT Database:', dataB);
+        console.log('--> INIT Quiz:', quiz);
+        this.DB = dataB!;
+        quiz!.database= dataB!;
+        quiz!.databaseName = dataB!.name;
+      });
       this.quizEditInit(quizId);
     });
   }
@@ -141,10 +153,6 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
         }
       });
     });
-    this.quizService.getAllDatabase().subscribe(databases => {
-      this.databases = databases;
-      console.log('--> Databases:', this.databases);
-    });
   }
 
   quizEditInit(quizId: number){
@@ -152,7 +160,8 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       const dataB = this.databases.find(db => db.id === quiz?.databaseId)
       this.DB = dataB!;
       this.quiz = quiz || new Quiz();
-
+      quiz!.database= dataB!;
+      quiz!.databaseName = dataB!.name;
       this.isTest = quiz?.isTest;
       //this.DB = quiz!.database;
       console.log('--> Quiz:', this.quiz);
@@ -185,10 +194,6 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       this.questions = quiz?.questions ?? [];
       console.log('--> Questions:', this.questions);
       this.questions = this.questions.map(q => ({ ...q, isOpen: false }));
-      this.quizService.getAllDatabase().subscribe(databases => {
-        this.databases = databases;
-        console.log('--> Databases:', this.databases);
-      });
     });
   }
 
