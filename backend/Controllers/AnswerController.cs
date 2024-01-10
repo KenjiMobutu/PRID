@@ -257,14 +257,16 @@ public class AnswerController : ControllerBase{
   [AllowAnonymous]
   [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet("{attemptId}/{questionId}/answer")]
-  public async Task<ActionResult<AnswerDTO>> GetAnswerByAttemptIdAndQuestionId(int attemptId, int questionId) {
+  public async Task<ActionResult<IEnumerable<AnswerDTO>>> GetAnswerByAttemptIdAndQuestionId(int attemptId, int questionId) {
     // Récupère en BD la réponse dont l'id est passé en paramètre dans l'url
-    var answer = await _context.Answers.FirstOrDefaultAsync(a => a.AttemptId == attemptId && a.QuestionId == questionId);
+    var answers = await _context.Answers
+    .Where(a => a.AttemptId == attemptId && a.QuestionId == questionId)
+    .ToListAsync();;
     // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
-    if (answer == null)
+    if (answers == null)
       return NotFound();
     // Retourne le membre
-    return _mapper.Map<AnswerDTO>(answer);
+    return _mapper.Map<List<AnswerDTO>>(answers);
   }
 
 

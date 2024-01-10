@@ -40,11 +40,11 @@ public class PridContext : DbContext{
                     .WithOne(a => a.Student)
                     .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<User>()
-            .HasDiscriminator(u => u.Role)
-            .HasValue<User>(Role.Student)
-            .HasValue<User>(Role.Teacher)
-            .HasValue<User>(Role.Admin);
+        // modelBuilder.Entity<User>()
+        //     .HasDiscriminator(u => u.Role)
+        //     .HasValue<User>(Role.Student)
+        //     .HasValue<User>(Role.Teacher)
+        //     .HasValue<User>(Role.Admin);
 
         modelBuilder.Entity<Quiz>()
                     .HasOne(q => q.Database)

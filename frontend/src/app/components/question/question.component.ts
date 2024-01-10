@@ -51,6 +51,7 @@ export class QuestionComponent implements OnInit{
   columnNames: string[] = []; // Initialisation noms de colonnes
   dataRows: string[][] = []; // Initialisation des lignes de données
   isQuizFinished = false;
+  isTestEncours = false;
   isQuizClosed = false;
   user : number | undefined;
   database: string = "";
@@ -123,7 +124,9 @@ export class QuestionComponent implements OnInit{
             this.quizService.getTestByUserAndQuiz(this.user!, quizId).subscribe(q => {
               console.log('---> getTestByUserAndQuiz TEST:', q);
               this.isQuizFinished = q?.status === QuizStatus.Fini;
+              this.isTestEncours = q?.status === QuizStatus.EnCours;
               console.log('---> Quiz STATUS FINISHED 1:', this.isQuizFinished );
+              console.log('---> Quiz STATUS EN COURS:', this.isTestEncours );
             });
           }
           this.isQuizClosed = this.quiz?.isClosed!;
@@ -309,7 +312,7 @@ export class QuestionComponent implements OnInit{
               this.correctQuery = true;
             }
             this.showAnswer();
-            this.showRowsCount = !this.showRowsCount;
+            //this.showRowsCount = !this.showRowsCount;
             this.showAnswerTable = !this.showAnswerTable;
 
             this.rowsCount = data.data.length;
@@ -381,11 +384,13 @@ export class QuestionComponent implements OnInit{
           this.attempts = attempts; // Accéder à la dernière tentative
           const lastAttempt = attempts[attempts.length - 1];
           this.lastAttempt = lastAttempt;
-          this.answerService.getByAttemptAndQuestionId(lastAttempt.id!, this.currentQuestionId!).subscribe(answer => {
-            if (answer) {
-              this.query = answer.sql ?? '';
-              this.horodatage = answer.timestamp!;
-              console.log('----> 111 Answer:', answer.timestamp);
+          this.answerService.getByAttemptAndQuestionId(lastAttempt.id!, this.currentQuestionId!).subscribe(answers => {
+            if (answers && answers.length > 0) {
+              var lastAnswer = answers[answers.length - 1];
+              this.query = lastAnswer.sql ?? '';
+              this.horodatage = lastAnswer.timestamp!;
+              console.log('----> 111 Answer:', lastAnswer.timestamp);
+              console.log('----> 111 Answers:', answers);
               this.envoyer();
             }
           });

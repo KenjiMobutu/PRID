@@ -41,17 +41,18 @@
 
 <div *ngIf="showAnswers">
   <p>{{horodatage | date:'dd/MM/yyyy - H:mm:ss'}}</p>
+</div>
+<br>
+
+<div *ngIf="showRowsCount && !isTestEncours" >
   <div [ngClass]="{'correct-answer': res === true, 'incorrect-answer': res === false}">
     <p [innerText]="answerMessage"></p>
   </div>
-</div>
-<br>
-<div *ngIf="showRowsCount" >
   <p>La réponse compte {{rowsCount}} lignes</p>
 </div>
 
 
-<div *ngIf="showAnswerTable">
+<div *ngIf="showAnswerTable && !isTestEncours">
   <table>
     <thead>
       <tr>
@@ -70,7 +71,7 @@
   </table>
 </div>
 <br>
-<div *ngIf="showSolutions">
+<div *ngIf="showSolutions && !isTestEncours">
   <ng-container *ngFor="let solution of solutions; let i = index">
     <p>Solution {{ solution.order }}</p>
     <div class="solutionBody">
