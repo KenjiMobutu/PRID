@@ -43,6 +43,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 export class QuizEditionComponent implements OnInit, AfterViewInit{
   public isNew: boolean = false;
   public isTest?: boolean;
+  idQuiz?: number;
   questionControls: FormControl[] = [] ;
   public today: Date = new Date();
   range = new FormGroup({
@@ -131,6 +132,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     });
     this.route.params.subscribe(params => {
       const quizId = +params['id'];
+      this.idQuiz = quizId;
       this.quizService.getOne(quizId).subscribe(quiz => {
         const dataB = this.databases.find(db => db.id === quiz?.databaseId!)
         console.log('--> INIT Database:', dataB);
@@ -203,22 +205,36 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
 
   nameUsed(): any {
     let timeout: NodeJS.Timeout;
-    return (ctl: FormControl) => {
+    let originalName: string | undefined;
+
+    return async (ctl: FormControl) => {
+      originalName! = this.quiz?.name!;
         clearTimeout(timeout);
-        const name = ctl.value;
-        return new Promise(resolve => {
-            timeout = setTimeout(() => {
+        const newName = ctl.value;
+
+        return new Promise(async resolve => {
+            timeout = setTimeout(async () => {
                 if (ctl.pristine) {
                     resolve(null);
                 } else {
-                    this.quizService.getByName(name).subscribe(quiz => {
-                        resolve(quiz ? { nameUsed: true } : null);
-                    });
+                    // Attendre que les noms des quiz soient récupérés
+                    const quizzes = await this.quizService.getAll().toPromise();
+                    const quizNames = quizzes!.map(q => q.name).filter(name => name !== originalName);
+                    console.log('-->*** Quiz Names:', quizNames);
+
+                    // Vérifier si le nom existe déjà dans la base de données
+                    const isNameUsed = quizNames.includes(newName);
+                    console.log('-->*** isNameUsed:', isNameUsed);
+                    resolve(isNameUsed ? { nameUsed: true } : null);
                 }
             }, 300);
         });
     };
   }
+
+
+
+
 
   dateNotBeforeTodayValidator() {
     return (control: AbstractControl): { [key: string]: any } | null => {

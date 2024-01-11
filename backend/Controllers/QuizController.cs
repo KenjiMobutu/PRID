@@ -32,11 +32,18 @@ public class QuizController :  ControllerBase{
     [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<QuizDTO>>> GetAll() {
-        return _mapper.Map<List<QuizDTO>>(await _context.Quizzes
-            .Include(q => q.Questions)
-            .Include(q => q.Database)
-            .Include(q => q.Attempts)
-            .ToListAsync());
+        var quizzes = await _context.Quizzes
+        .Include(q => q.Questions)
+        .Include(q => q.Database)
+        .Include(q => q.Attempts)
+        .ToListAsync();
+
+        var nonTestQuizzes = quizzes.Where(q => !q.IsTest).OrderBy(q => q.Name).ToList();
+        var testQuizzes = quizzes.Where(q => q.IsTest).OrderBy(q => q.Name).ToList();
+
+        var sortedQuizzes = nonTestQuizzes.Concat(testQuizzes).ToList();
+
+        return _mapper.Map<List<QuizDTO>>(sortedQuizzes);
     }
 
     [AllowAnonymous]

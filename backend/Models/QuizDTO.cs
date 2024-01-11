@@ -11,6 +11,7 @@ public class QuizDTO{
     public bool IsTest { get; set; }
     public DateTime? Start { get; set; }
     public DateTime? Finish { get; set; }
+    public string DatabaseName { get; set; } = "";
 
     [ForeignKey(nameof(DatabaseId))]
     public int DatabaseId { get; set; }

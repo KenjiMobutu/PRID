@@ -237,6 +237,7 @@ export class QuestionComponent implements OnInit{
       this.showSolutions = !this.showSolutions;
       this.showAnswers = false;
       this.showAnswerTable = false;
+      this.showRowsCount = false;
     }
 
     clear() {

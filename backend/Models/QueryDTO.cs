@@ -13,12 +13,12 @@ public class QueryDTO{
     public QueryDTO CheckQueries(QueryDTO query){
         // Vérifier si le nombre de lignes est différent
         if (Data.Length != query.Data.Length){
-            Error.Add("Nombre de lignes incorrect \n");
+            Error.Add("Nombre de lignes incorrect");
         }
 
         // Vérifier si le nombre de colonnes est différent
         if (ColumnNames.Length != query.ColumnNames.Length){
-            Error.Add("Nombre de colonnes incorrect \n");
+            Error.Add(" Nombre de colonnes incorrect \n");
         }
 
         // Comparaison des données si pas d'erreur à ce stade
@@ -32,7 +32,7 @@ public class QueryDTO{
         }
 
         if (!Error.Any()){
-            CorrectMessage = "Votre requête a retourné une réponse correcte ! Néanmoins, comparez votre solution avec celle(s) ci-dessous pour voir si vous n'avez pas eu un peu de chance :)!!!!";
+            CorrectMessage = "Votre requête a retourné une réponse correcte !  \nNéanmoins, comparez votre solution avec celle(s) ci-dessous pour voir si vous n'avez pas eu un peu de chance :)!!!!";
         }
 
         return this;

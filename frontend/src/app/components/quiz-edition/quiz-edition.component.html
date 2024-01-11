@@ -3,7 +3,7 @@
     <div class="form-column">
       <mat-form-field>
           <mat-label>Nom</mat-label>
-          <input matInput [formControl]="ctlName" [readOnly]="haveAttempt" required>
+          <input matInput [formControl]="ctlName" [readOnly]="haveAttempt && isTest" required>
           <mat-error class="field-error" *ngIf="ctlName.hasError('required')">Required</mat-error>
           <mat-error class="field-error" *ngIf="ctlName.hasError('minlength')">Minimum length is
               {{ctlName.errors?.minlength?.requiredLength}}</mat-error>
@@ -11,12 +11,12 @@
       </mat-form-field>
       <mat-form-field>
           <mat-label>Description</mat-label>
-          <input matInput [formControl]="ctlDescription" [readOnly]="haveAttempt">
+          <input matInput [formControl]="ctlDescription" [readOnly]="haveAttempt && isTest">
       </mat-form-field>
 
       <div class="form-card">
         <mat-label>Type de quiz:</mat-label>
-        <mat-radio-group [formControl]="ctlRadioGroup" required (change)="onChangeType($event)" [disabled]="haveAttempt">
+        <mat-radio-group [formControl]="ctlRadioGroup" required (change)="onChangeType($event)" [disabled]="haveAttempt && isTest!">
           <mat-radio-button value="trainning">Trainning</mat-radio-button>
           <mat-radio-button value="test">Test</mat-radio-button>
         </mat-radio-group>
@@ -29,7 +29,7 @@
     <div class="form-column">
       <mat-form-field>
         <mat-label>Base de données</mat-label>
-        <mat-select [formControl]="ctlDataBase" required (selectionChange)="selectedDatabaseChange($event.value)" [disabled]="haveAttempt">
+        <mat-select [formControl]="ctlDataBase" required (selectionChange)="selectedDatabaseChange($event.value)" [disabled]="haveAttempt && isTest!">
           <mat-option *ngFor="let db of databases" [value]="db.name">
             {{db.name}}
           </mat-option>
@@ -39,14 +39,14 @@
 
       <div class="publish-and-actions">
         <!-- Publié Toggle -->
-        <mat-slide-toggle [formControl]="ctlPublished" (change)="onChangePublished($event)" [disabled]="haveAttempt">publié</mat-slide-toggle>
+        <mat-slide-toggle [formControl]="ctlPublished" (change)="onChangePublished($event)" [disabled]="haveAttempt && isTest!">publié</mat-slide-toggle>
 
         <!-- Actions Buttons -->
         <div class="form-actions">
-          <button mat-icon-button matTooltip="Sauver" (click)="save()" [disabled]="frm.invalid || haveAttempt">
+          <button mat-icon-button matTooltip="Sauver" (click)="save()" [disabled]="frm.invalid || haveAttempt && isTest!">
             <mat-icon>save</mat-icon>
           </button>
-          <button mat-icon-button matTooltip="Supprimer" (click)="delete()" [disabled]="haveAttempt">
+          <button mat-icon-button matTooltip="Supprimer" (click)="delete()" [disabled]="haveAttempt && isTest!">
             <mat-icon>delete_forever</mat-icon>
           </button>
         </div>
@@ -88,47 +88,47 @@
           }}
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <button mat-icon-button matTooltip="Up" class="questionUp"  [disabled]="questionIndex <= 0 || haveAttempt"  (click)="questionUp(questionIndex)">
+      <button mat-icon-button matTooltip="Up" class="questionUp"  [disabled]="questionIndex <= 0 || haveAttempt && isTest!"  (click)="questionUp(questionIndex)">
         <mat-icon>keyboard_arrow_up</mat-icon>
       </button>
-      <button mat-icon-button matTooltip="Down" class="questionDown"  [disabled]="questionIndex >= questions.length - 1 || haveAttempt" (click)="questionDown(questionIndex)">
+      <button mat-icon-button matTooltip="Down" class="questionDown"  [disabled]="questionIndex >= questions.length - 1 || haveAttempt && isTest!" (click)="questionDown(questionIndex)">
         <mat-icon>keyboard_arrow_down</mat-icon>
       </button>
-      <button mat-icon-button matTooltip="Supprimer" class="questionDelete" (click)="questionDelete(questionIndex)" [disabled]="haveAttempt" >
+      <button mat-icon-button matTooltip="Supprimer" class="questionDelete" (click)="questionDelete(questionIndex)" [disabled]="haveAttempt && isTest!" >
         <mat-icon>delete_forever</mat-icon>
       </button>
       <p>Intitulé</p>
       <mat-form-field style="width: 100%;">
         <textarea matInput required cols="80" rows="2" [(ngModel)]="question.body" [ngModelOptions]="{standalone: true}"
-                  placeholder="Entrez le texte de la question ici" [disabled]="haveAttempt">{{question.body}}</textarea>
+                  placeholder="Entrez le texte de la question ici" [disabled]="haveAttempt && isTest!">{{question.body}}</textarea>
         <!-- <mat-error *ngIf="ctlQuestionBody.hasError('required')">Ce champ est obligatoire</mat-error> -->
         <!-- Afficher les erreurs pour chaque question -->
         <mat-error *ngIf="question.body === ''">Ce champ est obligatoire et doit contenir minimun 3 caractères !</mat-error>
       </mat-form-field>
       <div *ngFor="let solution of question.solutions; let solutionIndex = index" class="solution-container">
         <div class="buttons-container">
-            <button mat-icon-button matTooltip="Up" class="solutionUp" (click)="solutionUp(questionIndex, solutionIndex)" [disabled]="haveAttempt">
+            <button mat-icon-button matTooltip="Up" class="solutionUp" (click)="solutionUp(questionIndex, solutionIndex)" [disabled]="haveAttempt && isTest!">
                 <mat-icon>keyboard_arrow_up</mat-icon>
             </button>
-            <button mat-icon-button matTooltip="Down" class="solutionDown" (click)="solutionDown(questionIndex, solutionIndex)" [disabled]="haveAttempt">
+            <button mat-icon-button matTooltip="Down" class="solutionDown" (click)="solutionDown(questionIndex, solutionIndex)" [disabled]="haveAttempt && isTest!">
                 <mat-icon>keyboard_arrow_down</mat-icon>
             </button>
-            <button mat-icon-button matTooltip="Supprimer" class="solutionDelete" (click)="solutionDelete(questionIndex, solutionIndex)" [disabled]="haveAttempt">
+            <button mat-icon-button matTooltip="Supprimer" class="solutionDelete" (click)="solutionDelete(questionIndex, solutionIndex)" [disabled]="haveAttempt && isTest!">
                 <mat-icon>delete_forever</mat-icon>
             </button>
         </div>
         <div class="editor-container">
             <p>Solution {{ solutionIndex + 1 }}</p>
-            <code-editor #editor [(ngModel)]="solution.sql" [database]="DB" [ngModelOptions]="{standalone: true}" [readOnly]="haveAttempt"></code-editor>
+            <code-editor #editor [(ngModel)]="solution.sql" [database]="DB" [ngModelOptions]="{standalone: true}" [readOnly]="haveAttempt && isTest!"></code-editor>
             <mat-error *ngIf="solution.sql === ''">Ce champ est obligatoire !</mat-error>
         </div>
       </div>
-      <button mat-icon-button tabindex="-1" matTooltip="Ajouter une solution" class="newSolution" (click)="newSolution(questionIndex, question.id)" [disabled]="haveAttempt">
+      <button mat-icon-button tabindex="-1" matTooltip="Ajouter une solution" class="newSolution" (click)="newSolution(questionIndex, question.id)" [disabled]="haveAttempt && isTest">
         <mat-icon>add_box</mat-icon>
       </button>
     </mat-expansion-panel>
   </mat-accordion>
-  <button mat-icon-button tabindex="-1" matTooltip="Ajouter une question au quiz" class="newQuestion" (click)="newQuestion()" [disabled]="haveAttempt">
+  <button mat-icon-button tabindex="-1" matTooltip="Ajouter une question au quiz" class="newQuestion" (click)="newQuestion()" [disabled]="haveAttempt && isTest">
     <mat-icon>add_box</mat-icon>
   </button>
 </form>
