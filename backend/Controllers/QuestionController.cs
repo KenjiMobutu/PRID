@@ -30,7 +30,7 @@ public class QuestionController :  ControllerBase{
     }
 
     // GET: api/Questions
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<QuestionDTO>>> GetAll() {
@@ -42,7 +42,7 @@ public class QuestionController :  ControllerBase{
     }
 
     // GET: api/Question/id
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("{id}")]
     public async Task<ActionResult<QuestionDTO>> GetOne(int id) {
@@ -62,7 +62,7 @@ public class QuestionController :  ControllerBase{
     }
 
     // GET: api/question/id/quiz
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("{id}/quiz")]
     public async Task<ActionResult<QuizDTO>> GetQuiz(int id) {
@@ -79,7 +79,7 @@ public class QuestionController :  ControllerBase{
         return _mapper.Map<QuizDTO>(question.Quiz);
     }
 
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Student, Role.Admin)]
     [HttpGet("getdata/{dbname}")]
     public ActionResult<Dictionary<string, List<string>>> GetData(string dbname) {
@@ -106,7 +106,7 @@ public class QuestionController :  ControllerBase{
         return Ok(tableNames);
     }
 
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Student, Role.Admin)]
     [HttpGet("GetColumns/{dbName}")]
     public ActionResult<Dictionary<string, List<string>>> GetColumns(string dbName) {
@@ -131,7 +131,7 @@ public class QuestionController :  ControllerBase{
         return Ok(columnNames);
     }
 
-    [AllowAnonymous]
+    
     [Authorized(Role.Teacher, Role.Student, Role.Admin)]
     [HttpPost("queryPost")]
     public async Task<ActionResult<object>> Sql(SqlDTO sqldto){

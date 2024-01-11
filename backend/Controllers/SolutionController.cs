@@ -34,7 +34,7 @@ public class SolutionController : ControllerBase{
   }
 
   // GET: api/Solutions
-  [AllowAnonymous]
+
   [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet]
   public async Task<ActionResult<IEnumerable<SolutionDTO>>> GetAll() {
@@ -44,7 +44,7 @@ public class SolutionController : ControllerBase{
   }
 
   // GET: api/Solution/id
-  [AllowAnonymous]
+
   [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet("{id}")]
   public async Task<ActionResult<SolutionDTO>> GetOne(int id) {
@@ -58,7 +58,7 @@ public class SolutionController : ControllerBase{
   }
 
   // GET: api/solution/id/solutions
-  [AllowAnonymous]
+
   [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet("{id}/solutions")]
   public async Task<ActionResult<IEnumerable<SolutionDTO>>> GetByQuestionId(int id) {
@@ -82,7 +82,7 @@ public class SolutionController : ControllerBase{
     return _mapper.Map<List<SolutionDTO>>(question.Solutions);
   }
 
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("{id}/{sql}/{dbName}")]
     // Vérifie si la requête SQL est valide
@@ -175,7 +175,7 @@ public class SolutionController : ControllerBase{
   }
 
   // Récupère les noms des colonnes d'un DataTable
-  [AllowAnonymous]
+
   [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet("{sql}/columns")]
   public ActionResult<string[]> GetColumnNames(string sql){
@@ -197,7 +197,7 @@ public class SolutionController : ControllerBase{
   }
 
   // Récupère les données d'un DataTable
-  [AllowAnonymous]
+
   [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet("{sql}/rows")]
   public ActionResult<string[][]> GetDataRows(string sql){
@@ -234,7 +234,7 @@ public class SolutionController : ControllerBase{
     return dataRows;
   }
 
-  [AllowAnonymous]
+  
   [Authorized(Role.Teacher, Role.Admin)]
   [HttpDelete("{id}")]
   public async Task<IActionResult> DeleteSolution(int id) {

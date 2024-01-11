@@ -30,7 +30,7 @@ public class AttemptController : ControllerBase{
   }
 
   // GET: api/Attempts
-  [AllowAnonymous]
+
   [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet]
   public async Task<ActionResult<IEnumerable<AttemptDTO>>> GetAll() {
@@ -41,7 +41,7 @@ public class AttemptController : ControllerBase{
   }
 
   // GET: api/Attempt/id
-  [AllowAnonymous]
+
   [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet("{id}")]
   public async Task<ActionResult<AttemptDTO>> GetOne(int id) {
@@ -55,7 +55,7 @@ public class AttemptController : ControllerBase{
   }
 
   // GET: api/attempt/attemptId/answers
-  [AllowAnonymous]
+
   [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet("{id}/answers")]
   public async Task<ActionResult<IEnumerable<AnswerDTO>>> GetAnswers(int id) {
@@ -69,7 +69,7 @@ public class AttemptController : ControllerBase{
   }
 
   // GET: api/attempt/quizId/attempts
-  [AllowAnonymous]
+
   [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet("{quizId}/attempts")]
   public async Task<ActionResult<IEnumerable<AttemptDTO>>> GetAttemptsByQuizId(int quizId) {
@@ -87,7 +87,7 @@ public class AttemptController : ControllerBase{
   }
 
   // GET: api/attempt/quizId/studentId/attempt
-[AllowAnonymous]
+
 [Authorized(Role.Teacher, Role.Admin, Role.Student)]
 [HttpGet("{quizId}/{studentId}/attempt")]
 public async Task<ActionResult<IEnumerable<AttemptDTO>>> GetByQuizIdAndStudentId(int quizId, int studentId) {
@@ -109,7 +109,7 @@ public async Task<ActionResult<IEnumerable<AttemptDTO>>> GetByQuizIdAndStudentId
 
 
   // POST: api/Attempts
-  [AllowAnonymous]
+
   [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpPost("{quizId}/{studentId}")]
   public async Task<ActionResult<AttemptDTO>> PostAttempt(int quizId, int studentId) {
@@ -128,7 +128,7 @@ public async Task<ActionResult<IEnumerable<AttemptDTO>>> GetByQuizIdAndStudentId
   }
 
   //PUT: api/attempt/attemptId/finish
-  [AllowAnonymous]
+
   [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpPut("{attemptId}/finish")]
   public async Task<ActionResult<AttemptDTO>> PutAttempt(int attemptId) {
@@ -144,4 +144,22 @@ public async Task<ActionResult<IEnumerable<AttemptDTO>>> GetByQuizIdAndStudentId
     // Retourner le DTO de l'attempt
     return CreatedAtAction(nameof(GetOne), new { id = attemptDTO.Id }, attemptDTO);
   }
+
+  //get : api/attempt/studentId
+  
+  [Authorized(Role.Teacher, Role.Admin, Role.Student)]
+  [HttpGet("{studentId}")]
+  public async Task<ActionResult<IEnumerable<AttemptDTO>>> GetByStudentId(int studentId) {
+    // Récupère en BD l'attempt dont l'id est passé en paramètre dans l'url
+    var attempts = await _context.Attempts
+        .Include(a => a.Quiz)
+        .Include(a => a.Answers)
+        .Where(a => a.StudentId == studentId)
+        .ToListAsync();
+    // Si aucun attempt n'a été trouvé, renvoyer une erreur 404 Not Found
+    if (attempts == null || !attempts.Any())
+      return NotFound();
+    return _mapper.Map<List<AttemptDTO>>(attempts);
+  }
+
 }

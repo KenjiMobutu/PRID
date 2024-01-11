@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace prid_2324_a11.Models;
 
@@ -9,5 +8,5 @@ public class SolutionDTO{
 
     [ForeignKey(nameof(QuestionId))]
     public int QuestionId { get; set; }
-    
+
 }

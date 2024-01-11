@@ -1,16 +1,7 @@
-namespace prid_2324_a11.Models;
-using prid_2324_a11.Helpers;
-using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
 using MySql.Data.MySqlClient;
 using System.Data;
 
+namespace prid_2324_a11.Models;
 public class SqlDTO{
     public string Query { get; set; } = null!;
     public string DbName { get; set; } = null!;

@@ -33,7 +33,7 @@ public class AnswerController : ControllerBase{
   }
 
   // GET: api/questionId/answer
-  [AllowAnonymous]
+
   [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet("{questionId}/answer")]
   public async Task<ActionResult<IEnumerable<AnswerDTO>>> GetAnswers(int questionId) {
@@ -49,7 +49,7 @@ public class AnswerController : ControllerBase{
   }
 
   // GET: api/attemptId/answers
-  [AllowAnonymous]
+
   [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet("{attemptId}/{userId}/answers")]
   public async Task<ActionResult<IEnumerable<AnswerDTO>>> GetByAttemptId(int attemptId,int userId) {
@@ -67,7 +67,7 @@ public class AnswerController : ControllerBase{
   }
 
   // GET: api/answer/id
-  [AllowAnonymous]
+
   [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet("{id}")]
   public async Task<ActionResult<AnswerDTO>> GetOne(int id) {
@@ -80,7 +80,7 @@ public class AnswerController : ControllerBase{
     return _mapper.Map<AnswerDTO>(answer);
   }
 
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpPost("queryPost")]
     // Vérifie si la requête SQL est valide
@@ -173,7 +173,7 @@ public class AnswerController : ControllerBase{
   }
 
   // Récupère les noms des colonnes d'un DataTable
-  [AllowAnonymous]
+
   [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet("{sql}/{dbName}/columns")]
   public ActionResult<string[]> GetColumnNames(string sql,string dbName){
@@ -195,7 +195,7 @@ public class AnswerController : ControllerBase{
   }
 
   // Récupère les données d'un DataTable
-  [AllowAnonymous]
+
   [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet("{sql}/{dbName}/rows")]
   public ActionResult<string[][]> GetDataRows(string sql,string dbName){
@@ -233,7 +233,7 @@ public class AnswerController : ControllerBase{
   }
 
   // POST: api/answer
-  [AllowAnonymous]
+
   [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpPost("sendAnswer")]
   public async Task<ActionResult<AnswerDTO>> PostAnswer(AnswerDTO answerDTO) {
@@ -254,7 +254,7 @@ public class AnswerController : ControllerBase{
     return CreatedAtAction(nameof(GetOne), new { id = answer.Id }, _mapper.Map<AnswerDTO>(answer));
   }
 
-  [AllowAnonymous]
+  
   [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet("{attemptId}/{questionId}/answer")]
   public async Task<ActionResult<IEnumerable<AnswerDTO>>> GetAnswerByAttemptIdAndQuestionId(int attemptId, int questionId) {

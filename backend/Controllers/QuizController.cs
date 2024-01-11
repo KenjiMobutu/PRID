@@ -28,7 +28,7 @@ public class QuizController :  ControllerBase{
     }
 
     // GET: api/Quizes
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<QuizDTO>>> GetAll() {
@@ -46,7 +46,7 @@ public class QuizController :  ControllerBase{
         return _mapper.Map<List<QuizDTO>>(sortedQuizzes);
     }
 
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("database")]
     public async Task<ActionResult<IEnumerable<DatabaseDTO>>> GetAllDatabase() {
@@ -57,7 +57,7 @@ public class QuizController :  ControllerBase{
         return databasesDto;
     }
 
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("teacher/{userId}")]
     public async Task<ActionResult<IEnumerable<QuizDTO>>> GetAllForTeacher(int userId) {
@@ -72,7 +72,7 @@ public class QuizController :  ControllerBase{
         return quizzesDto;
     }
 
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("{userId}/tp")]
     public async Task<ActionResult<IEnumerable<QuizDTO>>> GetTp(int userId){ // Ajoutez userId comme paramètre si nécessaire
@@ -97,7 +97,7 @@ public class QuizController :  ControllerBase{
 
 
     // GET: api/quiz/test
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("{userId}/test")]
     public async Task<ActionResult<IEnumerable<QuizDTO>>> GetTest(int userId) {
@@ -120,7 +120,7 @@ public class QuizController :  ControllerBase{
         return quizzesDto;
     }
 
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("{userId}/{quizId}/test")]
     public async Task<ActionResult<QuizDTO>> GetTestById(int userId, int quizId) {
@@ -141,7 +141,7 @@ public class QuizController :  ControllerBase{
     }
 
     // GET: api/quiz/id
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("{id}")]
     public async Task<ActionResult<QuizDTO>> GetOne(int id) {
@@ -161,7 +161,7 @@ public class QuizController :  ControllerBase{
     }
 
     // GET: api/quiz/id/questions
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("{id}/questions")]
     public async Task<ActionResult<IEnumerable<QuestionDTO>>> GetQuestions(int id) {
@@ -179,7 +179,7 @@ public class QuizController :  ControllerBase{
     }
 
     // GET: api/quiz/questionId/quiz
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("{id}/quiz")]
     public async Task<ActionResult<QuizDTO>> GetByQuestionId(int id) {
@@ -206,7 +206,7 @@ public class QuizController :  ControllerBase{
         return _mapper.Map<QuizDTO>(quiz);
     }
 
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpPost("close/{quizId}")]
     public async Task<ActionResult<QuizDTO>> CloseQuiz(int quizId) {
@@ -221,7 +221,7 @@ public class QuizController :  ControllerBase{
         }
     }
 
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpPost("open/{quizId}")]
     public async Task<ActionResult<QuizDTO>> OpenQuiz(int quizId) {
@@ -269,6 +269,7 @@ public class QuizController :  ControllerBase{
                         }else if (!quiz.IsClosed){
                             determinedStatus = QuizStatus.EnCours;
                             quiz.Score = "N/A";
+
                         }else{
                             determinedStatus = QuizStatus.Fini;
                             if (quiz.IsTest && questionsCount.TryGetValue(quiz.Id, out var totalQuestions)){
@@ -305,13 +306,11 @@ public class QuizController :  ControllerBase{
         // Calculer le score total du quiz
         double totalScore = 0;
 
-        foreach (var question in model.Quiz.Questions)
-        {
+        foreach (var question in model.Quiz.Questions){
             // Vérifier si la dernière réponse pour cette question existe
             var latestAnswer = latestAnswers.FirstOrDefault(a => a.QuestionId == question.Id);
             Console.WriteLine("**** latestAnswer : " + latestAnswer?.QuestionId + " " + latestAnswer?.Sql);
-            if (latestAnswer!.IsCorrect)
-            {
+            if (latestAnswer != null && latestAnswer!.IsCorrect){
                 // Incrémenter le score en fonction de la présence d'une réponse
                 totalScore += 1.0 / totalQuestions * 10;
             }
@@ -324,7 +323,7 @@ public class QuizController :  ControllerBase{
 
 
     // POST: api/quiz
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Admin)]
     [HttpPost("create")]
     public async Task<ActionResult<QuizDTO>> Create(QuizDTO data) {
@@ -342,7 +341,7 @@ public class QuizController :  ControllerBase{
         return CreatedAtAction(nameof(GetOne), new { id = newQuiz.Id }, _mapper.Map<QuizDTO>(newQuiz));
     }
 
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("name/{name}")]
     public async Task<ActionResult<QuizDTO>> GetByName(string name) {
@@ -355,7 +354,7 @@ public class QuizController :  ControllerBase{
         return _mapper.Map<QuizDTO>(quiz);
     }
 
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpGet("database/{name}")]
     public async Task<ActionResult<DatabaseDTO>> GetDatabaseByName(string name) {
@@ -371,7 +370,7 @@ public class QuizController :  ControllerBase{
     }
 
     // PUT: api/quiz/id
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Admin)]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, QuizDTO data) {
@@ -391,7 +390,7 @@ public class QuizController :  ControllerBase{
     }
 
     // DELETE: api/quiz/id
-    [AllowAnonymous]
+
     [Authorized(Role.Teacher, Role.Admin)]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id) {
@@ -408,7 +407,7 @@ public class QuizController :  ControllerBase{
         return NoContent();
     }
 
-    [AllowAnonymous]
+    
     [Authorized(Role.Teacher, Role.Admin)]
     [HttpGet("available/{name}")]
     public async Task<ActionResult<bool>> IsAvailable(string name) {
