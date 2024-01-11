@@ -147,12 +147,12 @@ public class PridContext : DbContext{
         modelBuilder.Entity<Solution>().HasData(
             new Solution { Id = 1, QuestionId = 1, Order = 1, Sql = "SELECT * FROM s" },
             new Solution { Id = 2, QuestionId = 2, Order = 1, Sql = "SELECT sname NOM, city VILLE FROM s" },
-            new Solution { Id = 3, QuestionId = 3, Order = 1, Sql = "SELECT sname\n FROM s \n WHERE city='London' OR city='Paris'" },
-            new Solution { Id = 4, QuestionId = 3, Order = 2, Sql = "SELECT sname\n FROM s \n WHERE city IN ('London', 'Paris')" },
-            new Solution { Id = 5, QuestionId = 4, Order = 1, Sql = "SELECT sname\n FROM s \n WHERE status < 25 AND city='Paris'" },
-            new Solution { Id = 6, QuestionId = 5, Order = 1, Sql = "SELECT sname\n FROM s \n WHERE status NOT BETWEEN 15 AND 25" },
-            new Solution { Id = 7, QuestionId = 5, Order = 2, Sql = "SELECT sname\n FROM s \n WHERE status < 15 OR status >25" },
-            new Solution { Id = 8, QuestionId = 5, Order = 3, Sql = "SELECT sname\n FROM s \nWHERE NOT(status >= 15 AND status <= 25)\n -- si on applique de Morgan, on retrouve la solution 2" },
+            new Solution { Id = 3, QuestionId = 3, Order = 1, Sql = "SELECT sname\nFROM s\nWHERE city='London' OR city='Paris'" },
+            new Solution { Id = 4, QuestionId = 3, Order = 2, Sql = "SELECT sname\nFROM s\nWHERE city IN ('London', 'Paris')" },
+            new Solution { Id = 5, QuestionId = 4, Order = 1, Sql = "SELECT sname\nFROM s\nWHERE status < 25 AND city='Paris'" },
+            new Solution { Id = 6, QuestionId = 5, Order = 1, Sql = "SELECT sname\nFROM s\nWHERE status NOT BETWEEN 15 AND 25" },
+            new Solution { Id = 7, QuestionId = 5, Order = 2, Sql = "SELECT sname\nFROM s\nWHERE status < 15 OR status >25" },
+            new Solution { Id = 8, QuestionId = 5, Order = 3, Sql = "SELECT sname\nFROM s\nWHERE NOT(status >= 15 AND status <= 25)\n-- si on applique de Morgan, on retrouve la solution 2" },
             new Solution { Id = 9, QuestionId = 6, Order = 1, Sql = "SELECT DISTINCT PNAME FROM p WHERE  Color = 'RED' OR Color = 'BLUE'" },
             new Solution { Id = 10, QuestionId = 6, Order = 2, Sql = "SELECT DISTINCT PNAME FROM p WHERE Color IN ('RED', 'BLUE')" }
         );

@@ -33,7 +33,7 @@ public class QuizController :  ControllerBase{
     [HttpGet]
     public async Task<ActionResult<IEnumerable<QuizDTO>>> GetAll() {
         var quizzes = await _context.Quizzes
-        .Include(q => q.Questions)
+        .Include(q => q.Questions.OrderBy(q => q.Order))
         .Include(q => q.Database)
         .Include(q => q.Attempts)
         .ToListAsync();
@@ -62,7 +62,7 @@ public class QuizController :  ControllerBase{
     [HttpGet("teacher/{userId}")]
     public async Task<ActionResult<IEnumerable<QuizDTO>>> GetAllForTeacher(int userId) {
         var quizzes = await _context.Quizzes
-            .Include(q => q.Questions)
+            .Include(q => q.Questions.OrderBy(q => q.Order))
             .Include(q => q.Database)
             .Include(q => q.Attempts)
             .ToListAsync();
@@ -78,7 +78,7 @@ public class QuizController :  ControllerBase{
     public async Task<ActionResult<IEnumerable<QuizDTO>>> GetTp(int userId){ // Ajoutez userId comme paramètre si nécessaire
         var quizzes = await _context.Quizzes
             .Include(q => q.Database)
-            .Include(q => q.Questions)
+            .Include(q => q.Questions.OrderBy(q => q.Order))
             .ThenInclude(q => q.Solutions)
             .Include(q => q.Attempts)
             .Where(q => q.IsTest == false)
@@ -103,7 +103,7 @@ public class QuizController :  ControllerBase{
     public async Task<ActionResult<IEnumerable<QuizDTO>>> GetTest(int userId) {
         var quizzes = await _context.Quizzes
             .Include(q => q.Database)
-            .Include(q => q.Questions)
+            .Include(q => q.Questions.OrderBy(q => q.Order))
             .ThenInclude(q => q.Solutions)
             .Include(q => q.Attempts)
             .Where(q => q.IsTest == true)
@@ -126,7 +126,7 @@ public class QuizController :  ControllerBase{
     public async Task<ActionResult<QuizDTO>> GetTestById(int userId, int quizId) {
         var quiz = await _context.Quizzes
             .Include(q => q.Database)
-            .Include(q => q.Questions)
+            .Include(q => q.Questions.OrderBy(q => q.Order))
             .ThenInclude(q => q.Solutions)
             .Include(q => q.Attempts)
             .FirstOrDefaultAsync(q => q.Id == quizId);
@@ -167,7 +167,7 @@ public class QuizController :  ControllerBase{
     public async Task<ActionResult<IEnumerable<QuestionDTO>>> GetQuestions(int id) {
         // Récupère en BD le quiz avec ses questions liées
         var quiz = await _context.Quizzes
-            .Include(q => q.Questions)
+            .Include(q => q.Questions.OrderBy(q => q.Order))
             .Include(q => q.Database)
             .Include(q => q.Attempts)
             .FirstOrDefaultAsync(q => q.Id == id);
@@ -186,7 +186,7 @@ public class QuizController :  ControllerBase{
         // Récupère en BD le quiz avec ses questions liées
         var question = await _context.Questions
             .Include(q => q.Quiz)
-            .Include(q => q.Quiz.Questions)
+            .Include(q => q.Quiz.Questions.OrderBy(q => q.Order))
             .Include(q => q.Quiz.Database)
             .Include(q => q.Quiz.Attempts)
             .FirstOrDefaultAsync(q => q.Id == id);
@@ -195,7 +195,7 @@ public class QuizController :  ControllerBase{
             return NotFound();
         var quizId = question.Quiz.Id;
         var quiz = await _context.Quizzes
-            .Include(q => q.Questions)
+            .Include(q => q.Questions.OrderBy(q => q.Order))
             .Include(q => q.Database)
             .Include(q => q.Attempts)
             .FirstOrDefaultAsync(q => q.Id == quizId);

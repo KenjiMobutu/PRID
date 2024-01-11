@@ -1,38 +1,15 @@
-import { Component, OnInit, ViewChild,AfterViewInit, ElementRef, OnDestroy, Input, Inject } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Quiz, Question } from '../../models/quiz';
-import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { QuizService } from 'src/app/services/quiz.service';
-import { StateService } from 'src/app/services/state.service';
-import { AuthenticationService } from 'src/app/services/authentication.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatTableState } from 'src/app/helpers/mattable.state';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
 import { Router, ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash-es';
 import { QuestionService } from 'src/app/services/question.service';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import {MatRadioModule} from '@angular/material/radio';
-import {FloatLabelType, MatFormFieldModule} from '@angular/material/form-field';
-import {MatIconModule} from '@angular/material/icon';
-import {MatSelectModule} from '@angular/material/select';
-import {MatInputModule} from '@angular/material/input';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {FlatTreeControl} from '@angular/cdk/tree';
-import {MatTreeFlatDataSource, MatTreeFlattener, MatTreeModule} from '@angular/material/tree';
-import {MatButtonModule} from '@angular/material/button';
-import { FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {JsonPipe} from '@angular/common';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import {MatNativeDateModule} from '@angular/material/core';
-import {MatAccordion, MatExpansionModule} from '@angular/material/expansion';
-import { TruncatePipe } from 'src/app/helpers/truncatePipe';
 import { DataBase } from 'src/app/models/database';
 import { SolutionService } from 'src/app/services/solution.service';
 import { AttemptService } from 'src/app/services/attempt.service';
 import { Solution } from 'src/app/models/solution';
-import { da, el } from 'date-fns/locale';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 @Component({
   selector: 'quiz-edition',
@@ -104,12 +81,12 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       ctlStart: this.ctlStart,
       ctlEnd: this.ctlFinish
     }, { validators: this.dateRangeValidator });
-    //this.ctlQuestionBody = this.fb.control('', [ Validators.required]);
+
     this.questionControls.forEach(control => {
       control.setValidators([Validators.required, Validators.minLength(3)]);
       control.updateValueAndValidity();
     });
-    //this.ctlQuery = this.fb.control('', []);
+
     this.frm = this.fb.group({
       name: this.ctlName,
       description: this.ctlDescription,
@@ -177,7 +154,6 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       this.ctlDateRange.setValue(this.ctlStart.value + ' - ' + this.ctlFinish.value);
       this.ctlStart.setValue(quiz?.start);
       this.ctlFinish.setValue(quiz?.finish);
-      //this.ctlQuestionBody.setValue(this.questionControls.map(q => q.value));
       this.questions = quiz?.questions || [];
       this.questionControls = quiz?.questions.map(q =>
         this.fb.control(q.body, Validators.required)
@@ -190,9 +166,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       console.log('--> Range:', this.ctlDateRange.value);
       console.log('--> Start DATE:', this.ctlStart.value);
       console.log('--> End DATE:', this.ctlFinish.value);
-     // console.log('--> Question Body:', this.ctlQuestionBody.value);
       console.log('--> Quiz:', quiz);
-      //console.log('--> Query:', this.ctlQuery.value);
       this.questions = quiz?.questions ?? [];
       console.log('--> Questions:', this.questions);
       this.questions = this.questions.map(q => ({ ...q, isOpen: false }));
@@ -231,10 +205,6 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
         });
     };
   }
-
-
-
-
 
   dateNotBeforeTodayValidator() {
     return (control: AbstractControl): { [key: string]: any } | null => {
@@ -428,175 +398,174 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     this.questions[questionIndex].solutions.splice(solutionIndex, 1);
   }
 
-  save() {
-    function adjustDateForTimezone(date: string | number | Date) {
-      if (!date) return null;
-      const newDate = new Date(date);
-      newDate.setMinutes(newDate.getMinutes() - newDate.getTimezoneOffset());
-      return newDate;
-    }
-    console.log('--> Save');
-    console.log('Form validity:', this.frm.valid);
-    console.log('Name validity:', this.ctlName.valid);
-    console.log('Name value:', this.ctlName);
-    console.log('Description validity:', this.ctlDescription.valid);
-    console.log('Radio Group validity:', this.ctlRadioGroup.valid);
-    console.log('Published validity:', this.ctlPublished.valid);
-    console.log('Start validity:', this.ctlStart.valid);
-    console.log('Finish validity:', this.ctlFinish.valid);
-    console.log('Question Body validity:', this.questionControls.forEach((control, index) => { console.log(`Question ${index} validity:`, control.valid);}));
-    console.log('Database validity:', this.ctlDataBase.valid);
-    console.log('Date Range validity:', this.ctlDateRange.valid);
-    console.log('Form value:', this.frm.value);
+  // save() {
+  //   function adjustDateForTimezone(date: string | number | Date) {
+  //     if (!date) return null;
+  //     const newDate = new Date(date);
+  //     newDate.setMinutes(newDate.getMinutes() - newDate.getTimezoneOffset());
+  //     return newDate;
+  //   }
+  //   console.log('--> Save');
+  //   console.log('Form validity:', this.frm.valid);
+  //   console.log('Name validity:', this.ctlName.valid);
+  //   console.log('Name value:', this.ctlName);
+  //   console.log('Description validity:', this.ctlDescription.valid);
+  //   console.log('Radio Group validity:', this.ctlRadioGroup.valid);
+  //   console.log('Published validity:', this.ctlPublished.valid);
+  //   console.log('Start validity:', this.ctlStart.valid);
+  //   console.log('Finish validity:', this.ctlFinish.valid);
+  //   console.log('Question Body validity:', this.questionControls.forEach((control, index) => { console.log(`Question ${index} validity:`, control.valid);}));
+  //   console.log('Database validity:', this.ctlDataBase.valid);
+  //   console.log('Date Range validity:', this.ctlDateRange.valid);
+  //   console.log('Form value:', this.frm.value);
 
-     // Vérifier la validité de chaque question
-    this.questionControls.forEach((control, index) => {
-      console.log(`Question ${index} validity:`, control.valid);
-    });
-    if (!this.frm.valid || this.questions.length === 0 || this.questions.some(q => q.solutions.length === 0) || this.questions.some(q => q.body === '') || this.questions.some(q => q.body.length < 3)) {
-      const formValid = this.frm.valid;
-      const questionsExist = this.questions.length > 0;
-      const solutionsExist = this.questions.every(q => q.solutions.length > 0);
+  //    // Vérifier la validité de chaque question
+  //   this.questionControls.forEach((control, index) => {
+  //     console.log(`Question ${index} validity:`, control.valid);
+  //   });
+  //   if (!this.frm.valid || this.questions.length === 0 || this.questions.some(q => q.solutions.length === 0) || this.questions.some(q => q.body === '') || this.questions.some(q => q.body.length < 3)) {
+  //     const formValid = this.frm.valid;
+  //     const questionsExist = this.questions.length > 0;
+  //     const solutionsExist = this.questions.every(q => q.solutions.length > 0);
 
-      // Initialiser une liste pour stocker les messages d'erreur
-      const errorMessages: string[] = [];
+  //     // Initialiser une liste pour stocker les messages d'erreur
+  //     const errorMessages: string[] = [];
 
-      // Vérifier la validité du formulaire
-      if (!formValid) {
-          errorMessages.push("Le formulaire n'est pas valide.");
-      }
+  //     // Vérifier la validité du formulaire
+  //     if (!formValid) {
+  //         errorMessages.push("Le formulaire n'est pas valide.");
+  //     }
 
-      if(this.questions.some(q => q.body === '') || this.questions.some(q => q.body.length < 3)){
-        errorMessages.push("Le titre de la question ne peut etre vide ou inférieur à 3.");
-      }
+  //     if(this.questions.some(q => q.body === '') || this.questions.some(q => q.body.length < 3)){
+  //       errorMessages.push("Le titre de la question ne peut etre vide ou inférieur à 3 caractères.");
+  //     }
 
-      // Vérifier l'existence des questions
-      if (!questionsExist) {
-          errorMessages.push("Aucune question n'a été ajoutée.");
-      }
+  //     // Vérifier l'existence des questions
+  //     if (!questionsExist) {
+  //         errorMessages.push("Aucune question n'a été ajoutée.");
+  //     }
 
-      // Vérifier l'existence des solutions pour chaque question
-      if (!solutionsExist) {
-          errorMessages.push("Il manque des solutions pour certaines questions.");
-      }
+  //     // Vérifier l'existence des solutions pour chaque question
+  //     if (!solutionsExist) {
+  //         errorMessages.push("Il manque des solutions pour certaines questions.");
+  //     }
 
-      // Afficher les messages d'erreur
-      if (errorMessages.length > 0) {
-          // Afficher les messages d'erreur sur l'interface utilisateur
-          this.errorMessage = errorMessages.join("\n");
-      }
-      console.error('Le formulaire n\'est pas valide ou manque de questions ou de solutions.');
-      return;
-    }
+  //     // Afficher les messages d'erreur
+  //     if (errorMessages.length > 0) {
+  //         // Afficher les messages d'erreur sur l'interface utilisateur
+  //         this.errorMessage = errorMessages.join("\n");
+  //     }
+  //     console.error('Le formulaire n\'est pas valide ou manque de questions ou de solutions.');
+  //     return;
+  //   }
 
-    // Préparation des données du quiz
-    const quizExists = this.quiz!.id! > 0;
-    const dataB = this.databases.find(db => db.id === this.quiz!.databaseId);
-    let startValue = null;
-    let finishValue = null;
+  //   // Préparation des données du quiz
+  //   const quizExists = this.quiz!.id! > 0;
+  //   const dataB = this.databases.find(db => db.id === this.quiz!.databaseId);
+  //   let startValue = null;
+  //   let finishValue = null;
 
-    if (this.quiz.isTest || this.quizIsTest) {
-      startValue = this.ctlStart.value;
-      finishValue = this.ctlFinish.value;
-    }
+  //   if (this.quiz.isTest || this.quizIsTest) {
+  //     startValue = this.ctlStart.value;
+  //     finishValue = this.ctlFinish.value;
+  //   }
+
+  //   const startValueAdjusted = adjustDateForTimezone(startValue);
+  //   const finishValueAdjusted = adjustDateForTimezone(finishValue);
+  //   console.log('--> 0 *SAVE* Start Value:', startValue);
+  //   console.log('--> 1 *SAVE* Start Value:', startValue);
+  //   const name = this.ctlName.value;
+  //   const quizData = {
+  //       id: this.quiz!.id,
+  //       name: name,
+  //       description: this.ctlDescription.value,
+  //       isTest: this.ctlRadioGroup.value === 'test',
+  //       isPublished: this.ctlPublished.value,
+  //       start: startValueAdjusted ? startValueAdjusted : null,
+  //       finish: finishValueAdjusted ? finishValueAdjusted : null,
+  //       databaseId: quizExists ? dataB!.id : this.DB.id,
+  //       questions: this.questions.map(question => ({
+  //           ...question,
+  //           body: question.body,
+  //           solutions: question.solutions.map(solution => ({
+  //             ...solution,
+  //             questionId: question.id
+  //         }))
+  //       })),
+  //       isClosed: this.quiz!.isClosed,
+  //       database: dataB!,
+  //       status: this.quiz!.status,
+  //       attempts: this.quiz!.attempts,
+  //       statusAsString: this.quiz!.statusAsString,
+  //       display: this.quiz!.display
+  //   };
 
 
-    const startValueAdjusted = adjustDateForTimezone(startValue);
-    const finishValueAdjusted = adjustDateForTimezone(finishValue);
-    console.log('--> 0 *SAVE* Start Value:', startValue);
-    console.log('--> 1 *SAVE* Start Value:', startValue);
-    const name = this.ctlName.value;
-    const quizData = {
-        id: this.quiz!.id,
-        name: name,
-        description: this.ctlDescription.value,
-        isTest: this.ctlRadioGroup.value === 'test',
-        isPublished: this.ctlPublished.value,
-        start: startValueAdjusted ? startValueAdjusted : null,
-        finish: finishValueAdjusted ? finishValueAdjusted : null,
-        databaseId: quizExists ? dataB!.id : this.DB.id,
-        questions: this.questions.map(question => ({
-            ...question,
-            body: question.body,
-            solutions: question.solutions.map(solution => ({
-              ...solution,
-              questionId: question.id
-          }))
-        })),
-        isClosed: this.quiz!.isClosed,
-        database: dataB!,
-        status: this.quiz!.status,
-        attempts: this.quiz!.attempts,
-        statusAsString: this.quiz!.statusAsString,
-        display: this.quiz!.display
-    };
+  //   //console.log('--> QUestion BODY', this.ctlQuestionBody);
+  //   console.log('--> 2 *SAVE* Start Value:', startValue);
+  //   console.log('--> Quiz Data QUESTIONS:', quizData.questions);
+  //   if(this.deletedQuestions.length > 0) {
+  //     console.log('--> Deleted Questions:', this.deletedQuestions);
+  //     this.deletedQuestions.forEach(question => {
+  //       this.questionService.deleteById(question.id!).subscribe({
+  //         next: response => {
+  //             console.log('Question supprimée avec succès !', response);
+  //             this.solutionService.deleteByQuestionId(question.id!).subscribe({
+  //               next: response => {
+  //                   console.log('Solution supprimée avec succès !', response);
+  //               },
+  //               error: error => {
+  //                   console.error('Erreur lors de la suppression de la solution:', error);
+  //               }
+  //             });
+  //         },
+  //         error: error => {
+  //             console.error('Erreur lors de la suppression de la question:', error);
+  //         }
+  //       });
+  //     });
+  //   }
 
+  //   if (this.deletedSolutions.length > 0) {
+  //     console.log('--> Deleted Solutions:', this.deletedSolutions);
+  //     this.deletedSolutions.forEach(solution => {
+  //       this.solutionService.deleteById(solution.id!).subscribe({
+  //         next: response => {
+  //             console.log('Solution supprimée avec succès !', response);
+  //         },
+  //         error: error => {
+  //             console.error('Erreur lors de la suppression de la solution:', error);
+  //         }
+  //       });
+  //     });
+  //   }
 
-    //console.log('--> QUestion BODY', this.ctlQuestionBody);
-    console.log('--> 2 *SAVE* Start Value:', startValue);
-    console.log('--> Quiz Data QUESTIONS:', quizData.questions);
-    if(this.deletedQuestions.length > 0) {
-      console.log('--> Deleted Questions:', this.deletedQuestions);
-      this.deletedQuestions.forEach(question => {
-        this.questionService.deleteById(question.id!).subscribe({
-          next: response => {
-              console.log('Question supprimée avec succès !', response);
-              this.solutionService.deleteByQuestionId(question.id!).subscribe({
-                next: response => {
-                    console.log('Solution supprimée avec succès !', response);
-                },
-                error: error => {
-                    console.error('Erreur lors de la suppression de la solution:', error);
-                }
-              });
-          },
-          error: error => {
-              console.error('Erreur lors de la suppression de la question:', error);
-          }
-        });
-      });
-    }
+  //   if (quizData.id! > 0) {
+  //       // Mise à jour du quiz existant
+  //       this.quizService.update(quizData.id!, quizData!).subscribe({
+  //           next: response => {
+  //               console.log('Quiz mis à jour avec succès !', response);
+  //               this.router.navigate(['/teacher']);
+  //           },
+  //           error: error => {
+  //               console.error('Erreur lors de la mise à jour du quiz:', error);
+  //           }
+  //       });
+  //   } else {
+  //       // Ajout d'un nouveau quiz
+  //       this.quizService.add(quizData!).subscribe({
+  //           next: response => {
 
-    if (this.deletedSolutions.length > 0) {
-      console.log('--> Deleted Solutions:', this.deletedSolutions);
-      this.deletedSolutions.forEach(solution => {
-        this.solutionService.deleteById(solution.id!).subscribe({
-          next: response => {
-              console.log('Solution supprimée avec succès !', response);
-          },
-          error: error => {
-              console.error('Erreur lors de la suppression de la solution:', error);
-          }
-        });
-      });
-    }
-
-    if (quizData.id! > 0) {
-        // Mise à jour du quiz existant
-        this.quizService.update(quizData.id!, quizData!).subscribe({
-            next: response => {
-                console.log('Quiz mis à jour avec succès !', response);
-                this.router.navigate(['/teacher']);
-            },
-            error: error => {
-                console.error('Erreur lors de la mise à jour du quiz:', error);
-            }
-        });
-    } else {
-        // Ajout d'un nouveau quiz
-        this.quizService.add(quizData!).subscribe({
-            next: response => {
-
-                console.log('Quiz enregistré avec succès !', response);
-                console.log('New Quiz Data:', quizData);
-                this.router.navigate(['/teacher']);
-            },
-            error: error => {
-                console.error('Erreur lors de la sauvegarde du quiz:', error);
-            }
-        });
-    }
-  }
+  //               console.log('Quiz enregistré avec succès !', response);
+  //               console.log('New Quiz Data:', quizData);
+  //               this.router.navigate(['/teacher']);
+  //           },
+  //           error: error => {
+  //               console.error('Erreur lors de la sauvegarde du quiz:', error);
+  //           }
+  //       });
+  //   }
+  // }
 
   delete() {
     console.log('--> Delete');
@@ -609,51 +578,6 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         if (this.quiz!.id! > 0) {
-          //delete solutions
-          // this.quiz!.questions.forEach(question => {
-          //   question.solutions.forEach(solution => {
-          //     this.solutionService.deleteByQuestionId(solution.id!).subscribe({
-
-          //     });
-          //   });
-          // });
-
-          //delete answers
-          // this.quiz!.questions.forEach(question => {
-          //   question.answers.forEach(answer => {
-          //     this.quizService.deleteAnswer(answer.id!).subscribe({
-          //       next: response => {
-          //           console.log('Answer supprimée avec succès !', response);
-
-          //       },
-          //       error: error => {
-          //           console.error('Erreur lors de la suppression de la answer:', error);
-          //       }
-          //     });
-          //   });
-          // });
-
-          //delete questions
-        // this.quiz!.questions.forEach(question => {
-        //     this.questionService.deleteByQuizId(this.quiz!.id!).subscribe({
-        //         next: response => {
-        //             console.log('Question supprimée avec succès !', response);
-        //             this.solutionService.deleteByQuestionId(question.id!).subscribe({
-        //                 next: response => {
-        //                     console.log('Solution supprimée avec succès !', response);
-
-        //                 },
-        //                 error: error => {
-        //                     console.error('Erreur lors de la suppression de la solution:', error);
-        //                 }
-        //             });
-        //         },
-        //         error: error => {
-        //             console.error('Erreur lors de la suppression de la question:', error);
-        //         }
-        //     });
-        // });
-
           //delete quiz
           this.quizService.delete(this.quiz!.id!).subscribe({
               next: response => {
@@ -671,6 +595,192 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       }
     });
   }
+
+
+
+  // Fonction pour sauvegarder le formulaire
+  save() {
+    console.log('--> Save');
+    console.log('Form validity:', this.frm.valid);
+
+    if (!this.isFormValid()) {
+        this.handleFormErrors();
+        return;
+    }
+
+    const quizData = this.prepareQuizData();
+
+    this.deleteQuestionsAndSolutions();
+
+    this.saveOrUpdateQuiz(quizData);
+  }
+
+  // Fonction pour vérifier la validité du formulaire
+  isFormValid(): boolean {
+    return (
+        this.frm.valid &&
+        this.questions.length > 0 &&
+        this.questions.every(q => q.solutions.length > 0) &&
+        !this.questions.some(q => q.body === '' || q.body.length < 3)
+    );
+  }
+
+  // Fonction pour gérer les erreurs du formulaire
+  handleFormErrors() {
+    const errorMessages: string[] = [];
+
+    if (!this.frm.valid) {
+        errorMessages.push("Le formulaire n'est pas valide.");
+    }
+
+    if (this.questions.some(q => q.body === '') || this.questions.some(q => q.body.length < 3)) {
+        errorMessages.push("Le titre de la question ne peut être vide ou inférieur à 3 caractères.");
+    }
+
+    if (this.questions.length === 0) {
+        errorMessages.push("Aucune question n'a été ajoutée.");
+    }
+
+    if (!this.questions.every(q => q.solutions.length > 0)) {
+        errorMessages.push("Il manque des solutions pour certaines questions.");
+    }
+
+    if (errorMessages.length > 0) {
+        this.errorMessage = errorMessages.join("\n");
+    }
+
+    console.error('Le formulaire n\'est pas valide ou manque de questions ou de solutions.');
+  }
+
+  // Fonction pour préparer les données du quiz
+  prepareQuizData(): any {
+    const quizExists = this.quiz!.id! > 0;
+    const dataB = this.databases.find(db => db.id === this.quiz!.databaseId);
+    let startValue = null;
+    let finishValue = null;
+
+    if (this.quiz.isTest || this.quizIsTest) {
+        startValue = this.ctlStart.value;
+        finishValue = this.ctlFinish.value;
+    }
+
+    const startValueAdjusted = this.adjustDateForTimezone(startValue);
+    const finishValueAdjusted = this.adjustDateForTimezone(finishValue);
+
+    const name = this.ctlName.value;
+
+    return {
+        id: this.quiz!.id,
+        name: name,
+        description: this.ctlDescription.value,
+        isTest: this.ctlRadioGroup.value === 'test',
+        isPublished: this.ctlPublished.value,
+        start: startValueAdjusted ? startValueAdjusted : null,
+        finish: finishValueAdjusted ? finishValueAdjusted : null,
+        databaseId: quizExists ? dataB!.id : this.DB.id,
+        questions: this.questions.map(question => ({
+            ...question,
+            body: question.body,
+            solutions: question.solutions.map(solution => ({
+                ...solution,
+                questionId: question.id
+            }))
+        })),
+        isClosed: this.quiz!.isClosed,
+        database: dataB!,
+        status: this.quiz!.status,
+        attempts: this.quiz!.attempts,
+        statusAsString: this.quiz!.statusAsString,
+        display: this.quiz!.display
+    };
+  }
+
+  // Fonction pour supprimer les questions et solutions
+  deleteQuestionsAndSolutions() {
+    if (this.deletedQuestions.length > 0) {
+        this.deletedQuestions.forEach(question => {
+            this.deleteQuestionAndSolutions(question);
+        });
+    }
+
+    if (this.deletedSolutions.length > 0) {
+        this.deletedSolutions.forEach(solution => {
+            this.solutionService.deleteById(solution.id!).subscribe({
+                next: response => {
+                    console.log('Solution supprimée avec succès !', response);
+                },
+                error: error => {
+                    console.error('Erreur lors de la suppression de la solution:', error);
+                }
+            });
+        });
+    }
+  }
+
+  // Fonction pour supprimer une question et ses solutions
+  deleteQuestionAndSolutions(question: any) {
+    this.questionService.deleteById(question.id!).subscribe({
+        next: response => {
+            console.log('Question supprimée avec succès !', response);
+            this.solutionService.deleteByQuestionId(question.id!).subscribe({
+                next: response => {
+                    console.log('Solution supprimée avec succès !', response);
+                },
+                error: error => {
+                    console.error('Erreur lors de la suppression de la solution:', error);
+                }
+            });
+        },
+        error: error => {
+            console.error('Erreur lors de la suppression de la question:', error);
+        }
+    });
+  }
+
+  // Fonction pour sauvegarder ou mettre à jour le quiz
+  saveOrUpdateQuiz(quizData: any) {
+    if (quizData.id! > 0) {
+        this.updateQuiz(quizData);
+    } else {
+        this.addNewQuiz(quizData);
+    }
+  }
+
+  // Fonction pour mettre à jour un quiz existant
+  updateQuiz(quizData: any) {
+    this.quizService.update(quizData.id!, quizData).subscribe({
+        next: response => {
+            console.log('Quiz mis à jour avec succès !', response);
+            this.router.navigate(['/teacher']);
+        },
+        error: error => {
+            console.error('Erreur lors de la mise à jour du quiz:', error);
+        }
+    });
+  }
+
+  // Fonction pour ajouter un nouveau quiz
+  addNewQuiz(quizData: any) {
+    this.quizService.add(quizData).subscribe({
+        next: response => {
+            console.log('Quiz enregistré avec succès !', response);
+            console.log('New Quiz Data:', quizData);
+            this.router.navigate(['/teacher']);
+        },
+        error: error => {
+            console.error('Erreur lors de la sauvegarde du quiz:', error);
+        }
+    });
+  }
+
+  // Fonction pour ajuster la date en fonction du fuseau horaire
+  adjustDateForTimezone(date: string | number | Date) {
+    if (!date) return null;
+    const newDate = new Date(date);
+    newDate.setMinutes(newDate.getMinutes() - newDate.getTimezoneOffset());
+    return newDate;
+  }
+
 
 
 }

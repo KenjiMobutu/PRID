@@ -12,7 +12,7 @@
     <p>{{ quiz.name }}</p>
   </div>
 
-  <button mat-icon-button tabindex="-1" [disabled]="isQuizClosed"  (click)="close()" class="tip close">
+  <button mat-icon-button tabindex="-1" [disabled]="isQuizClosed || isQuizFinished"  (click)="close()" class="tip close">
     <mat-icon>close</mat-icon>
     <span class="tooltiptext">Cloturer le quiz</span>
   </button>
