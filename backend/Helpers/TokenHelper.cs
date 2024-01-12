@@ -72,6 +72,7 @@ public class TokenHelper{
     public async Task SaveRefreshTokenAsync(string pseudo, string token) {
         var user = await _context.Users.SingleOrDefaultAsync(u => u.Pseudo == pseudo);;
         if (user != null) {
+            Console.WriteLine("**** REFRESH TOKEN user --->: " + user.Pseudo);
             user.RefreshToken = token;
             await _context.SaveChangesAsync();
         }

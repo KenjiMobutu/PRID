@@ -173,22 +173,62 @@ public class UsersController : ControllerBase{ //DTO: pas toutes les donnes sont
         return Ok(_mapper.Map<UserDTO>(user));
     }
 
-    private async Task<User?> Authenticate(string pseudo, string password) {
-        //var user = await _context.Users.FindAsync(pseudo); ne fonctionne pas car le find se fait sur la clé primaire qui est un int.
+    private async Task<User?> Authenticate(string pseudo, string password){
+        // Recherche de l'utilisateur par le pseudonyme
         var user = await _context.Users.SingleOrDefaultAsync(u => u.Pseudo == pseudo);
-        // return null if member not found
+
+        // Retourne null si l'utilisateur n'est pas trouvé
         if (user == null)
             return null;
-        Console.WriteLine("user 111: " + user.Password);
+
+        Console.WriteLine("**** user -->: " + user.Password);
+
+        // Vérification du mot de passe
         var hash = TokenHelper.GetPasswordHash(password);
-        if (user.Password == hash) {
-            Console.WriteLine("user: 222" + user.Pseudo);
+        if (user.Password == hash){
+            //var tokenHandler = new JwtSecurityTokenHandler();
+            Console.WriteLine("**** user --->: " + user.Pseudo);
+
+            // Génération du token JWT
             user.Token = TokenHelper.GenerateJwtToken(user.Pseudo, user.Role);
+
+            //var key = Encoding.ASCII.GetBytes("my-super-secret-key");
+            // var tokenDescriptor = new SecurityTokenDescriptor{
+            //     Subject = new ClaimsIdentity(new Claim[] {
+            //             new Claim(ClaimTypes.Name, user.Pseudo),
+            //             new Claim(ClaimTypes.Role, user.Role.ToString())
+            //         }),
+            //     IssuedAt = DateTime.UtcNow,
+            //     Expires = DateTime.UtcNow.AddMinutes(15), // temps de validité du token
+            //     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            // };
+
             // Génère un refresh token et le stocke dans la table Members
             var refreshToken = TokenHelper.GenerateRefreshToken();
             await _tokenHelper.SaveRefreshTokenAsync(pseudo, refreshToken);
         }
         return user;
     }
+
+
+    [AllowAnonymous]
+    [HttpPost("refresh")]
+    public async Task<ActionResult<TokensDTO>> Refresh([FromBody] TokensDTO tokens) {
+        var principal = TokenHelper.GetPrincipalFromExpiredToken(tokens.Token);
+        var pseudo = principal.Identity?.Name!;
+        var savedRefreshToken = await _tokenHelper.GetRefreshTokenAsync(pseudo);
+        if (savedRefreshToken != tokens.RefreshToken)
+            throw new SecurityTokenException("Invalid refresh token");
+
+        var newToken = TokenHelper.GenerateJwtToken(principal.Claims);
+        var newRefreshToken = TokenHelper.GenerateRefreshToken();
+        await _tokenHelper.SaveRefreshTokenAsync(pseudo, newRefreshToken);
+
+        return new TokensDTO {
+            Token = newToken,
+            RefreshToken = newRefreshToken
+        };
+    }
+
 
 }
