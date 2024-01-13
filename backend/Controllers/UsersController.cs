@@ -163,7 +163,7 @@ public class UsersController : ControllerBase{ //DTO: pas toutes les donnes sont
     [AllowAnonymous]
     [Authorized(Role.Teacher, Role.Admin, Role.Student)]
     [HttpPost("authenticate")]
-    public async Task<ActionResult<UserDTO>> Authenticate(UserLoginDTO dto) {
+    public async Task<ActionResult<UserDTO>> Authenticate(UserWithPasswordDTO  dto) {
         var user = await Authenticate(dto.Pseudo, dto.Password);
 
         var result = await new UserValidator(_context).ValidateForAuthenticate(user);
@@ -192,7 +192,7 @@ public class UsersController : ControllerBase{ //DTO: pas toutes les donnes sont
             // Génération du token JWT
             user.Token = TokenHelper.GenerateJwtToken(user.Pseudo, user.Role);
 
-            //var key = Encoding.ASCII.GetBytes("my-super-secret-key");
+            // var key = Encoding.ASCII.GetBytes("my-super-secret-key");
             // var tokenDescriptor = new SecurityTokenDescriptor{
             //     Subject = new ClaimsIdentity(new Claim[] {
             //             new Claim(ClaimTypes.Name, user.Pseudo),
@@ -209,7 +209,6 @@ public class UsersController : ControllerBase{ //DTO: pas toutes les donnes sont
         }
         return user;
     }
-
 
     [AllowAnonymous]
     [HttpPost("refresh")]

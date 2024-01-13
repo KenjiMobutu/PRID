@@ -318,7 +318,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     // nouvelle question avec l'ordre
     const newQuestion = new Question();
     newQuestion.order = newOrder;
-
+    newQuestion.body = ''; // Titre de la question
     // Ajoutez la nouvelle question au tableau
     this.questions.push(newQuestion);
   }
@@ -480,22 +480,23 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
 
   // Fonction pour gérer les erreurs du formulaire
   handleFormErrors() {
+    this.errorMessage = '';
     const errorMessages: string[] = [];
 
     if (!this.frm.valid) {
         errorMessages.push("Le formulaire n'est pas valide.");
     }
 
-    if (this.questions.every(q => q.body === '') || this.questions.some(q => q.body.length < 2)) {
-        errorMessages.push("Le titre de la question ne peut être vide ou inférieur à 2 caractères.");
+    if (this.questions.length === 0) {
+        errorMessages.push("Aucune question n'a été ajoutée.\n Veuillez ajouter au moins une question.\n");
     }
 
-    if (this.questions.length === 0) {
-        errorMessages.push("Aucune question n'a été ajoutée.");
+    if (this.questions.every(q => q.body === '') || this.questions.some(q => q.body.length < 2)) {
+        errorMessages.push("Le titre de la question ne peut être vide ou inférieur à 2 caractères. \n");
     }
 
     if (!this.questions.every(q => q.solutions.length > 0)) {
-        errorMessages.push("Il manque des solutions pour certaines questions.");
+        errorMessages.push("Il manque des solutions pour certaines questions.\n");
     }
 
     if (!this.questions.every(q => q.solutions.every(s => s.sql && s.sql.trim().length > 0))) {

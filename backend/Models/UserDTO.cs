@@ -17,7 +17,7 @@ public class UserDTO{
 }
 
 public class UserWithPasswordDTO : UserDTO{
-    public string? Password { get; set; } = null!;
+    public string Password { get; set; } = "";
 }
 
 public class UserLoginDTO : UserWithPasswordDTO{

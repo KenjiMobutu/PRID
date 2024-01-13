@@ -18,6 +18,7 @@ export class User {
   birthDate?: Date;
   role: Role = Role.Student;
   token?: string;
+  refreshToken?: string;
 
   public get roleAsString(): string {
     return Role[this.role];
