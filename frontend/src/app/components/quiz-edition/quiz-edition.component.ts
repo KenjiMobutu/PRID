@@ -11,6 +11,7 @@ import { SolutionService } from 'src/app/services/solution.service';
 import { AttemptService } from 'src/app/services/attempt.service';
 import { Solution } from 'src/app/models/solution';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { empty } from 'rxjs';
 @Component({
   selector: 'quiz-edition',
   templateUrl: './quiz-edition.component.html',
@@ -97,7 +98,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       start: this.ctlStart,
       finish: this.ctlFinish,
       questionBody: this.questionControls.map(q => q.value),
-      //query: this.ctlQuery,
+      //query: this.questions.map(q => q.solutions.map(s => s.sql))
     });
     console.log('--> Form:', this.frm);
   }
@@ -177,6 +178,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
       this.questions = quiz?.questions ?? [];
       console.log('--> Questions:', this.questions);
       this.questions = this.questions.map(q => ({ ...q, isOpen: false }));
+      this.initializeFormControls();
     });
   }
 
@@ -321,12 +323,20 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     this.questions.push(newQuestion);
   }
 
-  questionDelete(questionIndex: number){
+  questionDelete(questionIndex: number) {
     console.log('--> Question Delete');
-    this.deletedQuestions.push(this.questions![questionIndex]);
+
+    // Sauvegarder la question supprimée
+    const deletedQuestion = this.questions!.splice(questionIndex, 1)[0];
+    this.deletedQuestions.push(deletedQuestion);
     console.log('--> Deleted Questions:', this.deletedQuestions);
-    this.questions?.splice(questionIndex, 1);
-  }
+
+    // Mettre à jour l'ordre des questions restantes
+    this.questions?.forEach((question, index) => {
+        question.order = index + 1;
+    });
+}
+
 
   solutionUp(questionIndex: number, solutionIndex: number) {
     if (solutionIndex > 0 && this.questions && this.questions[questionIndex]) {
@@ -457,8 +467,15 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
         this.frm.valid &&
         this.questions.length > 0 &&
         this.questions.every(q => q.solutions.length > 0) &&
-        !this.questions.some(q => q.body === '' || q.body.length < 3)
+        !this.questions.some(q => q.body === '' || q.body.length < 2) &&
+        this.questions.every(q => this.isQuestionBodyValid(q)) &&
+        this.questions.every(q => q.solutions.every(s => s.sql && s.sql.trim().length > 0))
     );
+  }
+
+  isQuestionBodyValid(question: any): boolean {
+    //console.log('--> *** isQuestionBodyValid:', question.body);
+    return question.body?.replace(/\s/g, '').length >= 2;
   }
 
   // Fonction pour gérer les erreurs du formulaire
@@ -469,7 +486,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
         errorMessages.push("Le formulaire n'est pas valide.");
     }
 
-    if (this.questions.some(q => q.body === '') || this.questions.some(q => q.body.length < 2)) {
+    if (this.questions.every(q => q.body === '') || this.questions.some(q => q.body.length < 2)) {
         errorMessages.push("Le titre de la question ne peut être vide ou inférieur à 2 caractères.");
     }
 
@@ -479,6 +496,10 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
 
     if (!this.questions.every(q => q.solutions.length > 0)) {
         errorMessages.push("Il manque des solutions pour certaines questions.");
+    }
+
+    if (!this.questions.every(q => q.solutions.every(s => s.sql && s.sql.trim().length > 0))) {
+      errorMessages.push("Il manque des requêtes pour certaines solutions.");
     }
 
     if (errorMessages.length > 0) {
@@ -617,6 +638,27 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     return newDate;
   }
 
+  initializeFormControls(): void {
+    this.questions.forEach((question, i) => {
+        const control = new FormControl(question.body, [
+            Validators.required,
+            Validators.minLength(2)
+        ]);
+        this.questionControls.push(control);
+
+        // Ajouter chaque contrôle au formulaire principal
+        this.frm.addControl(`question_${i}`, control);
+    });
+  }
+
+  updateQuestionBody(event: any, question: any): void {
+    console.log('--> Update Question Body:', event.target.value);
+    question.body = event.target.value;
+  }
+
+  isQuestionLengthBodyValid(question: any): boolean {
+    return question.body.trim().length >= 2;
+  }
 
 
 }

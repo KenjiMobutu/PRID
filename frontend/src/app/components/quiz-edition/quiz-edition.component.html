@@ -99,7 +99,7 @@
       </button>
       <p>Intitulé</p>
       <mat-form-field style="width: 100%;">
-        <textarea matInput required cols="80" rows="2" [(ngModel)]="question.body" [ngModelOptions]="{standalone: true}"
+        <textarea matInput required cols="80" rows="2"  [(ngModel)]="question.body" [ngModelOptions]="{standalone: true}"
                   placeholder="Entrez le texte de la question ici" [disabled]="haveAttempt && isTest!">{{question.body}}</textarea>
         <!-- Afficher les erreurs pour chaque question -->
         <mat-error *ngIf="question.body?.trim()?.length! < 2">
