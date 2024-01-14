@@ -5,7 +5,7 @@ namespace prid_2324_a11.Models;
 public class Attempt{
     [Key]
     public int Id { get; set; }
-    public DateTime Start { get; set; }
+    public DateTime? Start { get; set; }
     public DateTime? Finish { get; set; }
 
     [ForeignKey(nameof(StudentId))]

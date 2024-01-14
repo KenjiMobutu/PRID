@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild,AfterViewInit, ElementRef, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, ViewChild,AfterViewInit, ElementRef, OnDestroy, Input, ChangeDetectorRef } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { Quiz, Question, Attempt } from '../../models/quiz';
 import { MatDialog } from '@angular/material/dialog';
@@ -57,6 +57,7 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
     private service: QuestionService,
     private answerService: AnswerService,
     private attemptService: AttemptService,
+    private cdr: ChangeDetectorRef
 
   ) {
     this.state = this.stateService.quizTestListState;
@@ -84,6 +85,7 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
         default: return item[property];
       }
     };
+    this.refresh();
   }
 
   // appelée quand on clique sur le bouton "edit"
@@ -139,10 +141,6 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
   }
 
   refresh() {
-    const updateDatabaseName = (quiz: Quiz) => {
-      const dbName = this.databases.find(db => db.id === quiz.databaseId)?.name;
-      quiz.databaseName = dbName;
-    };
     if (!this._isTest) {
       this.quizService.getTp(this.user!).subscribe(quizes => {
         const publishedQuizes = quizes.filter(quiz => quiz.isPublished);
@@ -150,7 +148,6 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
         this.state.restoreState(this.dataSource);
         this._filter = this.state.filter;
         publishedQuizes.forEach(quiz => {
-          //updateDatabaseName(quiz);
           console.log('----> 1 quiz TP ', quiz);
           console.log('--> 2 quiz', quiz.name + ' Database -->' + quiz.databaseName + ' Status -->' + quiz.statusAsString);
         });
@@ -159,7 +156,6 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
       this.quizService.getTest(this.user!).subscribe(quizes => {
         // Filtrer pour n'afficher que les quiz publiés
         const publishedQuizes = quizes.filter(quiz => quiz.isPublished);
-
         this.dataSource.data = publishedQuizes;
         this.state.restoreState(this.dataSource);
         this._filter = this.state.filter;
@@ -167,7 +163,6 @@ export class QuizTestComponent implements OnInit, AfterViewInit {
             if (this.quiz) {
                 this.quiz.score = quiz.score;
             }
-            //updateDatabaseName(quiz);
             console.log('----> 1 quiz TEST : ', quiz);
             console.log('----> quiz', quiz.name + ' Database -->' + quiz.databaseName + ' Status -->' + quiz.statusAsString + ' ' + quiz.score);
         });

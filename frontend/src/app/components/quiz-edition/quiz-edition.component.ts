@@ -12,6 +12,7 @@ import { AttemptService } from 'src/app/services/attempt.service';
 import { Solution } from 'src/app/models/solution';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { empty } from 'rxjs';
+import { ChangeDetectorRef } from '@angular/core';
 @Component({
   selector: 'quiz-edition',
   templateUrl: './quiz-edition.component.html',
@@ -64,6 +65,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     private solutionService: SolutionService,
     private attemptService: AttemptService,
     public dialog: MatDialog,
+    private cdr: ChangeDetectorRef
 
   ){
     this.ctlName = this.fb.control('', [
@@ -491,8 +493,8 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
         errorMessages.push("Aucune question n'a été ajoutée.\n Veuillez ajouter au moins une question.\n");
     }
 
-    if (this.questions.every(q => q.body === '') || this.questions.some(q => q.body.length < 2)) {
-        errorMessages.push("Le titre de la question ne peut être vide ou inférieur à 2 caractères. \n");
+    if (this.questions.every(q => q.body === '') || this.questions.some(q => q.body.length < 2) || this.questions.some(q => q.body.trim().length < 2)) {
+        errorMessages.push("Le titre de la question ne peut être vide ou inférieur à 2 caractères (les espaces ne comptent pas!). \n");
     }
 
     if (!this.questions.every(q => q.solutions.length > 0)) {

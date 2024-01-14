@@ -17,6 +17,7 @@ import { Data } from 'popper.js';
 import { DataBase } from 'src/app/models/database';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { ChangeDetectorRef } from '@angular/core';
 @Component({
   selector: 'question',
   templateUrl: './question.component.html',
@@ -79,6 +80,7 @@ export class QuestionComponent implements OnInit{
     private authService: AuthenticationService,
     private questionService: QuestionService,
     public dialog: MatDialog,
+    private cdr: ChangeDetectorRef
 
     ) { }
 
@@ -89,6 +91,7 @@ export class QuestionComponent implements OnInit{
       });
       const db = this.databases.find(db => db.id === this.quiz!.databaseId);
       this.database = db!.name ?? '';
+
     }
 
     ngAfterViewInit(): void {
@@ -145,6 +148,7 @@ export class QuestionComponent implements OnInit{
           });
         });
         this.getAnswerForCurrentQuestion(quizId);
+        this.cdr.detectChanges();
     }
 
     next() {
@@ -205,18 +209,19 @@ export class QuestionComponent implements OnInit{
         if (result) {
           // L'utilisateur a confirmé la clôture du quiz
           if (this.question?.quizId) {
-            this.quizService.closeQuiz(this.question.quizId).subscribe(() => {
-              if (this.quiz) {
-                this.quiz.isClosed = true;
-                this.quiz.status = 1; // constante pour QuizStatus.Fini
-                console.log('----> Quiz STATUS:', this.quiz.isClosed);
-                this.router.navigate(['/quiz']);
-              }
-            }, error => {
-              console.error('Erreur lors de la clôture du quiz:', error);
+            this.closeAttempt();
+
+            // Clôturez le quiz côté front-end
+            this.quiz!.attempts[this.quiz!.attempts.length - 1].finish = new Date();
+
+            // Mettez à jour l'attempt côté front-end
+            this.attemptService.update(this.quiz!.attempts[this.quiz!.attempts.length - 1].id!).subscribe(res => {
+              console.log('----> *1* Résultat:', res);
+
+              // Redirigez vers la page quiz
+              this.router.navigate(['/quiz']);
             });
           }
-          this.closeAttempt();
         } else {
           // L'utilisateur a annulé l'action
           console.log('Clôture du quiz annulée');
@@ -261,10 +266,13 @@ export class QuestionComponent implements OnInit{
     }
 
     closeAttempt() {
-      this.attemptService.getByQuizId(this.quiz?.id ?? 0).subscribe(attempts => {
+      this.attemptService.getByQuizIdAndUserId(this.quiz?.id ?? 0, this.user!).subscribe(attempts => {
+        this.quiz!.attempts[attempts.length - 1].finish = new Date();
         if (attempts && attempts.length > 0) {
           const lastAttempt = attempts[attempts.length - 1]; // Accéder à la dernière tentative
           if (lastAttempt && lastAttempt.id !== undefined) {
+            console.log('----> *** Attempt:', lastAttempt);
+            lastAttempt.finish =  new Date();
             this.attemptService.update(lastAttempt.id).subscribe(res => {
               console.log('----> *1* Résultat:', res);
             });
@@ -385,6 +393,8 @@ export class QuestionComponent implements OnInit{
           this.attempts = attempts; // Accéder à la dernière tentative
           const lastAttempt = attempts[attempts.length - 1];
           this.lastAttempt = lastAttempt;
+          if(lastAttempt.finish)
+            this.haveAttempt = true;
           this.answerService.getByAttemptAndQuestionId(lastAttempt.id!, this.currentQuestionId!).subscribe(answers => {
             if (answers && answers.length > 0) {
               var lastAnswer = answers[answers.length - 1];

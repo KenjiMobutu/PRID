@@ -10,6 +10,7 @@ using System.Security.Claims;
 using prid_2324_a11.Helpers;
 using System.Xml.Serialization;
 
+
 namespace prid_2324_a11.Controllers;
 
 [Authorize]
@@ -213,7 +214,7 @@ public class QuizController :  ControllerBase{
     // Trouver le quiz par ID
         var quiz = await _context.Quizzes.FirstOrDefaultAsync(q => q.Id == quizId);
         if (quiz != null) {
-            quiz.IsClosed = true;
+            //quiz.IsClosed = true;
             await _context.SaveChangesAsync();
             return Ok();
         } else {
@@ -240,7 +241,7 @@ public class QuizController :  ControllerBase{
 
         var attempts = await _context.Attempts
             .Where(a => quizzes.Select(q => q.Id).Contains(a.QuizId) && a.StudentId == userId)
-            .OrderByDescending(a => a.Finish)
+            .OrderByDescending(a => a.Start)
             .ToListAsync();
 
         var questionsCount = await _context.Questions
@@ -251,42 +252,34 @@ public class QuizController :  ControllerBase{
 
         foreach (var quiz in quizzes){
             QuizStatus determinedStatus;
-                if (quiz.Finish.HasValue && now > quiz.Finish){
-                    determinedStatus = QuizStatus.Cloture;
-                    quiz.IsClosed = true;
+            if (quiz.Finish.HasValue && now > quiz.Finish){
+                determinedStatus = QuizStatus.Cloture;
+                quiz.IsClosed = true;
+                quiz.Score = "N/A";
+            }else{
+                var attempt = attempts.FirstOrDefault(a => a.QuizId == quiz.Id);
+                if (attempt != null){
+                    quiz.HaveAttempt = true;
+                    if (attempt.Finish is not null){
+                        determinedStatus = QuizStatus.Fini;
+                    }else{
+                        determinedStatus = QuizStatus.EnCours;
+                        quiz.Score = "N/A";
+                    }
+                    if (quiz.IsTest && questionsCount.TryGetValue(quiz.Id, out var totalQuestions)){
+                        var model = new CalculateQuizScoreModel { Quiz = quiz, Attempt = attempt };
+                        var result = await CalculateQuizScore(model);
+                        quiz.Score = result;
+                    }
+                }else if (quiz.IsTest){
+                    determinedStatus = QuizStatus.PasCommence;
                     quiz.Score = "N/A";
                 }else{
-                    var attempt = attempts.FirstOrDefault(a => a.QuizId == quiz.Id);
-                    if (attempt != null){
-                        quiz.HaveAttempt = true;
-                        if (attempt.Finish is not null  && quiz.IsTest){
-                            determinedStatus = QuizStatus.Fini;
-                            if (quiz.IsTest && questionsCount.TryGetValue(quiz.Id, out var totalQuestions)){
-                                var model = new CalculateQuizScoreModel { Quiz = quiz, Attempt = attempt };
-                                var result = await CalculateQuizScore(model);
-                                quiz.Score = result;
-                            }
-                        }else if (!quiz.IsClosed){
-                            determinedStatus = QuizStatus.EnCours;
-                            quiz.Score = "N/A";
-
-                        }else{
-                            determinedStatus = QuizStatus.Fini;
-                            if (quiz.IsTest && questionsCount.TryGetValue(quiz.Id, out var totalQuestions)){
-                                var model = new CalculateQuizScoreModel { Quiz = quiz, Attempt = attempt };
-                                var result = await CalculateQuizScore(model);
-                                quiz.Score = result;
-                            }
-                        }
-                    }else if (quiz.IsTest || quiz.IsClosed){
-                        determinedStatus = QuizStatus.PasCommence;
-                        quiz.Score = "N/A";
-                    }else{
-                        determinedStatus = QuizStatus.PasCommence;
-                    }
+                    determinedStatus = QuizStatus.PasCommence;
                 }
-                quiz.SetExternalStatus(determinedStatus);
-                Console.WriteLine("--> statut : " + determinedStatus);
+            }
+            quiz.SetExternalStatus(determinedStatus);
+            Console.WriteLine("--> statut : " + determinedStatus);
         }
     }
 
@@ -407,7 +400,7 @@ public class QuizController :  ControllerBase{
         return NoContent();
     }
 
-    
+
     [Authorized(Role.Teacher, Role.Admin)]
     [HttpGet("available/{name}")]
     public async Task<ActionResult<bool>> IsAvailable(string name) {

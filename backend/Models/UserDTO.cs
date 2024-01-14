@@ -20,7 +20,7 @@ public class UserWithPasswordDTO : UserDTO{
     public string Password { get; set; } = "";
 }
 
-public class UserLoginDTO : UserWithPasswordDTO{
-    public string Pseudo{ get; set; } = null!;
-    public string Password { get; set; } = null!;
-}
+// public class UserLoginDTO : UserWithPasswordDTO{
+//     public string Pseudo{ get; set; } = null!;
+//     public string Password { get; set; } = null!;
+// }

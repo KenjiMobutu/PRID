@@ -132,21 +132,26 @@ public async Task<ActionResult<IEnumerable<AttemptDTO>>> GetByQuizIdAndStudentId
   [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpPut("{attemptId}/finish")]
   public async Task<ActionResult<AttemptDTO>> PutAttempt(int attemptId) {
-    // Récupère en BD l'attempt dont l'id est passé en paramètre dans l'url
-    var attempt = await _context.Attempts.FindAsync(attemptId);
-    // Si aucun attempt n'a été trouvé, renvoyer une erreur 404 Not Found
-    if (attempt == null)
-      return NotFound();
-    attempt.Finish = DateTime.Now;
-    // Sauvegarder les changements
-    await _context.SaveChangesAsync();
-    var attemptDTO = _mapper.Map<AttemptDTO>(attempt);
-    // Retourner le DTO de l'attempt
-    return CreatedAtAction(nameof(GetOne), new { id = attemptDTO.Id }, attemptDTO);
+      // Récupère en BD l'attempt dont l'id est passé en paramètre dans l'url
+      var attempt = await _context.Attempts.FindAsync(attemptId);
+
+      // Si aucun attempt n'a été trouvé, renvoyer une erreur 404 Not Found
+      if (attempt == null)
+          return NotFound();
+
+      // Assurez-vous que Finish est correctement défini
+      attempt.Finish = DateTime.Now;
+
+      // Sauvegarder les changements
+      await _context.SaveChangesAsync();
+
+      // Retourner le DTO de l'attempt
+      return NoContent();
   }
 
+
   //get : api/attempt/studentId
-  
+
   [Authorized(Role.Teacher, Role.Admin, Role.Student)]
   [HttpGet("{studentId}")]
   public async Task<ActionResult<IEnumerable<AttemptDTO>>> GetByStudentId(int studentId) {
