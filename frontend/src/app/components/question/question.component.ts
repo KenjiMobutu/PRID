@@ -40,6 +40,8 @@ export class QuestionComponent implements OnInit{
   currentQuestionIndex: number = 0;
   isSolutionCorrect: boolean | null = null;
   private _isTest?: boolean;
+  isQuizTest = false;
+  isAnswerd = false;
   query = "";
   now = new Date();
   heure = this.now;
@@ -124,9 +126,10 @@ export class QuestionComponent implements OnInit{
           this._isTest = this.quiz?.isTest;
           console.log('---> Quiz!!:', this.quiz);
           if(quiz?.isTest){
+            this.isQuizTest = true;
             this.quizService.getTestByUserAndQuiz(this.user!, quizId).subscribe(q => {
               console.log('---> getTestByUserAndQuiz TEST:', q);
-              this.isQuizFinished = q?.status === QuizStatus.Fini;
+              //this.isQuizFinished = q?.status === QuizStatus.Fini;
               this.isTestEncours = q?.status === QuizStatus.EnCours;
               console.log('---> Quiz STATUS FINISHED 1:', this.isQuizFinished );
               console.log('---> Quiz STATUS EN COURS:', this.isTestEncours );
@@ -393,11 +396,14 @@ export class QuestionComponent implements OnInit{
           this.attempts = attempts; // Accéder à la dernière tentative
           const lastAttempt = attempts[attempts.length - 1];
           this.lastAttempt = lastAttempt;
-          if(lastAttempt.finish)
-            this.haveAttempt = true;
+          if(lastAttempt.finish !== null)
+            this.isQuizFinished = true;
           this.answerService.getByAttemptAndQuestionId(lastAttempt.id!, this.currentQuestionId!).subscribe(answers => {
             if (answers && answers.length > 0) {
               var lastAnswer = answers[answers.length - 1];
+              if(lastAnswer)
+                this.isAnswerd = true;
+              console.log('----> 111 LastAnswer:', lastAnswer.sql);
               this.query = lastAnswer.sql ?? '';
               this.horodatage = lastAnswer.timestamp!;
               console.log('----> 111 Answer:', lastAnswer.timestamp);

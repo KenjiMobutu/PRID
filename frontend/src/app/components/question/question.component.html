@@ -12,7 +12,7 @@
     <p>{{ quiz.name }}</p>
   </div>
 
-  <button mat-icon-button tabindex="-1" [disabled]="isQuizClosed || isQuizFinished ||haveAttempt"  (click)="close()" class="tip close">
+  <button mat-icon-button tabindex="-1" [disabled]="isQuizFinished"  (click)="close()" class="tip close">
     <mat-icon>close</mat-icon>
     <span class="tooltiptext">Cloturer le quiz</span>
   </button>
@@ -23,18 +23,18 @@
     <p>{{ question.body }}</p>
   </div>
 </div>
-<code-editor #editor [(ngModel)]="query" [readOnly]="isQuizFinished || isQuizClosed || haveAttempt" [database]="DB"></code-editor>
+<code-editor #editor [(ngModel)]="query" [readOnly]="isQuizFinished" [database]="DB"></code-editor>
 <br>
 <div>
-  <input id="readonly" type="checkbox" [(ngModel)]="isQuizFinished || isQuizClosed || haveAttempt" hidden>
+  <input id="readonly" type="checkbox" [(ngModel)]="isQuizFinished" hidden>
 </div>
 <div style="display: none;">
   <textarea [(ngModel)]="query" cols="80" rows="5" style="width: 100%"></textarea>
 </div>
 
 <div>
-  <button style="margin-right: 10px;" [disabled]="isQuizFinished || isQuizClosed || haveAttempt" (click)="send()" >Envoyer</button>
-  <button style="margin-right: 10px;" [disabled]="isQuizFinished || isQuizClosed || haveAttempt" (click)="clear()">Effacer</button>
+  <button style="margin-right: 10px;" [disabled]="isQuizFinished" (click)="send()" >Envoyer</button>
+  <button style="margin-right: 10px;" [disabled]="isQuizFinished" (click)="clear()">Effacer</button>
   <button style="margin-right: 10px;" *ngIf="!isTest && !isQuizFinished" (click)="showSolution()">Voir/Cacher Solution(s)</button>
 </div>
 <br>
@@ -71,7 +71,7 @@
   </table>
 </div>
 <br>
-<div *ngIf="showSolutions">
+<div *ngIf="showSolutions && !isTestEncours">
   <ng-container *ngFor="let solution of solutions; let i = index">
     <p>Solution {{ solution.order }}</p>
     <div class="solutionBody">

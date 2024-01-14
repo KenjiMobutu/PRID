@@ -65,12 +65,11 @@ input:checked + .slider:before {
   color: red;
 }
 
-
 .form {
   display: flex;
   flex-direction: column;
   max-width: 800px;
-  margin: auto;
+  margin-left: 150px;
 }
 
 .form-row {

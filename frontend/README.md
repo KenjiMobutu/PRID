@@ -25,3 +25,16 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
+
+## Login
+
+Pseudo = "admin" Password = "admin"
+Pseudo = "ben"    Password = "ben"
+Pseudo = "bruno"  Password = "bruno"
+Pseudo = "alain"  Password= "alain"
+Pseudo = "xavier"
+Pseudo = "boris"
+Pseudo = "marc"
+Pseudo = "bob"    Password = "bob"
+Pseudo = "caro"   Password = "caro"

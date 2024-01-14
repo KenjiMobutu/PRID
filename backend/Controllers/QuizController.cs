@@ -262,14 +262,14 @@ public class QuizController :  ControllerBase{
                     quiz.HaveAttempt = true;
                     if (attempt.Finish is not null){
                         determinedStatus = QuizStatus.Fini;
-                    }else{
+                        if (quiz.IsTest && questionsCount.TryGetValue(quiz.Id, out var totalQuestions)){
+                            var model = new CalculateQuizScoreModel { Quiz = quiz, Attempt = attempt };
+                            var result = await CalculateQuizScore(model);
+                            quiz.Score = result;
+                        }
+                    } else {
                         determinedStatus = QuizStatus.EnCours;
                         quiz.Score = "N/A";
-                    }
-                    if (quiz.IsTest && questionsCount.TryGetValue(quiz.Id, out var totalQuestions)){
-                        var model = new CalculateQuizScoreModel { Quiz = quiz, Attempt = attempt };
-                        var result = await CalculateQuizScore(model);
-                        quiz.Score = result;
                     }
                 }else if (quiz.IsTest){
                     determinedStatus = QuizStatus.PasCommence;
