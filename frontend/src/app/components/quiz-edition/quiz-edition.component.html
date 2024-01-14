@@ -1,0 +1,135 @@
+<form mat-dialog-content id="frm" class="form" [formGroup]="frm" novalidate>
+  <div class="form-row">
+    <div class="form-column">
+      <mat-form-field>
+          <mat-label>Nom</mat-label>
+          <input matInput [formControl]="ctlName" [readOnly]="haveAttempt && isTest" required>
+          <mat-error class="field-error" *ngIf="ctlName.hasError('required')">Required</mat-error>
+          <mat-error class="field-error" *ngIf="ctlName.hasError('minlength')">Minimum length is
+              {{ctlName.errors?.minlength?.requiredLength}}</mat-error>
+          <mat-error class="field-error" *ngIf="ctlName.hasError('nameUsed')">Quiz name already in use</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+          <mat-label>Description</mat-label>
+          <input matInput [formControl]="ctlDescription" [readOnly]="haveAttempt && isTest">
+      </mat-form-field>
+
+      <div class="form-card">
+        <mat-label>Type de quiz:</mat-label>
+        <mat-radio-group [formControl]="ctlRadioGroup" required (change)="onChangeType($event)" [disabled]="haveAttempt && isTest!">
+          <mat-radio-button value="trainning">Trainning</mat-radio-button>
+          <mat-radio-button value="test">Test</mat-radio-button>
+        </mat-radio-group>
+        <mat-error *ngIf="ctlRadioGroup.hasError('required')">Required</mat-error>
+      </div>
+
+
+    </div>
+
+    <div class="form-column">
+      <mat-form-field>
+        <mat-label>Base de données</mat-label>
+        <mat-select [formControl]="ctlDataBase" required (selectionChange)="selectedDatabaseChange($event.value)" [disabled]="haveAttempt && isTest!">
+          <mat-option *ngFor="let db of databases" [value]="db.name">
+            {{db.name}}
+          </mat-option>
+        </mat-select>
+        <mat-error class="field-error" *ngIf="ctlDataBase.hasError('required')">Required</mat-error>
+      </mat-form-field>
+
+      <div class="publish-and-actions">
+        <!-- Publié Toggle -->
+        <mat-slide-toggle [formControl]="ctlPublished" (change)="onChangePublished($event)" [disabled]="haveAttempt && isTest!">publié</mat-slide-toggle>
+
+        <!-- Actions Buttons -->
+        <div class="form-actions">
+          <button mat-icon-button matTooltip="Sauver" (click)="save()" [disabled]="frm.invalid || haveAttempt && isTest!">
+            <mat-icon>save</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Supprimer" (click)="delete()" >
+            <mat-icon>delete_forever</mat-icon>
+          </button>
+        </div>
+
+      </div>
+      <mat-form-field *ngIf="isTest" color="accent" >
+        <mat-label>Choisissez une période de validité</mat-label>
+        <mat-date-range-input [formGroup]="range" [rangePicker]="picker" required [disabled]="haveAttempt">
+          <input matStartDate [formControl]="ctlStart"  placeholder="Start date" required>
+          <input matEndDate [formControl]="ctlFinish" placeholder="End date" required>
+        </mat-date-range-input>
+        <mat-hint>JJ/MM/AAAA – JJ/MM/AAAA</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+        <mat-error *ngIf="range.hasError('required')">Les dates de début et de fin sont requises</mat-error>
+        <mat-error *ngIf="range.hasError('dateRangeInvalid')">La date de début ne peut être après la date de fin</mat-error>
+        <mat-error *ngIf="range.get('ctlStart')?.hasError('beforeToday')">La date de début ne peut être avant aujourd'hui</mat-error>
+        <mat-error *ngIf="range.get('ctlFinish')?.hasError('beforeToday')">La date de fin ne peut être avant aujourd'hui</mat-error>
+        <mat-error *ngIf="range.get('ctlStart')?.hasError('required')">La date de début est requise</mat-error>
+        <mat-error *ngIf="range.get('ctlFinish')?.hasError('required')">La date de fin est requise</mat-error>
+      </mat-form-field>
+      <!-- <p>Selected range: {{ctlStart.value | date:'dd/MM/yyyy' }} - {{ctlFinish.value | date:'dd/MM/yyyy' }}</p> -->
+    </div>
+  </div>
+  <br>
+  <h2>Questions</h2>
+  <p class="error"> {{errorMessage}}</p>
+  <mat-accordion>
+    <mat-expansion-panel *ngFor="let question of questions; let questionIndex = index" (opened)="question.isOpen = true" (closed)="question.isOpen = false">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <!-- {{ question ? (question.isOpen ? ('Question ' + (question.order || 'N/A')) : ((question.order || 'N/A') + '. ' + (question.body | truncate:90))) : 'Nouvelle question' }} -->
+          {{
+            question
+              ? (question.isOpen
+                  ? 'Question ' + (question.order || 'N/A')
+                  : (question.order || 'N/A') + '. ' + (question.body ? (question.body | truncate:90) : 'Contenu en attente'))
+              : 'Nouvelle question'
+          }}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <button mat-icon-button matTooltip="Up" class="questionUp"  [disabled]="questionIndex <= 0 || haveAttempt && isTest!"  (click)="questionUp(questionIndex)">
+        <mat-icon>keyboard_arrow_up</mat-icon>
+      </button>
+      <button mat-icon-button matTooltip="Down" class="questionDown"  [disabled]="questionIndex >= questions.length - 1 || haveAttempt && isTest!" (click)="questionDown(questionIndex)">
+        <mat-icon>keyboard_arrow_down</mat-icon>
+      </button>
+      <button mat-icon-button matTooltip="Supprimer" class="questionDelete" (click)="questionDelete(questionIndex)" [disabled]="haveAttempt && isTest!" >
+        <mat-icon>delete_forever</mat-icon>
+      </button>
+      <p>Intitulé</p>
+      <mat-form-field style="width: 100%;">
+        <textarea matInput required cols="80" rows="2"  [(ngModel)]="question.body" [ngModelOptions]="{standalone: true}"
+                  placeholder="Entrez le texte de la question ici" [disabled]="haveAttempt && isTest!">{{question.body}}</textarea>
+        <!-- Afficher les erreurs pour chaque question -->
+        <mat-error *ngIf="question.body?.trim()?.length! < 2">
+          Ce champ est obligatoire et doit contenir minimun 2 caractères (les espaces ne comptent pas).
+        </mat-error>
+      </mat-form-field>
+      <div *ngFor="let solution of question.solutions; let solutionIndex = index" class="solution-container">
+        <div class="buttons-container">
+            <button mat-icon-button matTooltip="Up" class="solutionUp" (click)="solutionUp(questionIndex, solutionIndex)" [disabled]="haveAttempt && isTest!">
+                <mat-icon>keyboard_arrow_up</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Down" class="solutionDown" (click)="solutionDown(questionIndex, solutionIndex)" [disabled]="haveAttempt && isTest!">
+                <mat-icon>keyboard_arrow_down</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Supprimer" class="solutionDelete" (click)="solutionDelete(questionIndex, solutionIndex)" [disabled]="haveAttempt && isTest!">
+                <mat-icon>delete_forever</mat-icon>
+            </button>
+        </div>
+        <div class="editor-container">
+            <p>Solution {{ solutionIndex + 1 }}</p>
+            <code-editor #editor [(ngModel)]="solution.sql" [database]="DB" [ngModelOptions]="{standalone: true}" [readOnly]="haveAttempt && isTest!"></code-editor>
+            <mat-error *ngIf="solution.sql?.trim()?.length === 0">Ce champ est obligatoire (les espaces ne comptent pas).</mat-error>
+        </div>
+      </div>
+      <button mat-icon-button tabindex="-1" matTooltip="Ajouter une solution" class="newSolution" (click)="newSolution(questionIndex, question.id)" [disabled]="haveAttempt && isTest">
+        <mat-icon>add_box</mat-icon>
+      </button>
+    </mat-expansion-panel>
+  </mat-accordion>
+  <button mat-icon-button tabindex="-1" matTooltip="Ajouter une question au quiz" class="newQuestion" (click)="newQuestion()" [disabled]="haveAttempt && isTest">
+    <mat-icon>add_box</mat-icon>
+  </button>
+</form>

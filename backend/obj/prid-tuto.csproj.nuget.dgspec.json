@@ -1,0 +1,74 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid-2324-xyy/prid-tuto/prid-tuto.csproj": {}
+  },
+  "projects": {
+    "/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid-2324-xyy/prid-tuto/prid-tuto.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid-2324-xyy/prid-tuto/prid-tuto.csproj",
+        "projectName": "prid-tuto",
+        "projectPath": "/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid-2324-xyy/prid-tuto/prid-tuto.csproj",
+        "packagesPath": "/Users/kenjimobutu/.nuget/packages/",
+        "outputPath": "/Users/kenjimobutu/Documents/Informatique de gestion/Cours/3/PRID/PRID2324/projects/prid-2324-xyy/prid-tuto/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/kenjimobutu/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.OpenApi": {
+              "target": "Package",
+              "version": "[7.0.10, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.5.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.400/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

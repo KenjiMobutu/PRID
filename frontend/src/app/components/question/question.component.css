@@ -1,0 +1,105 @@
+.questionBody {
+  color: blue;
+}
+
+.solutionBody {
+  color: green;
+}
+
+.correct-answer {
+  color: green;
+}
+
+.incorrect-answer {
+  color: red;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+.quiz-name {
+  flex-grow: 1;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* Style pour l'info-bulle (tip) */
+.tip {
+  position: relative;
+}
+.tip .close:hover {
+  visibility: visible;
+  opacity: 1;
+  background-color: #e6e0e0c6;
+  color: #ff4081;
+  transform: scale(1.2);
+}
+.tip:hover {
+  visibility: visible;
+  opacity: 1;
+  background-color: #b0b0b0;
+  color: #ff4081;
+  transform: scale(1.2);
+}
+
+.tip .tooltiptext {
+  visibility: hidden;
+  width: 100px;
+  font-size: 10px;
+  background-color: #cac6c6e6;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 110%; /* Place l'info-bulle au-dessus du bouton */
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.tip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+  background-color: #a49f9f;
+}
+
+/* Style pour le tableau */
+table {
+  border-collapse: collapse;
+  width: 30%;
+  border: 1px solid #ddd;
+}
+
+/* Style pour l'en-tête du tableau */
+thead {
+  background-color: #f2f2f2; /* Fond gris clair */
+}
+
+/* Style pour les cellules de l'en-tête */
+th {
+  border: 1px solid #ddd;;
+  padding: 8px;
+  text-align: center;
+}
+
+/* Style pour les lignes du tableau */
+tr {
+  border: 2px solid #ddd;
+}
+
+/* Style pour les cellules du tableau */
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+

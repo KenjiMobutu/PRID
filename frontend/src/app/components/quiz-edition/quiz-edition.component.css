@@ -1,0 +1,199 @@
+ /* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.error {
+  color: red;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin-left: 150px;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.form-column {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 50%;
+  padding: 8px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.publish-and-actions {
+  display: flex;
+  align-items: center; /* Centre les éléments verticalement */
+  justify-content: space-between; /* Sépare les éléments en deux groupes */
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px; /* Ajuste l'écart entre les boutons si nécessaire */
+}
+
+.form-actions :hover{
+  color: #ff4081;
+  transform: scale(1.3);
+}
+
+.solution-container {
+  display: flex;
+  align-items: start;
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 50px;
+  margin-right: 10px; /* Adjust spacing */
+}
+
+.editor-container {
+  flex-grow: 1;
+}
+.solutionUp:hover {
+  color: #ff4081;
+  transform: scale(1.3);
+  font-weight: bold;
+}
+.solutionDown:hover {
+  color: #ff4081;
+  transform: scale(1.3);
+}
+.solutionDelete:hover {
+  color: #ff4081;
+  transform: scale(1.3);
+}
+.newSolution:hover {
+  color: #ff4081;
+  transform: scale(1.3);
+}
+.questionUp:hover {
+  color: #ff4081;
+  transform: scale(1.3);
+  font-weight: bold;
+}
+.questionDown:hover {
+  color: #ff4081;
+  transform: scale(1.3);
+}
+.questionDelete:hover {
+  color: #ff4081;
+  transform: scale(1.3);
+}
+
+/* Responsivité */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+  }
+
+  .form-column {
+    flex-basis: 100%;
+  }
+
+  .publish-and-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .form-actions {
+    justify-content: flex-start;
+  }
+
+  .solution-container {
+    display: flex;
+    align-items: start;
+  }
+
+.buttons-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 10px; /* Adjust spacing as needed */
+}
+
+.editor-container {
+    flex-grow: 1;
+}
+.solutionUp:hover {
+  color: #ff4081;
+  transform: scale(1.3);
+}
+
+.solutionDown:hover {
+  color: #ff4081;
+  transform: scale(1.3);
+}
+
+}

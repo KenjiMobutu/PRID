@@ -1,0 +1,36 @@
+/* Style pour le titre de la boîte de dialogue */
+.title {
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+/* Style pour le contenu de la boîte de dialogue */
+mat-dialog-content {
+  color: #555;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+/* Style pour les actions de la boîte de dialogue */
+mat-dialog-actions {
+  display: flex;
+  justify-content: center;
+}
+
+/* Style pour les boutons */
+button {
+  margin-left: 10px;
+  color: #1976d2;
+  font-weight: bold;
+}
+
+/* Style pour le bouton 'Oui' pour le rendre plus distinct */
+button:first-of-type {
+  color: #0f7b3e;
+}
+
+/* Style pour le bouton 'Non' */
+button:last-of-type {
+  color: #d32f2f;
+}

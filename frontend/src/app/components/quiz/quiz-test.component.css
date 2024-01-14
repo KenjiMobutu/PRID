@@ -1,0 +1,36 @@
+/* Style pour l'info-bulle (tip) */
+.tip {
+  position: relative;
+}
+
+.tip:hover {
+  visibility: visible;
+  opacity: 1;
+  background-color: #ded9d9d5;
+  color: #ff4081;
+  transform: scale(1.2);
+}
+
+.tip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  font-size: 15px;
+  background-color: #4f4d4d;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 110%; /* Place l'info-bulle au-dessus du bouton */
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.tip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+  background-color: #6d6767;
+}

@@ -1,0 +1,5 @@
+{
+  "csharp.format.enable": false,
+  "editor.formatOnSave": false,
+  "java.project.explorer.showNonJavaResources": false
+}

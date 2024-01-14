@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+      {
+          "name": "Debug Backend",
+          "type": "coreclr",
+          "request": "attach",
+          "processName": "backend"
+      },
+      {
+          "type": "chrome",
+          "request": "launch",
+          "name": "Debug Frontend",
+          "url": "http://[::1]:4200/",
+          "webRoot": "${workspaceFolder}/frontend"
+      }
+  ]
+}

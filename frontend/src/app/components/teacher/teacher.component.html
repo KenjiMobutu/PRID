@@ -1,0 +1,60 @@
+<p>Liste des quiz:</p>
+<div class="row">
+  <div class="col-sm-12">
+    <mat-form-field>
+        <mat-label>Filter</mat-label>
+        <input matInput (keyup)="filterChanged($event)" [value]="filter" appSetFocus>
+    </mat-form-field>
+    <div class="mat-elevation-z2">
+        <table mat-table [dataSource]="dataSource" matSort matSortDisableClear>
+          <ng-container matColumnDef="nom">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="name"> Nom </th>
+            <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+          </ng-container>
+          <ng-container matColumnDef="dataBase" >
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="databaseName"> Base de données </th>
+            <td mat-cell *matCellDef="let row"> {{row.databaseName }} </td>
+          </ng-container>
+          <ng-container matColumnDef="type" >
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="isTest"> Type de quiz </th>
+            <td mat-cell *matCellDef="let row"> {{row.isTest ? 'Test' : 'Trainning' }} </td>
+          </ng-container>
+          <ng-container matColumnDef="startDate" >
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="start"> date début </th>
+            <td mat-cell *matCellDef="let row">
+              <ng-container> {{ row.isTest ? (row.start | date:'dd/MM/yyyy') : 'N/A' }} </ng-container>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="endDate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="finish"> date fin </th>
+            <td mat-cell *matCellDef="let row">
+              <ng-container> {{ row.isTest ? (row.finish | date:'dd/MM/yyyy') : 'N/A' }} </ng-container>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="statut">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="statusAsString"> Statut </th>
+            <td mat-cell *matCellDef="let row"> {{row.statusAsString}} </td>
+          </ng-container>
+          <ng-container matColumnDef="evaluation">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="evaluation"> Evaluation </th>
+            <td mat-cell *matCellDef="let row"> {{row.evaluation}} </td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef> Actions </th>
+            <td mat-cell *matCellDef="let row">
+              <button mat-icon-button tabindex="-1" (click)="edit(row)" class="tip" matTooltip="Editer un quiz">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      <mat-paginator [pageSize]="5" [pageSizeOptions]="[1, 3, 5, 10, 25, 100]"></mat-paginator>
+    </div>
+  </div>
+  <button mat-icon-button tabindex="-1" class="tip" matTooltip="Creer un nouveau quiz"  (click)="newQuiz()">
+    <mat-icon>add_box</mat-icon>
+  </button>
+</div>
+

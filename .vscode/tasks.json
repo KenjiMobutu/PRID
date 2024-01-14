@@ -1,0 +1,43 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+      {
+          "label": "run-servers",
+          "detail": "Démarre le frontend et le backend",
+          "group": "build",
+          "dependsOn": [
+              "run-angular",
+              "run-dotnet"
+          ],
+          "problemMatcher": []
+      },
+      {
+          "label": "run-angular",
+          "detail": "Démarre le frontend",
+          "type": "shell",
+          "command": "npm start",
+          "options": {
+              "cwd": "${workspaceFolder}/frontend"
+          },
+          "group": "build",
+          "presentation": {
+              "group": "servers"
+          },
+          "problemMatcher": "$msCompile"
+      },
+      {
+          "label": "run-dotnet",
+          "detail": "Démarre le backend",
+          "type": "shell",
+          "command": "dotnet watch",
+          "options": {
+              "cwd": "${workspaceFolder}/backend"
+          },
+          "group": "build",
+          "presentation": {
+              "group": "servers"
+          },
+          "problemMatcher": "$msCompile"
+      }
+  ]
+}
