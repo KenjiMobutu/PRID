@@ -325,7 +325,7 @@ export class QuestionComponent implements OnInit{
             }
             this.showAnswer();
             //this.showRowsCount = !this.showRowsCount;
-            this.showAnswerTable = !this.showAnswerTable;
+            this.showAnswerTable = true;
 
             this.rowsCount = data.data.length;
             this.dataT = data;
@@ -342,12 +342,14 @@ export class QuestionComponent implements OnInit{
             this.showSolutions = true;
           }
         );
+        //this.getAnswerForCurrentQuestion(this.quiz!.id!);
+        this.updateHorodatage(this.quiz!.id!);
     }
 
     showAnswer(){
       //this.resetAnswerState();
-      this.showRowsCount = !this.showRowsCount;
-      this.showAnswers = !this.showAnswers;
+      this.showRowsCount = true;
+      this.showAnswers = true;
     }
 
     showTable(){
@@ -409,6 +411,21 @@ export class QuestionComponent implements OnInit{
               console.log('----> 111 Answer:', lastAnswer.timestamp);
               console.log('----> 111 Answers:', answers);
               this.envoyer();
+            }
+          });
+        }
+      });
+    }
+
+    updateHorodatage(quizId: number){
+      this.attemptService.getByQuizIdAndUserId(quizId, this.user!).subscribe(attempts => {
+        console.log('----> 1 Attempts:', attempts);
+        if (attempts) {
+          const lastAttempt = attempts[attempts.length - 1];
+          this.answerService.getByAttemptAndQuestionId(lastAttempt.id!, this.currentQuestionId!).subscribe(answers => {
+            if (answers && answers.length > 0) {
+              var lastAnswer = answers[answers.length - 1];
+              this.horodatage = lastAnswer.timestamp!;
             }
           });
         }
