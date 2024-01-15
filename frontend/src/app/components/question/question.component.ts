@@ -326,7 +326,7 @@ export class QuestionComponent implements OnInit{
             this.showAnswer();
             //this.showRowsCount = !this.showRowsCount;
             this.showAnswerTable = true;
-
+            this.horodatage = new Date();
             this.rowsCount = data.data.length;
             this.dataT = data;
             this.dataRows =  data.data;
@@ -342,7 +342,6 @@ export class QuestionComponent implements OnInit{
             this.showSolutions = true;
           }
         );
-        //this.getAnswerForCurrentQuestion(this.quiz!.id!);
         this.updateHorodatage(this.quiz!.id!);
     }
 
