@@ -7,7 +7,7 @@
           <mat-error class="field-error" *ngIf="ctlName.hasError('required')">Required</mat-error>
           <mat-error class="field-error" *ngIf="ctlName.hasError('minlength')">Minimum length is
               {{ctlName.errors?.minlength?.requiredLength}}</mat-error>
-          <mat-error class="field-error" *ngIf="ctlName.hasError('nameUsed')">Quiz name already in use</mat-error>
+          <mat-error class="field-error" *ngIf="ctlName.hasError('nameUsed')">Quiz name already in use (pay attention case-sensitive)</mat-error>
       </mat-form-field>
       <mat-form-field>
           <mat-label>Description</mat-label>

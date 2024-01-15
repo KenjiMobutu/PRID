@@ -193,7 +193,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
     let originalName: string | undefined;
 
     return async (ctl: FormControl) => {
-      originalName! = this.quiz?.name!;
+        originalName! = this.quiz?.name!;
         clearTimeout(timeout);
         const newName = ctl.value;
 
@@ -204,11 +204,10 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
                 } else {
                     // Attendre que les noms des quiz soient récupérés
                     const quizzes = await this.quizService.getAll().toPromise();
-                    const quizNames = quizzes!.map(q => q.name).filter(name => name !== originalName);
-                    console.log('-->*** Quiz Names:', quizNames);
+                    const isNameUsed = quizzes!.some(q =>
+                        q.name!.localeCompare(newName, undefined, { sensitivity: 'base' }) === 0
+                    );
 
-                    // Vérifier si le nom existe déjà dans la base de données
-                    const isNameUsed = quizNames.includes(newName);
                     console.log('-->*** isNameUsed:', isNameUsed);
                     resolve(isNameUsed ? { nameUsed: true } : null);
                 }
@@ -216,6 +215,7 @@ export class QuizEditionComponent implements OnInit, AfterViewInit{
         });
     };
   }
+
 
   dateNotBeforeTodayValidator() {
     return (control: AbstractControl): { [key: string]: any } | null => {
