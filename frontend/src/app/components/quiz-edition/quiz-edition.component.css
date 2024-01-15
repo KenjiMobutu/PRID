@@ -69,7 +69,7 @@ input:checked + .slider:before {
   display: flex;
   flex-direction: column;
   max-width: 800px;
-  margin-left: 150px;
+  
 }
 
 .form-row {
