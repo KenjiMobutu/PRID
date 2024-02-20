@@ -6,6 +6,6 @@ pipelines:
         clone:
           enabled: false
         script:
-          - git clone --bare git@bitbucket.org:https://KenjiMobutu@bitbucket.org/kenjimobutu/prid-2324-a11.git
+          - git clone --bare git@bitbucket.org:bitbucket.org/kenjimobutu/prid-2324-a11.git
           - cd prid.git
-          - git push --mirror git@github.com:https://github.com/KenjiMobutu/PRID.git
+          - git push --mirror git@github.com:github.com/KenjiMobutu/PRID.git
