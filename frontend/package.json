@@ -21,7 +21,7 @@
     "@angular/material-date-fns-adapter": "^16.2.0",
     "@angular/platform-browser": "16.2.0",
     "@angular/platform-browser-dynamic": "16.2.0",
-    "@angular/platform-server": "16.2.0",
+    "@angular/platform-server": "20.3.31",
     "@angular/router": "16.2.0",
     "ace-builds": "1.30.0",
     "bootstrap": "5.3.1",
